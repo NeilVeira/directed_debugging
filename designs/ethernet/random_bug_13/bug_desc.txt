@@ -1,0 +1,5 @@
+Bug Description: stuck-at-1
+Location: 	rtl/eth_miim.v : 251
+Golden:   	WCtrlData_q2 <= #Tp WCtrlData_q1;
+Bug:      	WCtrlData_q2 <= 1;
+Module: eth_miim

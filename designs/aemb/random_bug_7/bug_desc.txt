@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/aeMB_fetch.v : 82
+Golden:   	assign 	     iwb_stb_o = 1'b1;
+Bug:      	assign 	     iwb_stb_o = 0;
+Module: aeMB_fetch

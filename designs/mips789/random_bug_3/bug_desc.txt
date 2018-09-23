@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/RF_components.v : 55
+Original: 	default res= `__TP 1'Bx;
+Bug:      	default res= 0;
+Module: compare

@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/ulit.v : 28
+Original: 	clk_no = 1+clk_no;
+Bug:      	clk_no = 0;
+Module: cal_cpi

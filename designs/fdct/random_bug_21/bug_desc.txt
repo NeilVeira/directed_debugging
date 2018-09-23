@@ -1,0 +1,5 @@
+Bug Description: incorrect condition
+Location: 	rtl/zigzag.v : 135
+Golden:   	if(ld_zigzag)
+Bug:      	if (1)
+Module: zigzag

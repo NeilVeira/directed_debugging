@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/div_uu.v : 207
+Golden:   	div0 <= #1 div0_pipe[d_width];
+Bug:      	div0 <= 1;
+Module: div_uu

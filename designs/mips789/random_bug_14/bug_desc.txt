@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/mips_dvc.v : 55
+Original: 	r_key1<=key1;
+Bug:      	r_key1<= 1;
+Module: mips_dvc

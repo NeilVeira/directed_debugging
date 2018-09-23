@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/fifo4.v : 138
+Golden:   	if(clr)				gb <= #1 1'b0;
+Bug:      	if(clr)				gb <= 1;
+Module: fifo4

@@ -1,0 +1,1 @@
+../../golden/rtl/decode_pipe.v

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/eth_top.v : 518
+Golden:   	assign temp_wb_err_o = wb_stb_i & wb_cyc_i & (~ByteSelected | CsMiss);
+Bug:      	assign temp_wb_err_o = 1;
+Module: eth_top

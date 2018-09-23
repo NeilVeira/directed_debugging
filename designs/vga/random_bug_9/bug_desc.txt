@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_tgen.v : 141
+Golden:   	assign gate = Hgate & Vgate;
+Bug:      	assign gate = 1;
+Module: vga_tgen

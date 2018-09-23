@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/common_modules.v : 85
+Golden:   	assign out[0] = in1[0] ^ in2[0];
+Bug:      	assign out[0] = 1;
+Module: gfadder

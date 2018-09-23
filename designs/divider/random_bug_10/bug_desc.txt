@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/div_uu.v : 130
+Golden:   	tmp = si;
+Bug:      	tmp = 1;
+Module: div_uu

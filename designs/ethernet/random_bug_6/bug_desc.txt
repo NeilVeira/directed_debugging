@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/eth_register.v : 108
+Golden:   	DataOut<=#1 DataIn;
+Bug:      	DataOut<= 0;
+Module: eth_register

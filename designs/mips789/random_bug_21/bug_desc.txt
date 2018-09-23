@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/EXEC_stage.v : 197
+Original: 	`MUXA_PC:   a_o = pc;
+Bug:      	`MUXA_PC:   a_o = 0;
+Module: alu_muxa

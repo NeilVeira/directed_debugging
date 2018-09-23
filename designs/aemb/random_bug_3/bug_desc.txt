@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/aeMB_regfile.v : 187
+Golden:   	assign      rREGA = rMEMA[rRA];
+Bug:      	assign      rREGA = 0;
+Module: aeMB_regfile

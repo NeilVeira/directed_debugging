@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/mips_dvc.v : 87
+Original: 	wire rd_status 	   =	  addr==`STATUS_ADDR 		&& 		ld_wd;
+Bug:      	wire rd_status 	   = 0;
+Module: mips_dvc

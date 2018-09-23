@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/decode_pipe.v : 448
+Original: 	pc_gen_ctl = `PC_NEXT;
+Bug:      	pc_gen_ctl = 1;
+Module: decoder

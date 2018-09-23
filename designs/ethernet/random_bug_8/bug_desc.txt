@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/eth_top.v : 542
+Golden:   	assign temp_wb_ack_o = (|RegCs) | BDAck;
+Bug:      	assign temp_wb_ack_o = 0;
+Module: eth_top

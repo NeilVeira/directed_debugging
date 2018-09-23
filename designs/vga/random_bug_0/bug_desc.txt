@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_wb_slave.v : 330
+Golden:   	stat[17] <= #1 acmp;
+Bug:      	stat[17] <= 1;
+Module: vga_wb_slave

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_pgen.v : 324
+Golden:   	wire sclr = ~ctrl_ven;
+Bug:      	wire sclr = 1;
+Module: vga_pgen

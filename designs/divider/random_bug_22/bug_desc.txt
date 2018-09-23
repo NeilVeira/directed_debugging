@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/div_uu.v : 203
+Golden:   	ovf <= #1 ovf_pipe[d_width];
+Bug:      	ovf <= 0;
+Module: div_uu

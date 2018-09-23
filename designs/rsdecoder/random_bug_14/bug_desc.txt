@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/common_modules.v : 109
+Golden:   	assign intvald[1] = (in1[1] & in2[0]) ^ (in1[0] & in2[1]);
+Bug:      	assign intvald[1] = 1;
+Module: lcpmult

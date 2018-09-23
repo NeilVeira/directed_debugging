@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_csm_pb.v : 154
+Golden:   	assign ack0_o = ( (sel0 && we0_i) || ack0 );
+Bug:      	assign ack0_o = 1;
+Module: vga_csm_pb

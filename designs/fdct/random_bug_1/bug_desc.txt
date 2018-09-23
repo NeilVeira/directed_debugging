@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/dctu.v : 3763
+Golden:   	6'h22: dct_cos_table = 32'he95f619a; // = -0.353553
+Bug:      	6'h22: dct_cos_table = 1; // = -0.353553
+Module: dctu

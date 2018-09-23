@@ -1,0 +1,1 @@
+../../golden/rtl/common_modules.v

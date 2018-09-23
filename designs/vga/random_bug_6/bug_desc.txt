@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/memory/generic_dpram.v : 167
+Golden:   	ra <= #1 raddr;
+Bug:      	ra <= 0;
+Module: generic_dpram

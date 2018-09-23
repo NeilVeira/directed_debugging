@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/common_modules.v : 65
+Golden:   	dataout <= datain;
+Bug:      	dataout <= 1;
+Module: register5_wl

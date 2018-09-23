@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/common_modules.v : 47
+Golden:   	assign dataout = out;
+Bug:      	assign dataout = 0;
+Module: register5_wlh

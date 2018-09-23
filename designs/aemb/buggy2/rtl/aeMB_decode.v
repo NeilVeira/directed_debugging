@@ -1,0 +1,1 @@
+../../golden/rtl/aeMB_decode.v

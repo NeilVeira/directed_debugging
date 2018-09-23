@@ -1,0 +1,5 @@
+Bug Description: incorrect condition
+Location: 	rtl/dct_mac.v : 110
+Golden:   	if(dclr)
+Bug:      	if (1)
+Module: dct_mac

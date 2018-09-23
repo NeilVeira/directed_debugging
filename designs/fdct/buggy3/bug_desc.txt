@@ -1,0 +1,5 @@
+Bug Description:  unknown
+Location: 	rtl/dctub.v : 164
+Golden:   	unknown
+Bug:      	unknown
+Module: dctub

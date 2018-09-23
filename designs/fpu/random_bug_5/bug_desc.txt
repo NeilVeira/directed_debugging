@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/fpu.v : 342
+Original: 	opas_r1 <= #1 opa_r[31];
+Bug:      	opas_r1 <= 0;
+Module: fpu

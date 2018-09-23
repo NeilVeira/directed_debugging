@@ -1,0 +1,1 @@
+../../golden/rtl/SCBLOCK.v

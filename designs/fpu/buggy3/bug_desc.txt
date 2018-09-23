@@ -1,0 +1,5 @@
+Bug Description:  unknown
+Location: 	rtl/post_norm.v : 462
+Golden:   	unknown
+Bug:      	unknown
+Module: post_norm

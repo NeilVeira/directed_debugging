@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_aslu.v : 263
+Golden:   	wire 	    fRTID = (rOPC == 6'o55) & rRD[0];
+Bug:      	wire 	    fRTID = 1;
+Module: aeMB_aslu

@@ -1,0 +1,5 @@
+Bug Description: stuck-at-1
+Location: 	rtl/eth_clockgen.v : 125
+Golden:   	Mdc <= #Tp ~Mdc;
+Bug:      	Mdc <= 1;
+Module: eth_clockgen

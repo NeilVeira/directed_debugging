@@ -1,0 +1,1 @@
+../../golden/rtl/vga_wb_master.v

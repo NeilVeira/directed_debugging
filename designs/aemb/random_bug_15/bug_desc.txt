@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_decode.v : 186
+Golden:   	wire 	 fSHIFT = fGH4 & fGL4;
+Bug:      	wire 	 fSHIFT = 1;
+Module: aeMB_decode

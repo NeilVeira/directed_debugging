@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_control.v : 214
+Golden:   	rRST <= 2'h3;
+Bug:      	rRST <= 1;
+Module: aeMB_control

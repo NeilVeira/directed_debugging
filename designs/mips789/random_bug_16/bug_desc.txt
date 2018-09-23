@@ -1,0 +1,5 @@
+Bug Description: incorrect condition
+Location: 	rtl/forward.v : 41
+Golden:   	if ((alu_we)&&(alu_wr_rn==rn)&&(alu_wr_rn!=0))
+Bug:      	if (1)
+Module: forward_node

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/common_modules.v : 42
+Golden:   	out <= out;
+Bug:      	out <= 1;
+Module: register5_wlh

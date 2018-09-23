@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_wb_master.v : 373
+Golden:   	ld_cursor0 <= #1 1'b0;
+Bug:      	ld_cursor0 <= 1;
+Module: vga_wb_master

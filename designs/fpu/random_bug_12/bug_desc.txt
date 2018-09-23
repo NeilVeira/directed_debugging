@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/fpu.v : 317
+Golden:   	5:	exp_r <= #1 opa_r1[30:23];
+Bug:      	5:	exp_r <= 1;
+Module: fpu

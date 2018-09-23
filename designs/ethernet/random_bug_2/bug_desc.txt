@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/eth_top.v : 507
+Original: 	assign ByteSelected = |wb_sel_i;
+Bug:      	assign ByteSelected = 0;
+Module: eth_top

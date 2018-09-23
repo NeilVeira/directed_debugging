@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/RF_components.v : 81
+Original: 	`PC_J		:	pc_next = `__TP {pc[31:28],imm[27:0]};
+Bug:      	`PC_J		:	pc_next = 0;
+Module: pc_gen

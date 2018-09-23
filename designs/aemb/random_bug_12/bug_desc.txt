@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/aeMB_fetch.v : 108
+Golden:   	rPC <= #1 xPC;
+Bug:      	rPC <= 0;
+Module: aeMB_fetch

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_enh_top.v : 441
+Golden:   	sluint <= #1 luint_pclk;  // resample at wb_clk_i clock
+Bug:      	sluint <= 1;  // resample at wb_clk_i clock
+Module: vga

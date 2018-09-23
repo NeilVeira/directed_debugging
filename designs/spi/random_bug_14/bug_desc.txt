@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/simple_spi_top.v : 344
+Golden:   	state <= #1 2'b01;
+Bug:      	state <= 0;
+Module: spi

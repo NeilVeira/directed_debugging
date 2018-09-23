@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/controller.v : 458
+Golden:   	dataoutstart = 0;
+Bug:      	dataoutstart = 1;
+Module: MainControl

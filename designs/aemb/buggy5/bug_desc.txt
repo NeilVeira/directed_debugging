@@ -1,0 +1,5 @@
+Bug Description:  unknown
+Location: 	rtl/aeMB_aslu.v: 143
+Golden:   	unknown
+Bug:      	unknown
+Module: aeMB_aslu

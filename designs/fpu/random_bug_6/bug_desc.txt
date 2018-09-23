@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/primitives.v : 95
+Original: 	quo <= #1 quo1;
+Bug:      	quo <= 0;
+Module: div_r2

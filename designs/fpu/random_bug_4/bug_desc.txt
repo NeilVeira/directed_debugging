@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/pre_norm.v : 110
+Original: 	assign expa_dn = !(|expa);			// opa denormalized
+Bug:      	assign expa_dn = 1;
+Module: pre_norm

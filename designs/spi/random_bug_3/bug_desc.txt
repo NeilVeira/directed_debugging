@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/fifo4.v : 107
+Golden:   	if(clr)		wp <= #1 2'h0;
+Bug:      	if(clr)		wp <= 1;
+Module: fifo4

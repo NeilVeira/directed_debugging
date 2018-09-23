@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_decode.v : 418
+Golden:   	xDWBWE <= 1'h0;
+Bug:      	xDWBWE <= 1;
+Module: aeMB_decode

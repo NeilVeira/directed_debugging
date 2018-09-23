@@ -1,0 +1,1 @@
+../../../golden/rtl/memory/generic_spram.v

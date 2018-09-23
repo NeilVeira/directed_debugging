@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/mips_dvc.v : 73
+Original: 	wire ld_wd = (mem_ctl==`DMEM_LW);
+Bug:      	wire ld_wd = 0;
+Module: mips_dvc

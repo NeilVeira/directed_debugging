@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/pre_norm.v : 187
+Original: 	assign fracta_s = fractb_lt_fracta ? fractb_n : fracta_n;
+Bug:      	assign fracta_s = 1;
+Module: pre_norm

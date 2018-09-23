@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/dct_mac.v : 98
+Golden:   	assign idin  = { {(mwidth-dwidth){din[dwidth-1]}}, din};
+Bug:      	assign idin  = 0;
+Module: dct_mac

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_fifo_dc.v : 165
+Golden:   	rptr      <= #1 rptr +1'h1;
+Bug:      	rptr      <= 1;
+Module: vga_fifo_dc

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/div_su.v : 166
+Golden:   	div0 <= #1 idiv0;
+Bug:      	div0 <= 1;
+Module: divider

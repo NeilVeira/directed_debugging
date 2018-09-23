@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/ctl_fsm.v : 124
+Original: 	id2ra_ctl_cls  =  `__TP 1'b0;
+Bug:      	id2ra_ctl_cls  = 1;
+Module: ctl_FSM

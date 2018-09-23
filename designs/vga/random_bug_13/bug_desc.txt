@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_vtim.v : 121
+Golden:   	Done    <= #1 1'b0;
+Bug:      	Done    <= 1;
+Module: vga_vtim

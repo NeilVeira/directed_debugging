@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_fifo.v : 181
+Golden:   	assign frreq = rreq;
+Bug:      	assign frreq = 1;
+Module: vga_fifo

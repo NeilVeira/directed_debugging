@@ -1,0 +1,1 @@
+../../golden/rtl/KESBLOCK.v

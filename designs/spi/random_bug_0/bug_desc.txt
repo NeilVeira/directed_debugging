@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/fifo4.v : 111
+Golden:   	assign wp_p1 = wp + 2'h1;
+Bug:      	assign wp_p1 = 0;
+Module: fifo4

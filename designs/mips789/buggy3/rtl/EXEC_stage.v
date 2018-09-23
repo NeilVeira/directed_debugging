@@ -1,0 +1,1 @@
+../../golden/rtl/EXEC_stage.v

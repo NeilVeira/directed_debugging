@@ -1,0 +1,1 @@
+../../../golden/rtl/include/vga_defines.v

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/aeMB_aslu.v : 285
+Golden:   	2'o3: xRESULT <= #1 rRES_M;
+Bug:      	2'o3: xRESULT <= 0;
+Module: aeMB_aslu

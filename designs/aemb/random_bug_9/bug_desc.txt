@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/aeMB_regfile.v : 231
+Golden:   	default: sDWBDAT <= wDWBDAT;
+Bug:      	default: sDWBDAT <= 0;
+Module: aeMB_regfile

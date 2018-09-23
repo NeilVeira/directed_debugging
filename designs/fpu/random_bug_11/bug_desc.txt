@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/post_norm.v : 401
+Golden:   	0: fract_out_rnd = fract_out_rnd0;
+Bug:      	0: fract_out_rnd = 1;
+Module: post_norm

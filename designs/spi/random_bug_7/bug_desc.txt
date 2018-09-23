@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/simple_spi_top.v : 365
+Golden:   	tcnt <= #1 icnt;
+Bug:      	tcnt <= 1;
+Module: spi

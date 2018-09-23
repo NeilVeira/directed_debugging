@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_pgen.v : 486
+Golden:   	assign rgb_fifo_wreq = cur1_wreq;
+Bug:      	assign rgb_fifo_wreq = 1;
+Module: vga_pgen

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/eth_registers.v : 878
+Golden:   	`ETH_HASH0_ADR        :  DataOut<=HASH0Out;
+Bug:      	`ETH_HASH0_ADR        :  DataOut<= 0;
+Module: eth_registers

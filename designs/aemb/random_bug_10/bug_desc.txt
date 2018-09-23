@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_control.v : 198
+Golden:   	xRUN <= {~(rBRA ^ rDLY), ~rBRA};
+Bug:      	xRUN <= 1;
+Module: aeMB_control

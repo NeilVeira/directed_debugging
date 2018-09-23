@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/div_uu.v : 118
+Golden:   	gen_q = {qi[d_width-2:0], ~si[z_width]};
+Bug:      	gen_q = 0;
+Module: div_uu

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_control.v : 210
+Golden:   	assign 	prst = rRST[1];
+Bug:      	assign 	prst = 1;
+Module: aeMB_control

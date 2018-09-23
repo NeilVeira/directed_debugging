@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_fifo_dc.v : 153
+Golden:   	srclr  <= rclr;
+Bug:      	srclr  <= 1;
+Module: vga_fifo_dc

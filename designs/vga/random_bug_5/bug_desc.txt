@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_enh_top.v : 437
+Golden:   	luint  <= #1 1'b0;
+Bug:      	luint  <= 1;
+Module: vga

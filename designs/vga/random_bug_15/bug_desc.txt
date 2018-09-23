@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/vga_vtim.v : 125
+Golden:   	cnt     <= #1 cnt_nxt[15:0];
+Bug:      	cnt     <= 0;
+Module: vga_vtim

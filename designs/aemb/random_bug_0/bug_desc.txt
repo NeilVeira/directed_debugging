@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/aeMB_control.v : 194
+Golden:   	wire 	fXCE = ~|rFSM;
+Bug:      	wire 	fXCE = 0;
+Module: aeMB_control

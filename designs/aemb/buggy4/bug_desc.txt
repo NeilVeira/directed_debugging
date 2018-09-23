@@ -1,0 +1,5 @@
+Bug Description:  unknown
+Location: 	rtl/aeMB_decode.v: 332
+Golden:   	unknown
+Bug:      	unknown
+Module: aeMB_decode

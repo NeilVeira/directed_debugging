@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/controller.v : 169
+Golden:   	active_sc = 0;
+Bug:      	active_sc = 1;
+Module: MainControl

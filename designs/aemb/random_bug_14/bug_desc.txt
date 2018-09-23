@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_fetch.v : 80
+Golden:   	wire [31:0] 	     wPCNXT = {(rIWBADR[ISIZ-1:2] + 1'b1),2'b00};
+Bug:      	wire [31:0] 	     wPCNXT = 1;
+Module: aeMB_fetch

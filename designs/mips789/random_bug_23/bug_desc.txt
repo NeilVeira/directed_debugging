@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/RF_components.v : 26
+Original: 	wire[15:0] sign = {16{instr25_0[15]}};
+Bug:      	wire[15:0] sign = 0;
+Module: ext

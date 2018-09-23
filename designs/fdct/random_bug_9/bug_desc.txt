@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/zigzag.v : 156
+Golden:   	sresult[44] <= #1 din_41;
+Bug:      	sresult[44] <= 1;
+Module: zigzag

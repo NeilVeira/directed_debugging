@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/except.v : 138
+Golden:   	fractb_00 <= #1 !(|fractb);
+Bug:      	fractb_00 <= 0;
+Module: except

@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/pre_norm.v : 215
+Original: 	sign <= #1 sign_d;
+Bug:      	sign <= 0;
+Module: pre_norm

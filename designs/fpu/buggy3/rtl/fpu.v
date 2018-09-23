@@ -1,0 +1,1 @@
+../../golden/rtl/fpu.v

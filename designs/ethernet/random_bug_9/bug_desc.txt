@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/eth_top.v : 556
+Golden:   	temp_wb_ack_o_reg <=#Tp temp_wb_ack_o & ~temp_wb_ack_o_reg;
+Bug:      	temp_wb_ack_o_reg <= 0;
+Module: eth_top

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/dct_mac.v : 105
+Golden:   	assign ext_mult_res = { {3{mult_res[mwidth-1]}}, mult_res};
+Bug:      	assign ext_mult_res = 1;
+Module: dct_mac

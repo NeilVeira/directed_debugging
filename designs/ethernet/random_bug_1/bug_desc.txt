@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/eth_register.v : 102
+Original: 	DataOut<=#1 RESET_VALUE;
+Bug:      	DataOut<= 1;
+Module: eth_register

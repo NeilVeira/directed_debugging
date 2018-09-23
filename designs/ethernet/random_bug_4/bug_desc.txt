@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/eth_top.v : 557
+Golden:   	temp_wb_dat_o_reg <=#Tp temp_wb_dat_o;
+Bug:      	temp_wb_dat_o_reg <= 1;
+Module: eth_top

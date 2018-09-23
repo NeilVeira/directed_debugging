@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/primitives.v : 93
+Golden:   	quo <= #1 quo1;
+Bug:      	quo <= 1;
+Module: div_r2

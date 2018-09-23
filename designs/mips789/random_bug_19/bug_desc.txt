@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/ctl_fsm.v : 125
+Original: 	ra2exec_ctl_clr  = `__TP  1'b0;
+Bug:      	ra2exec_ctl_clr  = 1;
+Module: ctl_FSM

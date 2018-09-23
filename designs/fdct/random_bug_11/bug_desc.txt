@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/dct_mac.v : 111
+Golden:   	result <= #1 ext_mult_res;
+Bug:      	result <= 0;
+Module: dct_mac

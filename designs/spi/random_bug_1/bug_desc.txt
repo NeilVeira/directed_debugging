@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/simple_spi_top.v : 215
+Golden:   	wire wr_spsr = wb_wr & (adr_i == 2'b01);
+Bug:      	wire wr_spsr = 1;
+Module: spi

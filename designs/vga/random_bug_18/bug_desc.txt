@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/vga_tgen.v : 142
+Golden:   	assign csync = hsync | vsync;
+Bug:      	assign csync = 0;
+Module: vga_tgen

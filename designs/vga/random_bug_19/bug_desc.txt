@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/vga_fifo_dc.v : 155
+Golden:   	wrst   <= wclr | ssrclr;
+Bug:      	wrst   <= 0;
+Module: vga_fifo_dc

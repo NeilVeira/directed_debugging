@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/vga_vtim.v : 134
+Golden:   	cnt     <= #1 Tsync;
+Bug:      	cnt     <= 1;
+Module: vga_vtim

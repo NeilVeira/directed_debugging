@@ -1,0 +1,1 @@
+../../golden/rtl/eth_txcounters.v

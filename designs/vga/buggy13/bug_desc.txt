@@ -1,0 +1,5 @@
+Bug Description:  unknown
+Location: 	rtl/vga_colproc.v : 466
+Golden:   	unknown
+Bug:      	unknown
+Module: vga_colproc

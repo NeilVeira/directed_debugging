@@ -1,0 +1,1 @@
+../../golden/rtl/mips_sys.v

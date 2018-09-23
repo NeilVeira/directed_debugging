@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/fifo4.v : 132
+Golden:   	assign full  = (wp == rp) &  gb;
+Bug:      	assign full  = 0;
+Module: fifo4

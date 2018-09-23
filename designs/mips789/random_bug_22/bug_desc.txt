@@ -1,0 +1,6 @@
+Bug Description: Stuck at fault
+Location: 	rtl/RF_components.v : 35
+Original: 	`EXT_S2H     :res = `__TP {instr25_0[15:0],16'B0};//shift to high
+Bug:      	`EXT_S2H     :res = 1;
+//shift to high
+Module: ext

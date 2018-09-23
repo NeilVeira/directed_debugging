@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/div_uu.v : 211
+Golden:   	q <= #1 gen_q(q_pipe[d_width-1], s_pipe[d_width]);
+Bug:      	q <= 1;
+Module: div_uu

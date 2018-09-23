@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/fifo_register.v : 28
+Golden:   	1 : outmux = datain;
+Bug:      	1 : outmux = 1;
+Module: fifo_register

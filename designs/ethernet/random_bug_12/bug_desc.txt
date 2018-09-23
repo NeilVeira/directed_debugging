@@ -1,0 +1,5 @@
+Bug Description: stuck-at-1
+Location: 	rtl/eth_clockgen.v : 132
+Golden:   	assign MdcEn_n = CountEq0 & Mdc;
+Bug:      	assign MdcEn_n = 1;
+Module: eth_clockgen

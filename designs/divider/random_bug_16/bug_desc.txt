@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/div_uu.v : 110
+Golden:   	gen_s = {si[z_width-1:0], 1'b0} - di;
+Bug:      	gen_s = 1;
+Module: div_uu

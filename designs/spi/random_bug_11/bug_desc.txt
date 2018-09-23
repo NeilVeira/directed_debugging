@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/fifo4.v : 119
+Golden:   	if(re)		rp <= #1 rp_p1;
+Bug:      	if(re)		rp <= 1;
+Module: fifo4

@@ -1,0 +1,5 @@
+Bug Description: incorrect condition
+Location: 	rtl/ctl_fsm.v : 80
+Golden:   	if (id_cmd==ID_CUR)
+Bug:      	if (1)
+Module: ctl_FSM

@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/aeMB_regfile.v : 210
+Golden:   	3'o0: xDWBDAT <= {(4){wREGD[7:0]}};
+Bug:      	3'o0: xDWBDAT <= 0;
+Module: aeMB_regfile

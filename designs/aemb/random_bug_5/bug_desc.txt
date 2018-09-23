@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_regfile.v : 165
+Golden:   	assign 	 dwb_dat_o = rDWBDAT;
+Bug:      	assign 	 dwb_dat_o = 1;
+Module: aeMB_regfile

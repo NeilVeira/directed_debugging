@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/primitives.v : 96
+Original: 	remainder <= #1 opa % opb;
+Bug:      	remainder <= 1;
+Module: div_r2

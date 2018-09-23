@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/div_uu.v : 132
+Golden:   	assign_s = tmp[z_width-1:z_width-d_width];
+Bug:      	assign_s = 0;
+Module: div_uu

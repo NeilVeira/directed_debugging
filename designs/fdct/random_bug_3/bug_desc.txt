@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/dct.v : 158
+Golden:   	douten <= #1 ddcnt & ~dddcnt;
+Bug:      	douten <= 1;
+Module: dct

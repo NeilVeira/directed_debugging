@@ -1,0 +1,10 @@
+sva/VennsaChecker.sv
+rtl/common_modules.v
+rtl/controller.v
+rtl/cseeblock.v
+rtl/fifo_register.v
+rtl/KESBLOCK.v
+rtl/RSDecoder.v
+rtl/SCBLOCK.v
++define+VENNSA_DYNAMIC_SIMULATION
++define+VENNSA_END_CHECKER

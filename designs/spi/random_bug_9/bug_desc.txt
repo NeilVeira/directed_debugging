@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/simple_spi_top.v : 183
+Golden:   	2'b00: dat_o <= #1 spcr;
+Bug:      	2'b00: dat_o <= 1;
+Module: spi

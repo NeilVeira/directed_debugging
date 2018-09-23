@@ -1,0 +1,5 @@
+Bug Description: Stuck at fault
+Location: 	rtl/forward.v : 47
+Original: 	else   mux_fw=  `__TP     `FW_NOP;
+Bug:      	else   mux_fw= 1;
+Module: forward_node

@@ -1,0 +1,1 @@
+../../golden/rtl/vga_clkgen.v

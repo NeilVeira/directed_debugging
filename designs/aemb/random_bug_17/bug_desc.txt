@@ -1,0 +1,5 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/aeMB_fetch.v : 81
+Golden:   	assign 	     iwb_adr_o = {rIWBADR[ISIZ-1:2],2'b00}; // Word Aligned
+Bug:      	assign 	     iwb_adr_o = 1; // Word Aligned
+Module: aeMB_fetch
