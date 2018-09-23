@@ -1,0 +1,7 @@
+spi
+spi/input_adr_i
+spi/always_2/case_1/stmt_1
+spi/always_2
+spi/reg_dat_o
+spi/always_2/case_1
+spi/always_2/case_1/cond

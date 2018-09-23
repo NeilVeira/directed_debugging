@@ -1,0 +1,6 @@
+aeMB_core
+aeMB_regfile
+aeMB_core/inst_regfile
+aeMB_core/wire_dwb_dat_o
+aeMB_regfile/assign_6_dwb_dat_o
+aeMB_regfile/wire_dwb_dat_o

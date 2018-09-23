@@ -1,0 +1,15 @@
+spi
+check_spi_top
+spi/inst_assert_spi_top_i1
+check_spi_top/input_spcr
+spi/always_2/case_1/stmt_1
+spi/always_1
+spi/always_1/if_1
+spi/reg_spcr
+spi/always_1/if_1/if_1
+spi/always_2
+spi/reg_dat_o
+spi/always_2/case_1
+spi/input_adr_i
+check_spi_top/input_adr_i
+check_spi_top/input_dat_o

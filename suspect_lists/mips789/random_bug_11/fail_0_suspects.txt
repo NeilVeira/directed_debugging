@@ -1,0 +1,17 @@
+mips_core
+mips_sys
+cal_cpi
+assert_rf_stage
+rf_stage
+mips_sys/inst_i_mips_core
+rf_stage/inst_chk_rf_stage
+rf_stage/inst_CAL_CPI
+mips_core/inst_iRF_stage
+cal_cpi/reg_clk_no
+rf_stage/wire_CLK_NO
+assert_rf_stage/input_CLK_NO
+cal_cpi/always_1
+cal_cpi/always_1/if_1/stmt_1
+cal_cpi/always_1/if_1/stmt_2
+cal_cpi/always_1/if_1
+assert_rf_stage/assert_cal_cpi_clk_count

@@ -1,0 +1,6 @@
+aeMB_core
+aeMB_fetch
+aeMB_core/inst_fetch
+aeMB_core/wire_iwb_stb_o
+aeMB_fetch/wire_iwb_stb_o
+aeMB_fetch/assign_3_iwb_stb_o
