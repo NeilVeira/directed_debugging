@@ -7,15 +7,8 @@ import verilog_parser
 
 ASSIGN_PATTERN = r"((?:parameter\s*)|(?:localparam\s*))?((?:assign\s+)?[\w\[\]:]+\s*<?=)[^=].*?;"
 CONDITION_PATTERN = r"\W(if\s*\(.*?\))"
+OPERATOR_PATTERN = r"([\*\+\-&\|\^])"
 
-
-def init(parser):
-    parser.add_argument("design_dir",help="Design to insert fault into")
-    parser.add_argument("--bug_type",default="assignment",help="Type of bug to insert." \
-        + " Currently supported types: "+str(BUG_TYPEX.keys()))
-    parser.add_argument("--dryrun","-n",action="store_true",default=False)
-    parser.add_argument("--verbose","-v",action="store_true",default=False)
-    
 
 class BugManager(verilog_parser.VerilogParser):
     def __init__(self,filename):
@@ -34,7 +27,7 @@ class Bug(object):
         self.full_text = full_text
         self.line = full_text[:start_idx].count("\n")+1
         self.golden_text = full_text[start_idx:end_idx+1]
-        self.buggy_text = "n/a"
+        self.buggy_text = ""
         self.bug_type = "unknown"
         
     def get_desc(self):
@@ -85,7 +78,7 @@ class Assignment(Bug):
         Parse all assignment statements from text according to ASSIGN_PATTERN.
         Return a list of Assignment objects for them. 
         '''
-        assignmentz = []
+        bugz = []
         prev = 0
         for m in re.finditer(ASSIGN_PATTERN, sanitized_text, flags=re.DOTALL):
             #don't try to parse paramenter assignments
@@ -100,9 +93,9 @@ class Assignment(Bug):
             assert start_idx != -1
             end_idx = verilog_parser.VerilogParser.find_end_with_brackets(sanitized_text, start_idx, ";")
             asgn = Assignment(filename, full_text, start_idx, end_idx, m.group(2))
-            assignmentz.append(asgn)
+            bugz.append(asgn)
             prev = end_idx+1
-        return assignmentz
+        return bugz
         
         
 class Condition(Bug):
@@ -121,7 +114,7 @@ class Condition(Bug):
         Parse all if condition statements and return list of Condition objects 
         for them. 
         '''
-        conditionz = []
+        bugz = []
         prev = 0
         for m in re.finditer(CONDITION_PATTERN, sanitized_text, flags=re.DOTALL):
             start_idx = sanitized_text.find(m.group(0), prev)
@@ -129,13 +122,56 @@ class Condition(Bug):
             assert start_idx != -1 
             end_idx = verilog_parser.VerilogParser.find_end_with_brackets(sanitized_text, start_idx, ")")
             cond = Condition(filename, full_text, start_idx, end_idx)
-            conditionz.append(cond)
+            bugz.append(cond)
             prev = end_idx+1
-        return conditionz
+        return bugz
+
+
+class Operator(Bug):
+    operator_classes = [["+","-","*"],["^","|","&"]] # defines which operators can be interchanged for each other
+    
+    def __init__(self, filename, full_text, start_idx, end_idx):
+        Bug.__init__(self, filename, full_text, start_idx, end_idx)
+        self.bug_type = "incorrect operator"
+        
+    def apply(self):
+        # find operator class and pick a different item from it 
+        op = self.full_text[self.start_idx]
+        print "op =",op
+        op_class = [op_class for op_class in Operator.operator_classes if op in op_class][0]
+        new_op = random.choice(op_class)
+        while new_op == op:
+            new_op = random.choice(op_class)
+        self.buggy_text = new_op 
+        self.inject()
+    
+    @staticmethod 
+    def parse(full_text, sanitized_text, filename):
+        bugz = []
+        prev = 0
+        for m in re.finditer(OPERATOR_PATTERN, sanitized_text, flags=re.DOTALL):
+            start_idx = sanitized_text.find(m.group(0), prev)
+            start_idx = sanitized_text.find(m.group(1), start_idx)
+            assert start_idx != -1 
+            end_idx = start_idx
+            cond = Operator(filename, full_text, start_idx, end_idx)
+            bugz.append(cond)
+            prev = end_idx+1
+        return bugz
+
+    
+    
+'''
+Possible further bugs:
+    Incorrect binary operator (+, -, *, ^, |, &), (<, >)
+    Incorrect signal bit fields
+    Incorrect timing delays
+'''
         
 
-BUG_TYPEX = {"assignment":  Assignment,
-            "condition":    Condition
+BUG_TYPEX = {"assignment" :  Assignment,
+            "condition" :  Condition,
+            "operator" : Operator,
             }
     
     
@@ -208,13 +244,23 @@ def main(design_dir, bug_type, verbose=False, dryrun=False):
     os.chdir(design_dir)
     filez = get_files()
     #pick a random file in design_dir/rtl_obj
-    f = random.choice(filez)
+    # f = random.choice(filez)
+    f = "rtl/aeMB_decode.v"
     inject_bug(f, bug_type, verbose, dryrun)
     
     
+
+def init(parser):
+    parser.add_argument("design_dir",help="Design to insert fault into")
+    parser.add_argument("--bug_type",default="assignment",help="Type of bug to insert." \
+        + " Currently supported types: "+str(BUG_TYPEX.keys()))
+    parser.add_argument("--dryrun","-n",action="store_true",default=False)
+    parser.add_argument("--verbose","-v",action="store_true",default=False)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     init(parser)
     args = parser.parse_args() 
     main(args.design_dir.rstrip("/"), args.bug_type, args.verbose, args.dryrun)
-   
+
