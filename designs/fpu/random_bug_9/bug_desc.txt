@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/fpu.v : 239
 Original: 	fract_out_q <= #1 {co_d, fract_out_d};
 Bug:      	fract_out_q <= 1;

@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/eth_top.v : 507
 Original: 	assign ByteSelected = |wb_sel_i;
 Bug:      	assign ByteSelected = 0;

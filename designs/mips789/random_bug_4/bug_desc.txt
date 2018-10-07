@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/forward.v : 47
 Original: 	else   mux_fw=  `__TP     `FW_NOP;
 Bug:      	else   mux_fw= 1;

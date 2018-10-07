@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/div_su.v : 121
+Golden:   	if (z[z_width-1])
+Bug:      	if (1)

@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/except.v : 113
 Original: 	qnan <= #1 (expa_ff & qnan_r_a) | (expb_ff & qnan_r_b);
 Bug:      	qnan <= 1;

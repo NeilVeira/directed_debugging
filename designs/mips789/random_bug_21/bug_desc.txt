@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/EXEC_stage.v : 197
 Original: 	`MUXA_PC:   a_o = pc;
 Bug:      	`MUXA_PC:   a_o = 0;

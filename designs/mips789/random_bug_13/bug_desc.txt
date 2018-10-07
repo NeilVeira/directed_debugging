@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/RF_components.v : 34
 Original: 	`EXT_SA      :res = `__TP {27'b0,instr25_0[10:6]} ;//sll,srl
 Bug:      	`EXT_SA      :res = 1;

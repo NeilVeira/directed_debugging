@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/RF_components.v : 98
 Original: 	pc_next =`__TP 0;
 Bug:      	pc_next = 1;

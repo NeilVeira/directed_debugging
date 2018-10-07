@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/RF_components.v : 81
 Original: 	`PC_J		:	pc_next = `__TP {pc[31:28],imm[27:0]};
 Bug:      	`PC_J		:	pc_next = 0;

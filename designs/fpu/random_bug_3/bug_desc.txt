@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/except.v : 71
 Original: 	assign   expb = opb[30:23];
 Bug:      	assign   expb = 1;

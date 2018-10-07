@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/primitives.v : 96
 Original: 	remainder <= #1 opa % opb;
 Bug:      	remainder <= 1;

@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/primitives.v : 95
 Original: 	quo <= #1 quo1;
 Bug:      	quo <= 0;

@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/ctl_fsm.v : 123
 Original: 	id2ra_ctl_clr  =  `__TP 1'b1;
 Bug:      	id2ra_ctl_clr  = 0;

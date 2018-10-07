@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/pre_norm.v : 110
 Original: 	assign expa_dn = !(|expa);			// opa denormalized
 Bug:      	assign expa_dn = 1;

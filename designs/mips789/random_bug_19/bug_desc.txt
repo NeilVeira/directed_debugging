@@ -1,4 +1,4 @@
-Bug Description: Stuck at fault
+Bug Description: stuck-at-0
 Location: 	rtl/ctl_fsm.v : 125
 Original: 	ra2exec_ctl_clr  = `__TP  1'b0;
 Bug:      	ra2exec_ctl_clr  = 1;
