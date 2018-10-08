@@ -7,7 +7,8 @@ import verilog_parser
 
 ASSIGN_PATTERN = r"((?:parameter\s*)|(?:localparam\s*))?((?:assign\s+)?[\w\[\]:]+\s*<?=)[^=].*?;"
 CONDITION_PATTERN = r"\W(if\s*\(.*?\))"
-OPERATOR_PATTERN = r"([\*\+\-&\|\^])"
+# OPERATOR_PATTERN = r"([&\|]+)|(?:[^\*\+\-\^]([\*\+\-\^])[^\*\+\-\^])|(?:[^=<>]([<>])[^=<>])" 
+OPERATOR_PATTERN = r"[^=]((?:[&\|]+)|(?:[<>]+)|(?:[\*\+\-\^]))[^=]" 
 
 
 class BugManager(verilog_parser.VerilogParser):
@@ -128,21 +129,24 @@ class Condition(Bug):
 
 
 class Operator(Bug):
-    operator_classes = [["+","-","*"],["^","|","&"]] # defines which operators can be interchanged for each other
+    # defines which operators can be interchanged for one another
+    # TODO: replace == with != 
+    operator_classes = [["+","-","*"],["^","|","&"],[">","<"],["&&","||"],["<<",">>"]] 
     
-    def __init__(self, filename, full_text, start_idx, end_idx):
+    def __init__(self, filename, full_text, start_idx, end_idx, op, op_idx):
         Bug.__init__(self, filename, full_text, start_idx, end_idx)
         self.bug_type = "incorrect operator"
+        self.op = op
+        self.op_idx = op_idx         
         
     def apply(self):
         # find operator class and pick a different item from it 
-        op = self.full_text[self.start_idx]
-        print "op =",op
-        op_class = [op_class for op_class in Operator.operator_classes if op in op_class][0]
+        print "op =",self.op
+        op_class = [op_class for op_class in Operator.operator_classes if self.op in op_class][0]
         new_op = random.choice(op_class)
-        while new_op == op:
+        while new_op == self.op:
             new_op = random.choice(op_class)
-        self.buggy_text = new_op 
+        self.buggy_text = self.full_text[self.start_idx:self.op_idx] + new_op + self.full_text[self.op_idx+len(self.op):self.end_idx+1]
         self.inject()
     
     @staticmethod 
@@ -150,11 +154,16 @@ class Operator(Bug):
         bugz = []
         prev = 0
         for m in re.finditer(OPERATOR_PATTERN, sanitized_text, flags=re.DOTALL):
+            op = m.group(1)
             start_idx = sanitized_text.find(m.group(0), prev)
-            start_idx = sanitized_text.find(m.group(1), start_idx)
+            start_idx = sanitized_text.find(op, start_idx)
             assert start_idx != -1 
-            end_idx = start_idx
-            cond = Operator(filename, full_text, start_idx, end_idx)
+            end_idx = start_idx + len(op)-1 
+            
+            # expand the range slightly so we can see the context 
+            fake_start_idx = max(start_idx-12, sanitized_text.rfind("\n",0,start_idx)+1)
+            fake_end_idx = min(end_idx+12, sanitized_text.find("\n",end_idx)-1) #
+            cond = Operator(filename, full_text, fake_start_idx, fake_end_idx, op, start_idx)
             bugz.append(cond)
             prev = end_idx+1
         return bugz
@@ -184,7 +193,10 @@ def get_files():
     for line in filelist:
         line = line.strip()
         if line != "" and os.path.exists(line) and "rtl/" in line and (line.endswith(".v") or line.endswith(".sv")):
-            filez.append(line)
+            # Most of the code in these files is not used so don't try to inject bugs into them since it will 
+            # be very difficult to produce a bug that propagates to the output. 
+            if line not in ["altpll.v","altsyncram.v","dcfifo.v","altera_primitives.v"]:
+                filez.append(line)
     return filez
     
     
@@ -226,8 +238,8 @@ def inject_bug(filename, bug_type="assignment", verbose=False, dryrun=False, bla
     bug.apply()
     #print bug.full_text
     if verbose:
-        print "line %i: %s" %(bug.line, bug.golden_text)
-        print "changed to %s" %(bug.buggy_text)
+        print "line %i: \"%s\"" %(bug.line, bug.golden_text)
+        print "changed to \"%s\"" %(bug.buggy_text)
         if log:
             log.write("line %i: %s\n" %(bug.line, bug.golden_text))
             log.write("changed to %s\n" %(bug.buggy_text))
@@ -245,8 +257,9 @@ def main(design_dir, bug_type, verbose=False, dryrun=False):
     filez = get_files()
     #pick a random file in design_dir/rtl_obj
     # f = random.choice(filez)
-    f = "rtl/aeMB_decode.v"
+    f = "rtl/altpll.v"
     inject_bug(f, bug_type, verbose, dryrun)
+    # print filez
     
     
 
