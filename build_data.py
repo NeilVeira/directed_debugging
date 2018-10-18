@@ -46,6 +46,11 @@ def run_sim(design_dir, dump_vcd=True, timeout=SIM_TIMEOUT):
      
 
 def main(design, args):
+    # Get simulation time factor from design_info.csv 
+    design_infox = run_debug_data.load_design_info()
+    design_name = os.path.basename(design)
+    time_fact = int(design_infox[design_name]["time factor"])
+    
     os.chdir(design)
     os.chdir("golden")
     filez = bug_inject.get_files()
@@ -89,7 +94,7 @@ def main(design, args):
             golden_sim = run_debug_data.get_sim_file("../golden")
             buggy_sim = run_debug_data.get_sim_file(".")
             logging.debug("Checking simulation output for failures")
-            failures = run_debug_data.get_failures(buggy_sim, golden_sim, ".*", time_fact=args.time_fact)
+            failures = run_debug_data.get_failures(buggy_sim, golden_sim, ".*", time_fact=time_fact)
             sim_failed = len(failures) >= 1
             
         os.chdir("..")
@@ -122,7 +127,6 @@ def init(parser):
     parser.add_argument("--verbose", "-v", action="store_true", default=False)
     parser.add_argument("--bug_type", default="assignment", help="Type of bug to insert." \
         + " Currently supported types: "+str(bug_inject.BUG_TYPEX.keys()))
-    parser.add_argument("--time_fact", type=int, default=1, help="Conversion ratio from simulation time to ns")
     parser.add_argument("--transfer_files", action="store_true", default=False, help="Copy files to pczisis after successful bug injection")
     
     

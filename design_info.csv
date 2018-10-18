@@ -1,0 +1,20 @@
+design name,    top-level,  dut path                                          ,time factor
+divider,        divider,    bench_div_top.dut         ,1000
+ethernet,       eth_top,    tb_ethernet.dut,1
+fpu,            fpu,        test.dut,10
+mem_ctrl,       mem_ctrl,   test.dut,
+rsdecoder,      rsdecoder,  testbench_rsdecoder.dut,1
+wb,             wb,         test.dut,
+ac97_ctrl,      ac97_ctrl,  test.a0.dut,
+spi,            spi,        tst_bench_top.dut,100
+usb1,           usb1_core,  test.u0,
+vga,            vga,        test.dut,1
+des,            des,        test.u0 ,
+aemb,           aeMB_core,  testbench.dut,1
+fdct,           fdct,       bench_top.dut ,1000
+i2c,            i2c,        tst_bench_top.dut ,
+mips789,        mips_sys,   AA_mips_top_tb.mips789_tb.isys,1
+pci,            TOP,        SYSTEM.bridge32_top,
+Aquarius_usb,   top,        test.TOP,
+minsoc,         minsoc_top, minsoc_bench.minsoc_top_0,
+scam_core,      scam_core,  scam_top_testbench.TOP.CORE,1

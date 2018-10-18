@@ -276,6 +276,8 @@ def create_template(failure, project, design_infox, window_size, args):
     Create project.template file using onpoint-cmd and fill 
     in the relevant fields.
     '''
+    # TODO: add new options to GENERAL_OPTIONS
+    
     print "Creating new template file %s.template" %(project)
     run("rm -rf %s.template" %(project))
     if os.path.exists(project+".template"):
@@ -519,12 +521,6 @@ def run_suffix_expansion(failure, design_name, design_infox, args):
 def main(args):
     bug_dir = args.bug_dir.rstrip("/")
     golden_dir = os.path.join(bug_dir,"..","golden")
-    if not os.path.exists(bug_dir):
-        print "Error: design directory %s does not exist" %(bug_dir)
-        return False 
-    elif not os.path.exists(golden_dir):
-        print "Error: could not find golden design"
-        return False 
     buggy_sim = get_sim_file(bug_dir)
     golden_sim = get_sim_file(golden_dir)
     if buggy_sim == "":
@@ -533,13 +529,12 @@ def main(args):
     if golden_sim == "":
         print "Error: could not find golden simulation file"
         return False
+
     design_infox = load_design_info()
     design_name = bug_dir.split("/")[-2]
-    if not design_infox.has_key(design_name):
-        print "Error: Unknown design %s" %design_name 
-        return False 
+    time_fact = int(design_infox[design_name]["time factor"])
           
-    failurez = get_failures(buggy_sim, golden_sim, design_infox[design_name]["dut path"], args.num_fails, args.time_fact)
+    failurez = get_failures(buggy_sim, golden_sim, design_infox[design_name]["dut path"], args.num_fails, time_fact)
     print "Failures:"
     for f in failurez:
         print f 
@@ -556,12 +551,11 @@ def main(args):
    
    
 def init(parser):
-    parser.add_argument("bug_dir",help="Directory of design to debug")
-    parser.add_argument("--xabr",action="store_true",default=False,help="Don't use abr strategy")
-    parser.add_argument("--overwrite",action="store_true",default=False,help="Delete any pre-existing template file")
-    parser.add_argument("--num_fails",type=int,default=1,help="Number of distinct failures to debug")
-    parser.add_argument("--time_fact",type=int,default=1,help="Conversion ratio from simulation time to ns")
-    parser.add_argument("-n","--dryrun",action="store_true",default=False,\
+    parser.add_argument("bug_dir", help="Directory of design to debug")
+    parser.add_argument("--xabr", action="store_true", default=False, help="Don't use abr strategy")
+    parser.add_argument("--overwrite", action="store_true", default=False, help="Delete any pre-existing template file")
+    parser.add_argument("--num_fails", type=int, default=1, help="Number of distinct failures to debug")
+    parser.add_argument("-n","--dryrun", action="store_true", default=False, \
                         help="Set up template file but don't run it")
     
     
