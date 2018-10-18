@@ -4,6 +4,7 @@ import argparse
 import re
 import random
 import verilog_parser
+import logging
 
 ASSIGN_PATTERN = r"((?:parameter\s*)|(?:localparam\s*))?((?:assign\s+)?[\w\[\]:]+\s*<?=)[^=].*?;"
 CONDITION_PATTERN = r"\W(if\s*\(.*?\))"
@@ -130,7 +131,6 @@ class Condition(Bug):
 
 class Operator(Bug):
     # defines which operators can be interchanged for one another
-    # TODO: replace == with != 
     operator_classes = [["+","-","*"],["^","|","&"],[">","<"],["&&","||"],["<<",">>"]] 
     
     def __init__(self, filename, full_text, start_idx, end_idx, op, op_idx):
@@ -200,27 +200,22 @@ def get_files():
     return filez
     
     
-def inject_bug(filename, bug_type="assignment", verbose=False, dryrun=False, blacklist=[], log=None):
+def inject_bug(filename, bug_type="assignment", verbose=False, dryrun=False, blacklist=[]):
     '''
     Inject a random bug into the given verilog file f. 
     blacklist: list of bug strings not to inject (only intended for use by build_data.py)
     Returns string describing the injected bug, or None if unsuccessful
     '''
-    print "Injecting %s bug into file %s" %(bug_type,filename)
-    if log != None:
-        log.write("Injecting %s bug into file %s\n" %(bug_type,filename))
+    logging.info("Injecting %s bug into file %s" %(bug_type,filename))
         
     if not BUG_TYPEX.has_key(bug_type):
-        print "Error: unknown bug type",bug_type
+        logging.error("Unknown bug type %s" %bug_type)
         return None
     
     rtl_obj = BugManager(filename)
     bugz = rtl_obj.bugx[bug_type]
     if len(bugz) == 0:
-        if verbose:
-            print "Error: no %s bugs found in file %s" %(bug_type,filename)
-            if log:
-                log.write("Error: no %s bugs found in file %s\n" %(bug_type,filename))
+        logging.error("no %s bugs found in file %s" %(bug_type,filename))
         return None 
         
     #pick random item from bugz which is not in blacklist
@@ -230,19 +225,13 @@ def inject_bug(filename, bug_type="assignment", verbose=False, dryrun=False, bla
         if str(bug) not in blacklist:
             break
     else:
-        print "Error: all possible bugs in file %s are blacklisted" %(filename)
-        if log:
-            log.write("Error: all possible bugs in file %s are blacklisted\n" %(filename))
+        logging.error("all possible bugs in file %s are blacklisted" %(filename))
         return None
     
     bug.apply()
     #print bug.full_text
-    if verbose:
-        print "line %i: \"%s\"" %(bug.line, bug.golden_text)
-        print "changed to \"%s\"" %(bug.buggy_text)
-        if log:
-            log.write("line %i: %s\n" %(bug.line, bug.golden_text))
-            log.write("changed to %s\n" %(bug.buggy_text))
+    logging.debug("line %i: \"%s\"" %(bug.line, bug.golden_text))
+    logging.debug("changed to \"%s\"" %(bug.buggy_text))
     if not dryrun:
         bug.write()
     return bug
@@ -255,9 +244,9 @@ def main(design_dir, bug_type, verbose=False, dryrun=False):
         
     os.chdir(design_dir)
     filez = get_files()
-    #pick a random file in design_dir/rtl_obj
-    # f = random.choice(filez)
-    f = "rtl/altpll.v"
+    # pick a random file in design_dir/rtl_obj
+    f = random.choice(filez)
+    # f = "rtl/altpll.v"
     inject_bug(f, bug_type, verbose, dryrun)
     # print filez
     
