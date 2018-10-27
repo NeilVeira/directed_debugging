@@ -2,12 +2,6 @@ import os
 import argparse
 import verilog_parser
 
-def init(parser):
-    parser.add_argument("file")
-    parser.add_argument("--types",default="output,inout")
-    parser.add_argument("--dut_path",default="DUT_PATH")
-    parser.add_argument("--verbose","-v",action="store_true",default=False) 
-
 def main(args):
     if not os.path.exists(args.file):
         print "Error: file %s does not exist" %(args.file)
@@ -25,7 +19,7 @@ def main(args):
     
     print "reg debug_clk;"
     print "initial debug_clk = 1;"
-    print "always #50 debug_clk = ~debug_clk;"
+    print "always #%i debug_clk = ~debug_clk;" %(args.interval)
     for s in signalz:
         if s.ifdef != None:
             print "`ifdef",s.ifdef
@@ -54,6 +48,12 @@ def main(args):
             print "`endif"
     print "end"
     
+    
+def init(parser):
+    parser.add_argument("file", help="Path to top-level module file")
+    parser.add_argument("--dut_path", help="Path of dut instance in testbench")
+    parser.add_argument("--interval",type=int, help="Simulation time interval to print signal values")
+    parser.add_argument("--types",default="output,inout")
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
