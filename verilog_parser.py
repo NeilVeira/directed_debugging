@@ -2,9 +2,10 @@ import os
 import argparse
 import re
 
-SIGNAL_PATTERN = r"((?:wire)|(?:reg)|(?:input)|(?:output)|(?:inout))\s+(?:\[\s*(\d+)\s*:\s*(\d+)\s*\])?((?:[\w,\s]*;)|(?:[\w\s]*?,))"
+SIGNAL_PATTERN = r"((?:wire)|(?:reg)|(?:input)|(?:output)|(?:inout)|(?:tri))\s+(?:\[\s*(\d+)\s*:\s*(\d+)\s*\])?((?:[\w,\s]*;)|(?:[\w\s]*?,))"
 MODULE_PATTERN = r"\bmodule\b\s+(\w+).*?\bendmodule\b"
 IFDEF_PATTERN = r"`ifdef\s+(\w+)(.*?)`endif\b"
+INSTANCE_PATTERN = r"\b(\w+)\s+(\w+)\s*\((.*?)\);"
 
 def init(parser):
     parser.add_argument("filename")    
@@ -36,6 +37,24 @@ class Module(object):
         
     def __str__(self):
         return "module %s, lines %i-%i" %(self.name,self.start_line,self.end_line)
+        
+
+class Instance(object):
+    def __init__(self, _type, name):
+        self._type = _type 
+        self.name = name 
+        self.portx = {}
+        self.port_indicex = {}
+    
+    def add_port(self, name, value, start_idx, end_idx):
+        self.portx[name] = value 
+        self.port_indicex[name] = (start_idx, end_idx)
+        
+    def __str__(self):
+        ret = "instance %s %s\n" %(self._type, self.name)
+        for port in self.portx:
+            ret += "    %s (%s)\n" %(port, self.portx[port])
+        return ret 
     
     
 class VerilogParser(object):
@@ -47,6 +66,7 @@ class VerilogParser(object):
         self.signalz = []
         self.modulez = []
         self.ifdefz = []
+        self.instancez = []
         
     @staticmethod 
     def find_end_with_brackets(text, start_idx, end_symbol):
@@ -57,7 +77,8 @@ class VerilogParser(object):
             text[start_idx:i+1] has balanced parentheses
         '''
         depth = 0
-        for i in xrange(start_idx, len(text)):
+        i = start_idx
+        while i < len(text):
             if text[i] in "([{":
                 depth += 1
             elif text[i] in ")]}":
@@ -65,7 +86,21 @@ class VerilogParser(object):
                 
             if text[i] == end_symbol and depth == 0:
                 return i
+            i += 1
         return i
+        
+    @staticmethod
+    def split_with_brackets(text, delimiter):
+        '''
+        Return a list of text split by the given delimeter character while respecting brackets 
+        '''
+        parts = []
+        prev = 0
+        while prev < len(text):
+            nxt = VerilogParser.find_end_with_brackets(text, prev, delimiter)
+            parts.append(text[prev:nxt])
+            prev = nxt+1
+        return parts 
             
     @staticmethod        
     def check_str_in_brackets(text, substr):
@@ -157,7 +192,7 @@ class VerilogParser(object):
             start_line = self.sanitized_text[:start].count("\n")+1
             end_line = self.sanitized_text[:end].count("\n")+1
             self.modulez.append(Module(m.group(1),start_line,end_line))
-            m = re.search(MODULE_PATTERN,self.sanitized_text[end:],flags=re.DOTALL) 
+            m = re.search(MODULE_PATTERN, self.sanitized_text[end:], flags=re.DOTALL) 
 
             
     def parse_ifdefs(self):
@@ -165,7 +200,49 @@ class VerilogParser(object):
         for m in re.findall(IFDEF_PATTERN, self.sanitized_text, flags=re.DOTALL):
             self.ifdefz.append(m)
     
-     
+ 
+    def parse_instances(self):
+        self.instancez = []
+        m = re.search(INSTANCE_PATTERN, self.sanitized_text, flags=re.DOTALL)
+        prev_idx = 0
+        while m:
+            _type, name = m.group(1), m.group(2)
+            content = m.group(3)
+            inst_start = self.sanitized_text.find(m.group(0))
+            inst_end = VerilogParser.find_end_with_brackets(self.sanitized_text, inst_start, ";")
+            
+            if _type not in ["module","else","if","begin"]: # follows the same syntax but is not an instantiation
+                inst = Instance(_type, name)
+                # print _type,name
+                ports = VerilogParser.split_with_brackets(content, ",")
+                for port in ports:
+                    # print port 
+                    inst_start = self.sanitized_text.find(port, prev_idx+1)
+                    prev_idx = inst_start+1 
+                    m = re.search(r"\.(\w+)\s*\((.*)\)", port)
+                    
+                    if m: 
+                        port_name = m.group(1)                       
+                        port_val = m.group(2)
+                        port_start_idx = self.sanitized_text.find(m.group(0), inst_start)
+                        # Note: don't use m.group(0) since it isn't guaranteed to follow brackets 
+                        # End of this port could be a comma or a semicolon if it's the last port 
+                        port_end_idx1 = VerilogParser.find_end_with_brackets(self.sanitized_text, port_start_idx, ",")
+                        port_end_idx2 = self.sanitized_text[:inst_end].rfind(")") -1 # closing bracket before the semicolon 
+                        port_end_idx = min(port_end_idx1, port_end_idx2)
+                        if port_end_idx <= port_start_idx:
+                            logging.warning("Tried to parse instance %s %s which seems to be invalid; aborting" %(_type,name))
+                            break 
+                        
+                        inst.portx[port_name] = port_val 
+                        inst.port_indicex[port_name] = (port_start_idx, port_end_idx)     
+                        
+                else:
+                    self.instancez.append(inst)
+            
+            m = re.search(INSTANCE_PATTERN, self.sanitized_text[inst_end:], flags=re.DOTALL) 
+            
+ 
     def get_module(self,line_num):
         for m in self.modulez:
             if m.start_line <= line_num <= m.end_line:
@@ -178,21 +255,26 @@ def main(args):
         return None 
         
     parser = VerilogParser(args.filename)
-    parser.parse_modules()
-    print "Modules:"
-    for module in parser.modulez:
-        print module
+    # parser.parse_modules()
+    # print "Modules:"
+    # for module in parser.modulez:
+        # print module
         
-    parser.parse_ifdefs()
-    print "\nifdefs:"
-    for name,code in parser.ifdefz:
-        print name
-        print code
+    # parser.parse_ifdefs()
+    # print "\nifdefs:"
+    # for name,code in parser.ifdefz:
+        # print name
+        # print code
         
-    print "\nsignals:"
-    parser.parse_signals()
-    for s in parser.signalz:
-        print s.ifdef,s
+    # print "\nsignals:"
+    # parser.parse_signals()
+    # for s in parser.signalz:
+        # print s.ifdef,s
+        
+    print "\nInstances:"
+    parser.parse_instances()
+    for inst in parser.instancez:
+        print inst
     
     
 if __name__ == "__main__":

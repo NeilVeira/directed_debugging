@@ -8,7 +8,6 @@ import logging
 
 ASSIGN_PATTERN = r"((?:parameter\s*)|(?:localparam\s*))?((?:assign\s+)?[\w\[\]:]+\s*<?=)[^=].*?;"
 CONDITION_PATTERN = r"\W(if\s*\(.*?\))"
-# OPERATOR_PATTERN = r"([&\|]+)|(?:[^\*\+\-\^]([\*\+\-\^])[^\*\+\-\^])|(?:[^=<>]([<>])[^=<>])" 
 OPERATOR_PATTERN = r"[^=]((?:[&\|]+)|(?:[<>]+)|(?:[\*\+\-\^]))[^=]" 
 
 
@@ -17,7 +16,7 @@ class BugManager(verilog_parser.VerilogParser):
         verilog_parser.VerilogParser.__init__(self,filename)
         self.bugx = {}
         for bug_type in BUG_TYPEX.keys():
-            self.bugx[bug_type] = BUG_TYPEX[bug_type].parse(self.text, self.sanitized_text, self.filename)
+            self.bugx[bug_type] = BUG_TYPEX[bug_type].parse(self.text, self.sanitized_text, self.filename, self)
     
     
 class Bug(object):
@@ -75,7 +74,7 @@ class Assignment(Bug):
         self.inject()
         
     @staticmethod
-    def parse(full_text, sanitized_text, filename):
+    def parse(full_text, sanitized_text, filename, parser):
         '''
         Parse all assignment statements from text according to ASSIGN_PATTERN.
         Return a list of Assignment objects for them. 
@@ -111,7 +110,7 @@ class Condition(Bug):
         self.inject()
         
     @staticmethod
-    def parse(full_text, sanitized_text, filename):
+    def parse(full_text, sanitized_text, filename, parser):
         '''
         Parse all if condition statements and return list of Condition objects 
         for them. 
@@ -131,7 +130,8 @@ class Condition(Bug):
 
 class Operator(Bug):
     # defines which operators can be interchanged for one another
-    operator_classes = [["+","-","*"],["^","|","&"],[">","<"],["&&","||"],["<<",">>"]] 
+    # TODO: missing unary "!" or "~" operators 
+    operator_classes = [["+","-","*"],["^","|","&","&&","||"],[">","<"],["<<",">>"]] 
     
     def __init__(self, filename, full_text, start_idx, end_idx, op, op_idx):
         Bug.__init__(self, filename, full_text, start_idx, end_idx)
@@ -150,7 +150,7 @@ class Operator(Bug):
         self.inject()
     
     @staticmethod 
-    def parse(full_text, sanitized_text, filename):
+    def parse(full_text, sanitized_text, filename, parser):
         bugz = []
         prev = 0
         for m in re.finditer(OPERATOR_PATTERN, sanitized_text, flags=re.DOTALL):
@@ -168,11 +168,31 @@ class Operator(Bug):
             prev = end_idx+1
         return bugz
 
+        
+class MissingPortConn(Bug):    
+    def __init__(self, filename, full_text, start_idx, end_idx):
+        Bug.__init__(self, filename, full_text, start_idx, end_idx)
+        self.bug_type = "Missing port connection"
+        
+    def apply(self):
+        self.buggy_text = "" 
+        self.inject() 
+        
+    @staticmethod 
+    def parse(full_text, sanitized_text, filename, parser):
+        bugz = []
+        parser.parse_instances()
+        for inst in parser.instancez:
+            for port in inst.portx:
+                start_idx,end_idx = inst.port_indicex[port]
+                
+                bug = MissingPortConn(filename, full_text, start_idx, end_idx)
+                bugz.append(bug)
+        return bugz 
     
     
 '''
 Possible further bugs:
-    Incorrect binary operator (+, -, *, ^, |, &), (<, >)
     Incorrect signal bit fields
     Incorrect timing delays
 '''
@@ -181,6 +201,7 @@ Possible further bugs:
 BUG_TYPEX = {"assignment" :  Assignment,
             "condition" :  Condition,
             "operator" : Operator,
+            "port" : MissingPortConn,
             }
     
     
@@ -246,7 +267,7 @@ def main(design_dir, bug_type, verbose=False, dryrun=False):
     filez = get_files()
     # pick a random file in design_dir/rtl_obj
     f = random.choice(filez)
-    # f = "rtl/altpll.v"
+    # f = "rtl/vga_enh_top.v"
     inject_bug(f, bug_type, verbose, dryrun)
     # print filez
     
@@ -264,5 +285,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     init(parser)
     args = parser.parse_args() 
+    
+    logging_level = logging.DEBUG if args.verbose else logging.INFO
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging_level)
+    logging.getLogger().setLevel(logging_level)
+    
     main(args.design_dir.rstrip("/"), args.bug_type, args.verbose, args.dryrun)
 

@@ -18,3 +18,4 @@ pci,            TOP,        SYSTEM.bridge32_top,
 Aquarius_usb,   top,        test.TOP,
 minsoc,         minsoc_top, minsoc_bench.minsoc_top_0,
 scam_core,      scam_core,  scam_top_testbench.TOP.CORE,1
+sudoku_check,sudoku_check,sudoku_check_bench.st,1000

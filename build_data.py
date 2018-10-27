@@ -73,11 +73,10 @@ def main(design, args):
             tried_bugs.append(line.strip())
     
     cnt_success = 0
-    for i in range(MAX_ATTEMPTS):
+    i = 0
+    for _ in range(MAX_ATTEMPTS):
         if cnt_success >= args.num_bugs:
-            break 
-
-        f = filez[i%len(filez)] #rotate through the files      
+            break      
         
         # Find available directory name
         while os.path.exists("random_bug_"+str(dir_idx)):
@@ -93,7 +92,16 @@ def main(design, args):
         # Inject random bug and check if simulation fails
         sim_failed = False        
         
+        attempts = 0 
+        f = filez[i%len(filez)] #rotate through the files 
+        i += 1
         bug = bug_inject.inject_bug(f, args.bug_type, verbose=args.verbose, blacklist=tried_bugs)
+        while not bug and attempts < 20:
+            f = filez[i%len(filez)] #rotate through the files 
+            i += 1 
+            bug = bug_inject.inject_bug(f, args.bug_type, verbose=args.verbose, blacklist=tried_bugs)
+            attempts += 1            
+        
         if bug:    
             tried_bugs.append(str(bug))
             success = run_sim(".", dump_vcd=True, timeout=args.sim_to)
@@ -124,9 +132,6 @@ def main(design, args):
         with open("tried_bugs.txt","w") as tried_bugs_file:
             for line in tried_bugs:
                 tried_bugs_file.write(line+"\n")
-
-    if i == MAX_ATTEMPTS:
-        logging.info("Unable to produce %i bugs after %i attempts. Giving up." %(args.num_bugs,i))
 
     
 def init(parser):

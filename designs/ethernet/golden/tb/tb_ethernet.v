@@ -264,6 +264,683 @@ eth_top dut
 );
 
 
+reg debug_clk;
+initial debug_clk = 1;
+always #50 debug_clk = ~debug_clk;
+reg [29:0] prev_m_wb_adr_tmp;
+reg [7:0] prev_r_ClkDiv;
+reg  prev_r_MiiNoPre;
+reg [15:0] prev_r_CtrlData;
+reg [4:0] prev_r_FIAD;
+reg [4:0] prev_r_RGAD;
+reg  prev_r_WCtrlData;
+reg  prev_r_RStat;
+reg  prev_r_ScanStat;
+reg  prev_NValid_stat;
+reg  prev_Busy_stat;
+reg  prev_LinkFail;
+reg [15:0] prev_Prsd;
+reg  prev_WCtrlDataStart;
+reg  prev_RStatStart;
+reg  prev_UpdateMIIRX_DATAReg;
+reg  prev_TxStartFrm;
+reg  prev_TxEndFrm;
+reg  prev_TxUsedData;
+reg [7:0] prev_TxData;
+reg  prev_TxRetry;
+reg  prev_TxAbort;
+reg  prev_TxUnderRun;
+reg  prev_TxDone;
+reg [3:0] prev_RegCs;
+reg [31:0] prev_RegDataOut;
+reg  prev_r_RecSmall;
+reg  prev_r_LoopBck;
+reg  prev_r_TxEn;
+reg  prev_r_RxEn;
+reg  prev_MRxDV_Lb;
+reg  prev_MRxErr_Lb;
+reg [3:0] prev_MRxD_Lb;
+reg  prev_Transmitting;
+reg  prev_r_HugEn;
+reg  prev_r_DlyCrcEn;
+reg [15:0] prev_r_MaxFL;
+reg [15:0] prev_r_MinFL;
+reg  prev_ShortFrame;
+reg  prev_DribbleNibble;
+reg  prev_ReceivedPacketTooBig;
+reg [47:0] prev_r_MAC;
+reg  prev_LoadRxStatus;
+reg [31:0] prev_r_HASH0;
+reg [31:0] prev_r_HASH1;
+reg [7:0] prev_r_TxBDNum;
+reg [6:0] prev_r_IPGT;
+reg [6:0] prev_r_IPGR1;
+reg [6:0] prev_r_IPGR2;
+reg [5:0] prev_r_CollValid;
+reg [15:0] prev_r_TxPauseTV;
+reg  prev_r_TxPauseRq;
+reg [3:0] prev_r_MaxRet;
+reg  prev_r_NoBckof;
+reg  prev_r_ExDfrEn;
+reg  prev_r_TxFlow;
+reg  prev_r_IFG;
+reg  prev_TxB_IRQ;
+reg  prev_TxE_IRQ;
+reg  prev_RxB_IRQ;
+reg  prev_RxE_IRQ;
+reg  prev_Busy_IRQ;
+reg  prev_ByteSelected;
+reg  prev_BDAck;
+reg [31:0] prev_BD_WB_DAT_O;
+reg [3:0] prev_BDCs;
+reg  prev_CsMiss;
+reg  prev_r_Pad;
+reg  prev_r_CrcEn;
+reg  prev_r_FullD;
+reg  prev_r_Pro;
+reg  prev_r_Bro;
+reg  prev_r_NoPre;
+reg  prev_r_RxFlow;
+reg  prev_r_PassAll;
+reg  prev_TxCtrlEndFrm;
+reg  prev_StartTxDone;
+reg  prev_SetPauseTimer;
+reg  prev_TxUsedDataIn;
+reg  prev_TxDoneIn;
+reg  prev_TxAbortIn;
+reg  prev_PerPacketPad;
+reg  prev_PadOut;
+reg  prev_PerPacketCrcEn;
+reg  prev_CrcEnOut;
+reg  prev_TxStartFrmOut;
+reg  prev_TxEndFrmOut;
+reg  prev_ReceivedPauseFrm;
+reg  prev_ControlFrmAddressOK;
+reg  prev_RxStatusWriteLatched_sync2;
+reg  prev_LateCollision;
+reg  prev_DeferIndication;
+reg  prev_LateCollLatched;
+reg  prev_DeferLatched;
+reg  prev_RstDeferLatched;
+reg  prev_CarrierSenseLost;
+reg  prev_temp_wb_ack_o;
+reg [31:0] prev_temp_wb_dat_o;
+reg  prev_temp_wb_err_o;
+reg [7:0] prev_RxData;
+reg  prev_RxValid;
+reg  prev_RxStartFrm;
+reg  prev_RxEndFrm;
+reg  prev_RxAbort;
+reg  prev_WillTransmit;
+reg  prev_ResetCollision;
+reg [7:0] prev_TxDataOut;
+reg  prev_WillSendControlFrame;
+reg  prev_ReceiveEnd;
+reg  prev_ReceivedPacketGood;
+reg  prev_ReceivedLengthOK;
+reg  prev_InvalidSymbol;
+reg  prev_LatchedCrcError;
+reg  prev_RxLateCollision;
+reg [3:0] prev_RetryCntLatched;
+reg [3:0] prev_RetryCnt;
+reg  prev_StartTxAbort;
+reg  prev_MaxCollisionOccured;
+reg  prev_RetryLimit;
+reg  prev_StatePreamble;
+reg [1:0] prev_StateData;
+reg  prev_TxCarrierSense;
+reg  prev_Collision;
+reg [15:0] prev_RxByteCnt;
+reg  prev_RxByteCntEq0;
+reg  prev_RxByteCntGreat2;
+reg  prev_RxByteCntMaxFrame;
+reg  prev_RxCrcError;
+reg  prev_RxStateIdle;
+reg  prev_RxStatePreamble;
+reg  prev_RxStateSFD;
+reg [1:0] prev_RxStateData;
+reg  prev_AddressMiss;
+reg  prev_LatchedMRxErr;
+always @(posedge debug_clk) begin
+    if (
+        dut.m_wb_adr_tmp != prev_m_wb_adr_tmp ||
+        dut.r_ClkDiv != prev_r_ClkDiv ||
+        dut.r_MiiNoPre != prev_r_MiiNoPre ||
+        dut.r_CtrlData != prev_r_CtrlData ||
+        dut.r_FIAD != prev_r_FIAD ||
+        dut.r_RGAD != prev_r_RGAD ||
+        dut.r_WCtrlData != prev_r_WCtrlData ||
+        dut.r_RStat != prev_r_RStat ||
+        dut.r_ScanStat != prev_r_ScanStat ||
+        dut.NValid_stat != prev_NValid_stat ||
+        dut.Busy_stat != prev_Busy_stat ||
+        dut.LinkFail != prev_LinkFail ||
+        dut.Prsd != prev_Prsd ||
+        dut.WCtrlDataStart != prev_WCtrlDataStart ||
+        dut.RStatStart != prev_RStatStart ||
+        dut.UpdateMIIRX_DATAReg != prev_UpdateMIIRX_DATAReg ||
+        dut.TxStartFrm != prev_TxStartFrm ||
+        dut.TxEndFrm != prev_TxEndFrm ||
+        dut.TxUsedData != prev_TxUsedData ||
+        dut.TxData != prev_TxData ||
+        dut.TxRetry != prev_TxRetry ||
+        dut.TxAbort != prev_TxAbort ||
+        dut.TxUnderRun != prev_TxUnderRun ||
+        dut.TxDone != prev_TxDone ||
+        dut.RegCs != prev_RegCs ||
+        dut.RegDataOut != prev_RegDataOut ||
+        dut.r_RecSmall != prev_r_RecSmall ||
+        dut.r_LoopBck != prev_r_LoopBck ||
+        dut.r_TxEn != prev_r_TxEn ||
+        dut.r_RxEn != prev_r_RxEn ||
+        dut.MRxDV_Lb != prev_MRxDV_Lb ||
+        dut.MRxErr_Lb != prev_MRxErr_Lb ||
+        dut.MRxD_Lb != prev_MRxD_Lb ||
+        dut.Transmitting != prev_Transmitting ||
+        dut.r_HugEn != prev_r_HugEn ||
+        dut.r_DlyCrcEn != prev_r_DlyCrcEn ||
+        dut.r_MaxFL != prev_r_MaxFL ||
+        dut.r_MinFL != prev_r_MinFL ||
+        dut.ShortFrame != prev_ShortFrame ||
+        dut.DribbleNibble != prev_DribbleNibble ||
+        dut.ReceivedPacketTooBig != prev_ReceivedPacketTooBig ||
+        dut.r_MAC != prev_r_MAC ||
+        dut.LoadRxStatus != prev_LoadRxStatus ||
+        dut.r_HASH0 != prev_r_HASH0 ||
+        dut.r_HASH1 != prev_r_HASH1 ||
+        dut.r_TxBDNum != prev_r_TxBDNum ||
+        dut.r_IPGT != prev_r_IPGT ||
+        dut.r_IPGR1 != prev_r_IPGR1 ||
+        dut.r_IPGR2 != prev_r_IPGR2 ||
+        dut.r_CollValid != prev_r_CollValid ||
+        dut.r_TxPauseTV != prev_r_TxPauseTV ||
+        dut.r_TxPauseRq != prev_r_TxPauseRq ||
+        dut.r_MaxRet != prev_r_MaxRet ||
+        dut.r_NoBckof != prev_r_NoBckof ||
+        dut.r_ExDfrEn != prev_r_ExDfrEn ||
+        dut.r_TxFlow != prev_r_TxFlow ||
+        dut.r_IFG != prev_r_IFG ||
+        dut.TxB_IRQ != prev_TxB_IRQ ||
+        dut.TxE_IRQ != prev_TxE_IRQ ||
+        dut.RxB_IRQ != prev_RxB_IRQ ||
+        dut.RxE_IRQ != prev_RxE_IRQ ||
+        dut.Busy_IRQ != prev_Busy_IRQ ||
+        dut.ByteSelected != prev_ByteSelected ||
+        dut.BDAck != prev_BDAck ||
+        dut.BD_WB_DAT_O != prev_BD_WB_DAT_O ||
+        dut.BDCs != prev_BDCs ||
+        dut.CsMiss != prev_CsMiss ||
+        dut.r_Pad != prev_r_Pad ||
+        dut.r_CrcEn != prev_r_CrcEn ||
+        dut.r_FullD != prev_r_FullD ||
+        dut.r_Pro != prev_r_Pro ||
+        dut.r_Bro != prev_r_Bro ||
+        dut.r_NoPre != prev_r_NoPre ||
+        dut.r_RxFlow != prev_r_RxFlow ||
+        dut.r_PassAll != prev_r_PassAll ||
+        dut.TxCtrlEndFrm != prev_TxCtrlEndFrm ||
+        dut.StartTxDone != prev_StartTxDone ||
+        dut.SetPauseTimer != prev_SetPauseTimer ||
+        dut.TxUsedDataIn != prev_TxUsedDataIn ||
+        dut.TxDoneIn != prev_TxDoneIn ||
+        dut.TxAbortIn != prev_TxAbortIn ||
+        dut.PerPacketPad != prev_PerPacketPad ||
+        dut.PadOut != prev_PadOut ||
+        dut.PerPacketCrcEn != prev_PerPacketCrcEn ||
+        dut.CrcEnOut != prev_CrcEnOut ||
+        dut.TxStartFrmOut != prev_TxStartFrmOut ||
+        dut.TxEndFrmOut != prev_TxEndFrmOut ||
+        dut.ReceivedPauseFrm != prev_ReceivedPauseFrm ||
+        dut.ControlFrmAddressOK != prev_ControlFrmAddressOK ||
+        dut.RxStatusWriteLatched_sync2 != prev_RxStatusWriteLatched_sync2 ||
+        dut.LateCollision != prev_LateCollision ||
+        dut.DeferIndication != prev_DeferIndication ||
+        dut.LateCollLatched != prev_LateCollLatched ||
+        dut.DeferLatched != prev_DeferLatched ||
+        dut.RstDeferLatched != prev_RstDeferLatched ||
+        dut.CarrierSenseLost != prev_CarrierSenseLost ||
+        dut.temp_wb_ack_o != prev_temp_wb_ack_o ||
+        dut.temp_wb_dat_o != prev_temp_wb_dat_o ||
+        dut.temp_wb_err_o != prev_temp_wb_err_o ||
+        dut.RxData != prev_RxData ||
+        dut.RxValid != prev_RxValid ||
+        dut.RxStartFrm != prev_RxStartFrm ||
+        dut.RxEndFrm != prev_RxEndFrm ||
+        dut.RxAbort != prev_RxAbort ||
+        dut.WillTransmit != prev_WillTransmit ||
+        dut.ResetCollision != prev_ResetCollision ||
+        dut.TxDataOut != prev_TxDataOut ||
+        dut.WillSendControlFrame != prev_WillSendControlFrame ||
+        dut.ReceiveEnd != prev_ReceiveEnd ||
+        dut.ReceivedPacketGood != prev_ReceivedPacketGood ||
+        dut.ReceivedLengthOK != prev_ReceivedLengthOK ||
+        dut.InvalidSymbol != prev_InvalidSymbol ||
+        dut.LatchedCrcError != prev_LatchedCrcError ||
+        dut.RxLateCollision != prev_RxLateCollision ||
+        dut.RetryCntLatched != prev_RetryCntLatched ||
+        dut.RetryCnt != prev_RetryCnt ||
+        dut.StartTxAbort != prev_StartTxAbort ||
+        dut.MaxCollisionOccured != prev_MaxCollisionOccured ||
+        dut.RetryLimit != prev_RetryLimit ||
+        dut.StatePreamble != prev_StatePreamble ||
+        dut.StateData != prev_StateData ||
+        dut.TxCarrierSense != prev_TxCarrierSense ||
+        dut.Collision != prev_Collision ||
+        dut.RxByteCnt != prev_RxByteCnt ||
+        dut.RxByteCntEq0 != prev_RxByteCntEq0 ||
+        dut.RxByteCntGreat2 != prev_RxByteCntGreat2 ||
+        dut.RxByteCntMaxFrame != prev_RxByteCntMaxFrame ||
+        dut.RxCrcError != prev_RxCrcError ||
+        dut.RxStateIdle != prev_RxStateIdle ||
+        dut.RxStatePreamble != prev_RxStatePreamble ||
+        dut.RxStateSFD != prev_RxStateSFD ||
+        dut.RxStateData != prev_RxStateData ||
+        dut.AddressMiss != prev_AddressMiss ||
+        dut.LatchedMRxErr != prev_LatchedMRxErr )
+        $display("Signals at %t",$time);
+    if (dut.m_wb_adr_tmp != prev_m_wb_adr_tmp)
+        $display("m_wb_adr_tmp[29:0] = %h",dut.m_wb_adr_tmp);
+    prev_m_wb_adr_tmp <= dut.m_wb_adr_tmp;
+    if (dut.r_ClkDiv != prev_r_ClkDiv)
+        $display("r_ClkDiv[7:0] = %h",dut.r_ClkDiv);
+    prev_r_ClkDiv <= dut.r_ClkDiv;
+    if (dut.r_MiiNoPre != prev_r_MiiNoPre)
+        $display("r_MiiNoPre = %h",dut.r_MiiNoPre);
+    prev_r_MiiNoPre <= dut.r_MiiNoPre;
+    if (dut.r_CtrlData != prev_r_CtrlData)
+        $display("r_CtrlData[15:0] = %h",dut.r_CtrlData);
+    prev_r_CtrlData <= dut.r_CtrlData;
+    if (dut.r_FIAD != prev_r_FIAD)
+        $display("r_FIAD[4:0] = %h",dut.r_FIAD);
+    prev_r_FIAD <= dut.r_FIAD;
+    if (dut.r_RGAD != prev_r_RGAD)
+        $display("r_RGAD[4:0] = %h",dut.r_RGAD);
+    prev_r_RGAD <= dut.r_RGAD;
+    if (dut.r_WCtrlData != prev_r_WCtrlData)
+        $display("r_WCtrlData = %h",dut.r_WCtrlData);
+    prev_r_WCtrlData <= dut.r_WCtrlData;
+    if (dut.r_RStat != prev_r_RStat)
+        $display("r_RStat = %h",dut.r_RStat);
+    prev_r_RStat <= dut.r_RStat;
+    if (dut.r_ScanStat != prev_r_ScanStat)
+        $display("r_ScanStat = %h",dut.r_ScanStat);
+    prev_r_ScanStat <= dut.r_ScanStat;
+    if (dut.NValid_stat != prev_NValid_stat)
+        $display("NValid_stat = %h",dut.NValid_stat);
+    prev_NValid_stat <= dut.NValid_stat;
+    if (dut.Busy_stat != prev_Busy_stat)
+        $display("Busy_stat = %h",dut.Busy_stat);
+    prev_Busy_stat <= dut.Busy_stat;
+    if (dut.LinkFail != prev_LinkFail)
+        $display("LinkFail = %h",dut.LinkFail);
+    prev_LinkFail <= dut.LinkFail;
+    if (dut.Prsd != prev_Prsd)
+        $display("Prsd[15:0] = %h",dut.Prsd);
+    prev_Prsd <= dut.Prsd;
+    if (dut.WCtrlDataStart != prev_WCtrlDataStart)
+        $display("WCtrlDataStart = %h",dut.WCtrlDataStart);
+    prev_WCtrlDataStart <= dut.WCtrlDataStart;
+    if (dut.RStatStart != prev_RStatStart)
+        $display("RStatStart = %h",dut.RStatStart);
+    prev_RStatStart <= dut.RStatStart;
+    if (dut.UpdateMIIRX_DATAReg != prev_UpdateMIIRX_DATAReg)
+        $display("UpdateMIIRX_DATAReg = %h",dut.UpdateMIIRX_DATAReg);
+    prev_UpdateMIIRX_DATAReg <= dut.UpdateMIIRX_DATAReg;
+    if (dut.TxStartFrm != prev_TxStartFrm)
+        $display("TxStartFrm = %h",dut.TxStartFrm);
+    prev_TxStartFrm <= dut.TxStartFrm;
+    if (dut.TxEndFrm != prev_TxEndFrm)
+        $display("TxEndFrm = %h",dut.TxEndFrm);
+    prev_TxEndFrm <= dut.TxEndFrm;
+    if (dut.TxUsedData != prev_TxUsedData)
+        $display("TxUsedData = %h",dut.TxUsedData);
+    prev_TxUsedData <= dut.TxUsedData;
+    if (dut.TxData != prev_TxData)
+        $display("TxData[7:0] = %h",dut.TxData);
+    prev_TxData <= dut.TxData;
+    if (dut.TxRetry != prev_TxRetry)
+        $display("TxRetry = %h",dut.TxRetry);
+    prev_TxRetry <= dut.TxRetry;
+    if (dut.TxAbort != prev_TxAbort)
+        $display("TxAbort = %h",dut.TxAbort);
+    prev_TxAbort <= dut.TxAbort;
+    if (dut.TxUnderRun != prev_TxUnderRun)
+        $display("TxUnderRun = %h",dut.TxUnderRun);
+    prev_TxUnderRun <= dut.TxUnderRun;
+    if (dut.TxDone != prev_TxDone)
+        $display("TxDone = %h",dut.TxDone);
+    prev_TxDone <= dut.TxDone;
+    if (dut.RegCs != prev_RegCs)
+        $display("RegCs[3:0] = %h",dut.RegCs);
+    prev_RegCs <= dut.RegCs;
+    if (dut.RegDataOut != prev_RegDataOut)
+        $display("RegDataOut[31:0] = %h",dut.RegDataOut);
+    prev_RegDataOut <= dut.RegDataOut;
+    if (dut.r_RecSmall != prev_r_RecSmall)
+        $display("r_RecSmall = %h",dut.r_RecSmall);
+    prev_r_RecSmall <= dut.r_RecSmall;
+    if (dut.r_LoopBck != prev_r_LoopBck)
+        $display("r_LoopBck = %h",dut.r_LoopBck);
+    prev_r_LoopBck <= dut.r_LoopBck;
+    if (dut.r_TxEn != prev_r_TxEn)
+        $display("r_TxEn = %h",dut.r_TxEn);
+    prev_r_TxEn <= dut.r_TxEn;
+    if (dut.r_RxEn != prev_r_RxEn)
+        $display("r_RxEn = %h",dut.r_RxEn);
+    prev_r_RxEn <= dut.r_RxEn;
+    if (dut.MRxDV_Lb != prev_MRxDV_Lb)
+        $display("MRxDV_Lb = %h",dut.MRxDV_Lb);
+    prev_MRxDV_Lb <= dut.MRxDV_Lb;
+    if (dut.MRxErr_Lb != prev_MRxErr_Lb)
+        $display("MRxErr_Lb = %h",dut.MRxErr_Lb);
+    prev_MRxErr_Lb <= dut.MRxErr_Lb;
+    if (dut.MRxD_Lb != prev_MRxD_Lb)
+        $display("MRxD_Lb[3:0] = %h",dut.MRxD_Lb);
+    prev_MRxD_Lb <= dut.MRxD_Lb;
+    if (dut.Transmitting != prev_Transmitting)
+        $display("Transmitting = %h",dut.Transmitting);
+    prev_Transmitting <= dut.Transmitting;
+    if (dut.r_HugEn != prev_r_HugEn)
+        $display("r_HugEn = %h",dut.r_HugEn);
+    prev_r_HugEn <= dut.r_HugEn;
+    if (dut.r_DlyCrcEn != prev_r_DlyCrcEn)
+        $display("r_DlyCrcEn = %h",dut.r_DlyCrcEn);
+    prev_r_DlyCrcEn <= dut.r_DlyCrcEn;
+    if (dut.r_MaxFL != prev_r_MaxFL)
+        $display("r_MaxFL[15:0] = %h",dut.r_MaxFL);
+    prev_r_MaxFL <= dut.r_MaxFL;
+    if (dut.r_MinFL != prev_r_MinFL)
+        $display("r_MinFL[15:0] = %h",dut.r_MinFL);
+    prev_r_MinFL <= dut.r_MinFL;
+    if (dut.ShortFrame != prev_ShortFrame)
+        $display("ShortFrame = %h",dut.ShortFrame);
+    prev_ShortFrame <= dut.ShortFrame;
+    if (dut.DribbleNibble != prev_DribbleNibble)
+        $display("DribbleNibble = %h",dut.DribbleNibble);
+    prev_DribbleNibble <= dut.DribbleNibble;
+    if (dut.ReceivedPacketTooBig != prev_ReceivedPacketTooBig)
+        $display("ReceivedPacketTooBig = %h",dut.ReceivedPacketTooBig);
+    prev_ReceivedPacketTooBig <= dut.ReceivedPacketTooBig;
+    if (dut.r_MAC != prev_r_MAC)
+        $display("r_MAC[47:0] = %h",dut.r_MAC);
+    prev_r_MAC <= dut.r_MAC;
+    if (dut.LoadRxStatus != prev_LoadRxStatus)
+        $display("LoadRxStatus = %h",dut.LoadRxStatus);
+    prev_LoadRxStatus <= dut.LoadRxStatus;
+    if (dut.r_HASH0 != prev_r_HASH0)
+        $display("r_HASH0[31:0] = %h",dut.r_HASH0);
+    prev_r_HASH0 <= dut.r_HASH0;
+    if (dut.r_HASH1 != prev_r_HASH1)
+        $display("r_HASH1[31:0] = %h",dut.r_HASH1);
+    prev_r_HASH1 <= dut.r_HASH1;
+    if (dut.r_TxBDNum != prev_r_TxBDNum)
+        $display("r_TxBDNum[7:0] = %h",dut.r_TxBDNum);
+    prev_r_TxBDNum <= dut.r_TxBDNum;
+    if (dut.r_IPGT != prev_r_IPGT)
+        $display("r_IPGT[6:0] = %h",dut.r_IPGT);
+    prev_r_IPGT <= dut.r_IPGT;
+    if (dut.r_IPGR1 != prev_r_IPGR1)
+        $display("r_IPGR1[6:0] = %h",dut.r_IPGR1);
+    prev_r_IPGR1 <= dut.r_IPGR1;
+    if (dut.r_IPGR2 != prev_r_IPGR2)
+        $display("r_IPGR2[6:0] = %h",dut.r_IPGR2);
+    prev_r_IPGR2 <= dut.r_IPGR2;
+    if (dut.r_CollValid != prev_r_CollValid)
+        $display("r_CollValid[5:0] = %h",dut.r_CollValid);
+    prev_r_CollValid <= dut.r_CollValid;
+    if (dut.r_TxPauseTV != prev_r_TxPauseTV)
+        $display("r_TxPauseTV[15:0] = %h",dut.r_TxPauseTV);
+    prev_r_TxPauseTV <= dut.r_TxPauseTV;
+    if (dut.r_TxPauseRq != prev_r_TxPauseRq)
+        $display("r_TxPauseRq = %h",dut.r_TxPauseRq);
+    prev_r_TxPauseRq <= dut.r_TxPauseRq;
+    if (dut.r_MaxRet != prev_r_MaxRet)
+        $display("r_MaxRet[3:0] = %h",dut.r_MaxRet);
+    prev_r_MaxRet <= dut.r_MaxRet;
+    if (dut.r_NoBckof != prev_r_NoBckof)
+        $display("r_NoBckof = %h",dut.r_NoBckof);
+    prev_r_NoBckof <= dut.r_NoBckof;
+    if (dut.r_ExDfrEn != prev_r_ExDfrEn)
+        $display("r_ExDfrEn = %h",dut.r_ExDfrEn);
+    prev_r_ExDfrEn <= dut.r_ExDfrEn;
+    if (dut.r_TxFlow != prev_r_TxFlow)
+        $display("r_TxFlow = %h",dut.r_TxFlow);
+    prev_r_TxFlow <= dut.r_TxFlow;
+    if (dut.r_IFG != prev_r_IFG)
+        $display("r_IFG = %h",dut.r_IFG);
+    prev_r_IFG <= dut.r_IFG;
+    if (dut.TxB_IRQ != prev_TxB_IRQ)
+        $display("TxB_IRQ = %h",dut.TxB_IRQ);
+    prev_TxB_IRQ <= dut.TxB_IRQ;
+    if (dut.TxE_IRQ != prev_TxE_IRQ)
+        $display("TxE_IRQ = %h",dut.TxE_IRQ);
+    prev_TxE_IRQ <= dut.TxE_IRQ;
+    if (dut.RxB_IRQ != prev_RxB_IRQ)
+        $display("RxB_IRQ = %h",dut.RxB_IRQ);
+    prev_RxB_IRQ <= dut.RxB_IRQ;
+    if (dut.RxE_IRQ != prev_RxE_IRQ)
+        $display("RxE_IRQ = %h",dut.RxE_IRQ);
+    prev_RxE_IRQ <= dut.RxE_IRQ;
+    if (dut.Busy_IRQ != prev_Busy_IRQ)
+        $display("Busy_IRQ = %h",dut.Busy_IRQ);
+    prev_Busy_IRQ <= dut.Busy_IRQ;
+    if (dut.ByteSelected != prev_ByteSelected)
+        $display("ByteSelected = %h",dut.ByteSelected);
+    prev_ByteSelected <= dut.ByteSelected;
+    if (dut.BDAck != prev_BDAck)
+        $display("BDAck = %h",dut.BDAck);
+    prev_BDAck <= dut.BDAck;
+    if (dut.BD_WB_DAT_O != prev_BD_WB_DAT_O)
+        $display("BD_WB_DAT_O[31:0] = %h",dut.BD_WB_DAT_O);
+    prev_BD_WB_DAT_O <= dut.BD_WB_DAT_O;
+    if (dut.BDCs != prev_BDCs)
+        $display("BDCs[3:0] = %h",dut.BDCs);
+    prev_BDCs <= dut.BDCs;
+    if (dut.CsMiss != prev_CsMiss)
+        $display("CsMiss = %h",dut.CsMiss);
+    prev_CsMiss <= dut.CsMiss;
+    if (dut.r_Pad != prev_r_Pad)
+        $display("r_Pad = %h",dut.r_Pad);
+    prev_r_Pad <= dut.r_Pad;
+    if (dut.r_CrcEn != prev_r_CrcEn)
+        $display("r_CrcEn = %h",dut.r_CrcEn);
+    prev_r_CrcEn <= dut.r_CrcEn;
+    if (dut.r_FullD != prev_r_FullD)
+        $display("r_FullD = %h",dut.r_FullD);
+    prev_r_FullD <= dut.r_FullD;
+    if (dut.r_Pro != prev_r_Pro)
+        $display("r_Pro = %h",dut.r_Pro);
+    prev_r_Pro <= dut.r_Pro;
+    if (dut.r_Bro != prev_r_Bro)
+        $display("r_Bro = %h",dut.r_Bro);
+    prev_r_Bro <= dut.r_Bro;
+    if (dut.r_NoPre != prev_r_NoPre)
+        $display("r_NoPre = %h",dut.r_NoPre);
+    prev_r_NoPre <= dut.r_NoPre;
+    if (dut.r_RxFlow != prev_r_RxFlow)
+        $display("r_RxFlow = %h",dut.r_RxFlow);
+    prev_r_RxFlow <= dut.r_RxFlow;
+    if (dut.r_PassAll != prev_r_PassAll)
+        $display("r_PassAll = %h",dut.r_PassAll);
+    prev_r_PassAll <= dut.r_PassAll;
+    if (dut.TxCtrlEndFrm != prev_TxCtrlEndFrm)
+        $display("TxCtrlEndFrm = %h",dut.TxCtrlEndFrm);
+    prev_TxCtrlEndFrm <= dut.TxCtrlEndFrm;
+    if (dut.StartTxDone != prev_StartTxDone)
+        $display("StartTxDone = %h",dut.StartTxDone);
+    prev_StartTxDone <= dut.StartTxDone;
+    if (dut.SetPauseTimer != prev_SetPauseTimer)
+        $display("SetPauseTimer = %h",dut.SetPauseTimer);
+    prev_SetPauseTimer <= dut.SetPauseTimer;
+    if (dut.TxUsedDataIn != prev_TxUsedDataIn)
+        $display("TxUsedDataIn = %h",dut.TxUsedDataIn);
+    prev_TxUsedDataIn <= dut.TxUsedDataIn;
+    if (dut.TxDoneIn != prev_TxDoneIn)
+        $display("TxDoneIn = %h",dut.TxDoneIn);
+    prev_TxDoneIn <= dut.TxDoneIn;
+    if (dut.TxAbortIn != prev_TxAbortIn)
+        $display("TxAbortIn = %h",dut.TxAbortIn);
+    prev_TxAbortIn <= dut.TxAbortIn;
+    if (dut.PerPacketPad != prev_PerPacketPad)
+        $display("PerPacketPad = %h",dut.PerPacketPad);
+    prev_PerPacketPad <= dut.PerPacketPad;
+    if (dut.PadOut != prev_PadOut)
+        $display("PadOut = %h",dut.PadOut);
+    prev_PadOut <= dut.PadOut;
+    if (dut.PerPacketCrcEn != prev_PerPacketCrcEn)
+        $display("PerPacketCrcEn = %h",dut.PerPacketCrcEn);
+    prev_PerPacketCrcEn <= dut.PerPacketCrcEn;
+    if (dut.CrcEnOut != prev_CrcEnOut)
+        $display("CrcEnOut = %h",dut.CrcEnOut);
+    prev_CrcEnOut <= dut.CrcEnOut;
+    if (dut.TxStartFrmOut != prev_TxStartFrmOut)
+        $display("TxStartFrmOut = %h",dut.TxStartFrmOut);
+    prev_TxStartFrmOut <= dut.TxStartFrmOut;
+    if (dut.TxEndFrmOut != prev_TxEndFrmOut)
+        $display("TxEndFrmOut = %h",dut.TxEndFrmOut);
+    prev_TxEndFrmOut <= dut.TxEndFrmOut;
+    if (dut.ReceivedPauseFrm != prev_ReceivedPauseFrm)
+        $display("ReceivedPauseFrm = %h",dut.ReceivedPauseFrm);
+    prev_ReceivedPauseFrm <= dut.ReceivedPauseFrm;
+    if (dut.ControlFrmAddressOK != prev_ControlFrmAddressOK)
+        $display("ControlFrmAddressOK = %h",dut.ControlFrmAddressOK);
+    prev_ControlFrmAddressOK <= dut.ControlFrmAddressOK;
+    if (dut.RxStatusWriteLatched_sync2 != prev_RxStatusWriteLatched_sync2)
+        $display("RxStatusWriteLatched_sync2 = %h",dut.RxStatusWriteLatched_sync2);
+    prev_RxStatusWriteLatched_sync2 <= dut.RxStatusWriteLatched_sync2;
+    if (dut.LateCollision != prev_LateCollision)
+        $display("LateCollision = %h",dut.LateCollision);
+    prev_LateCollision <= dut.LateCollision;
+    if (dut.DeferIndication != prev_DeferIndication)
+        $display("DeferIndication = %h",dut.DeferIndication);
+    prev_DeferIndication <= dut.DeferIndication;
+    if (dut.LateCollLatched != prev_LateCollLatched)
+        $display("LateCollLatched = %h",dut.LateCollLatched);
+    prev_LateCollLatched <= dut.LateCollLatched;
+    if (dut.DeferLatched != prev_DeferLatched)
+        $display("DeferLatched = %h",dut.DeferLatched);
+    prev_DeferLatched <= dut.DeferLatched;
+    if (dut.RstDeferLatched != prev_RstDeferLatched)
+        $display("RstDeferLatched = %h",dut.RstDeferLatched);
+    prev_RstDeferLatched <= dut.RstDeferLatched;
+    if (dut.CarrierSenseLost != prev_CarrierSenseLost)
+        $display("CarrierSenseLost = %h",dut.CarrierSenseLost);
+    prev_CarrierSenseLost <= dut.CarrierSenseLost;
+    if (dut.temp_wb_ack_o != prev_temp_wb_ack_o)
+        $display("temp_wb_ack_o = %h",dut.temp_wb_ack_o);
+    prev_temp_wb_ack_o <= dut.temp_wb_ack_o;
+    if (dut.temp_wb_dat_o != prev_temp_wb_dat_o)
+        $display("temp_wb_dat_o[31:0] = %h",dut.temp_wb_dat_o);
+    prev_temp_wb_dat_o <= dut.temp_wb_dat_o;
+    if (dut.temp_wb_err_o != prev_temp_wb_err_o)
+        $display("temp_wb_err_o = %h",dut.temp_wb_err_o);
+    prev_temp_wb_err_o <= dut.temp_wb_err_o;
+    if (dut.RxData != prev_RxData)
+        $display("RxData[7:0] = %h",dut.RxData);
+    prev_RxData <= dut.RxData;
+    if (dut.RxValid != prev_RxValid)
+        $display("RxValid = %h",dut.RxValid);
+    prev_RxValid <= dut.RxValid;
+    if (dut.RxStartFrm != prev_RxStartFrm)
+        $display("RxStartFrm = %h",dut.RxStartFrm);
+    prev_RxStartFrm <= dut.RxStartFrm;
+    if (dut.RxEndFrm != prev_RxEndFrm)
+        $display("RxEndFrm = %h",dut.RxEndFrm);
+    prev_RxEndFrm <= dut.RxEndFrm;
+    if (dut.RxAbort != prev_RxAbort)
+        $display("RxAbort = %h",dut.RxAbort);
+    prev_RxAbort <= dut.RxAbort;
+    if (dut.WillTransmit != prev_WillTransmit)
+        $display("WillTransmit = %h",dut.WillTransmit);
+    prev_WillTransmit <= dut.WillTransmit;
+    if (dut.ResetCollision != prev_ResetCollision)
+        $display("ResetCollision = %h",dut.ResetCollision);
+    prev_ResetCollision <= dut.ResetCollision;
+    if (dut.TxDataOut != prev_TxDataOut)
+        $display("TxDataOut[7:0] = %h",dut.TxDataOut);
+    prev_TxDataOut <= dut.TxDataOut;
+    if (dut.WillSendControlFrame != prev_WillSendControlFrame)
+        $display("WillSendControlFrame = %h",dut.WillSendControlFrame);
+    prev_WillSendControlFrame <= dut.WillSendControlFrame;
+    if (dut.ReceiveEnd != prev_ReceiveEnd)
+        $display("ReceiveEnd = %h",dut.ReceiveEnd);
+    prev_ReceiveEnd <= dut.ReceiveEnd;
+    if (dut.ReceivedPacketGood != prev_ReceivedPacketGood)
+        $display("ReceivedPacketGood = %h",dut.ReceivedPacketGood);
+    prev_ReceivedPacketGood <= dut.ReceivedPacketGood;
+    if (dut.ReceivedLengthOK != prev_ReceivedLengthOK)
+        $display("ReceivedLengthOK = %h",dut.ReceivedLengthOK);
+    prev_ReceivedLengthOK <= dut.ReceivedLengthOK;
+    if (dut.InvalidSymbol != prev_InvalidSymbol)
+        $display("InvalidSymbol = %h",dut.InvalidSymbol);
+    prev_InvalidSymbol <= dut.InvalidSymbol;
+    if (dut.LatchedCrcError != prev_LatchedCrcError)
+        $display("LatchedCrcError = %h",dut.LatchedCrcError);
+    prev_LatchedCrcError <= dut.LatchedCrcError;
+    if (dut.RxLateCollision != prev_RxLateCollision)
+        $display("RxLateCollision = %h",dut.RxLateCollision);
+    prev_RxLateCollision <= dut.RxLateCollision;
+    if (dut.RetryCntLatched != prev_RetryCntLatched)
+        $display("RetryCntLatched[3:0] = %h",dut.RetryCntLatched);
+    prev_RetryCntLatched <= dut.RetryCntLatched;
+    if (dut.RetryCnt != prev_RetryCnt)
+        $display("RetryCnt[3:0] = %h",dut.RetryCnt);
+    prev_RetryCnt <= dut.RetryCnt;
+    if (dut.StartTxAbort != prev_StartTxAbort)
+        $display("StartTxAbort = %h",dut.StartTxAbort);
+    prev_StartTxAbort <= dut.StartTxAbort;
+    if (dut.MaxCollisionOccured != prev_MaxCollisionOccured)
+        $display("MaxCollisionOccured = %h",dut.MaxCollisionOccured);
+    prev_MaxCollisionOccured <= dut.MaxCollisionOccured;
+    if (dut.RetryLimit != prev_RetryLimit)
+        $display("RetryLimit = %h",dut.RetryLimit);
+    prev_RetryLimit <= dut.RetryLimit;
+    if (dut.StatePreamble != prev_StatePreamble)
+        $display("StatePreamble = %h",dut.StatePreamble);
+    prev_StatePreamble <= dut.StatePreamble;
+    if (dut.StateData != prev_StateData)
+        $display("StateData[1:0] = %h",dut.StateData);
+    prev_StateData <= dut.StateData;
+    if (dut.TxCarrierSense != prev_TxCarrierSense)
+        $display("TxCarrierSense = %h",dut.TxCarrierSense);
+    prev_TxCarrierSense <= dut.TxCarrierSense;
+    if (dut.Collision != prev_Collision)
+        $display("Collision = %h",dut.Collision);
+    prev_Collision <= dut.Collision;
+    if (dut.RxByteCnt != prev_RxByteCnt)
+        $display("RxByteCnt[15:0] = %h",dut.RxByteCnt);
+    prev_RxByteCnt <= dut.RxByteCnt;
+    if (dut.RxByteCntEq0 != prev_RxByteCntEq0)
+        $display("RxByteCntEq0 = %h",dut.RxByteCntEq0);
+    prev_RxByteCntEq0 <= dut.RxByteCntEq0;
+    if (dut.RxByteCntGreat2 != prev_RxByteCntGreat2)
+        $display("RxByteCntGreat2 = %h",dut.RxByteCntGreat2);
+    prev_RxByteCntGreat2 <= dut.RxByteCntGreat2;
+    if (dut.RxByteCntMaxFrame != prev_RxByteCntMaxFrame)
+        $display("RxByteCntMaxFrame = %h",dut.RxByteCntMaxFrame);
+    prev_RxByteCntMaxFrame <= dut.RxByteCntMaxFrame;
+    if (dut.RxCrcError != prev_RxCrcError)
+        $display("RxCrcError = %h",dut.RxCrcError);
+    prev_RxCrcError <= dut.RxCrcError;
+    if (dut.RxStateIdle != prev_RxStateIdle)
+        $display("RxStateIdle = %h",dut.RxStateIdle);
+    prev_RxStateIdle <= dut.RxStateIdle;
+    if (dut.RxStatePreamble != prev_RxStatePreamble)
+        $display("RxStatePreamble = %h",dut.RxStatePreamble);
+    prev_RxStatePreamble <= dut.RxStatePreamble;
+    if (dut.RxStateSFD != prev_RxStateSFD)
+        $display("RxStateSFD = %h",dut.RxStateSFD);
+    prev_RxStateSFD <= dut.RxStateSFD;
+    if (dut.RxStateData != prev_RxStateData)
+        $display("RxStateData[1:0] = %h",dut.RxStateData);
+    prev_RxStateData <= dut.RxStateData;
+    if (dut.AddressMiss != prev_AddressMiss)
+        $display("AddressMiss = %h",dut.AddressMiss);
+    prev_AddressMiss <= dut.AddressMiss;
+    if (dut.LatchedMRxErr != prev_LatchedMRxErr)
+        $display("LatchedMRxErr = %h",dut.LatchedMRxErr);
+    prev_LatchedMRxErr <= dut.LatchedMRxErr;
+end
 
 // Connecting Ethernet PHY Module
 assign Mdio_IO = Mdo_OE ? Mdo_O : 1'bz ;
@@ -22774,7 +23451,9 @@ task wbm_read;
   input  [3:0]  init_waits_i;
   input  [3:0]  subseq_waits_i;
 
-  reg `READ_RETURN_TYPE read_data;
+  //`define WB_TAG_WIDTH 5
+  //`define READ_RETURN_TYPE [(32 + 4 + `WB_DATA_WIDTH + `WB_TAG_WIDTH - 1):0]
+  reg `READ_RETURN_TYPE read_data;   //reg [71:0] read_data
   reg `WB_TRANSFER_FLAGS flags;
   reg `READ_RETURN_TYPE read_status;
   integer i;
@@ -22807,12 +23486,18 @@ begin
     $display("*E WISHBONE Master was unable to complete the requested read operation from MAC!");
   end
 
+  //`define WB_DATA_WIDTH 32
+  //`define READ_DATA        [(32 + `WB_DATA_WIDTH + 4 - 1):32 + 4]
+  //READ_DATA = [67:36]
+  
   for (i = 0; i < size_i; i = i + 1)
   begin
     data_o       = data_o << 32;
     read_data    = wb_master.blk_read_data_out[(size_i - 1) - i]; // [31 - i];
-    data_o[31:0] = read_data`READ_DATA;
+    data_o[31:0] = read_data`READ_DATA; //read_data[67:36]
   end
+  
+  //to constrain tmp_data, constrain wb_master.blk_read_data_out[0][71:0]
 
   @(posedge wb_clk);
   #3;
@@ -24908,5 +25593,5 @@ begin
   $fclose(tb_log_file) ;
 end
 endtask // test_summary
-   
+
 endmodule
