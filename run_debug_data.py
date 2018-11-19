@@ -161,12 +161,11 @@ def choose_failures(all_failx, num_results):
     
     indices = [0]*len(keyz)
     i = 0
-    while len(chosen) < num_results:
-        if indices[i] < len(all_failx[keyz[i]]):
-            chosen.append(all_failx[keyz[i]][indices[i]])
-            chosen[-1].id = len(chosen)-1
-            indices[i] += 1
-        i = (i+1)%len(keyz)
+    for sig in keyz:
+        if len(chosen) == num_results:
+            break 
+        chosen.append(all_failx[sig][0])
+        chosen[-1].id = len(chosen)-1
     
     return chosen
         
@@ -360,10 +359,7 @@ def create_template(failure, project, design_infox, window_size, args):
             linez[i] = "#TIME_LIMIT=\n"
             
         elif linez[i].startswith("GENERAL_OPTIONS"):
-            linez[i] = 'GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all"'
-            
-        elif linez[i].startswith("VERBOSITY="):
-            linez[i] = "VERBOSITY=debug\n" 
+            linez[i] = 'GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"'
             
     f = open(project+".template","w")
     for line in linez:

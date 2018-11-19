@@ -9,7 +9,7 @@ def main(args):
         
     #parse all signals of specified types from verilog 
     rtl = verilog_parser.VerilogParser(args.file)
-    typez = args.types.split(",")
+    typez = args.types.split(",") + ["output","inout","output wire","output reg"]
     rtl.parse_ifdefs()
     rtl.parse_signals()
     signalz = []
@@ -53,7 +53,7 @@ def init(parser):
     parser.add_argument("file", help="Path to top-level module file")
     parser.add_argument("--dut_path", help="Path of dut instance in testbench")
     parser.add_argument("--interval",type=int, help="Simulation time interval to print signal values")
-    parser.add_argument("--types",default="output,inout")
+    parser.add_argument("--types",default="")
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

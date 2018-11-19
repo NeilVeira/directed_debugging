@@ -1,6 +1,7 @@
 import os
 import argparse
 import re
+import logging
 
 SIGNAL_PATTERN = r"((?:wire)|(?:reg)|(?:input)|(?:output)|(?:inout)|(?:tri))\s+(?:\[\s*(\d+)\s*:\s*(\d+)\s*\])?((?:[\w,\s]*;)|(?:[\w\s]*?,))"
 MODULE_PATTERN = r"\bmodule\b\s+(\w+).*?\bendmodule\b"
@@ -207,17 +208,19 @@ class VerilogParser(object):
         prev_idx = 0
         while m:
             _type, name = m.group(1), m.group(2)
-            content = m.group(3)
-            inst_start = self.sanitized_text.find(m.group(0))
+            inst_start = self.sanitized_text.find(m.group(0), prev_idx)
+            assert inst_start != -1 
             inst_end = VerilogParser.find_end_with_brackets(self.sanitized_text, inst_start, ";")
+            content = self.sanitized_text[inst_start:inst_end]
             
-            if _type not in ["module","else","if","begin"]: # follows the same syntax but is not an instantiation
+            if _type not in ["module","else","if","begin","end"]: # follows the same syntax but is not an instantiation
                 inst = Instance(_type, name)
                 # print _type,name
                 ports = VerilogParser.split_with_brackets(content, ",")
                 for port in ports:
                     # print port 
                     inst_start = self.sanitized_text.find(port, prev_idx+1)
+                    assert 0 <= inst_start < inst_end 
                     prev_idx = inst_start+1 
                     m = re.search(r"\.(\w+)\s*\((.*)\)", port)
                     
@@ -225,6 +228,7 @@ class VerilogParser(object):
                         port_name = m.group(1)                       
                         port_val = m.group(2)
                         port_start_idx = self.sanitized_text.find(m.group(0), inst_start)
+                        assert 0 <= inst_start < inst_end 
                         # Note: don't use m.group(0) since it isn't guaranteed to follow brackets 
                         # End of this port could be a comma or a semicolon if it's the last port 
                         port_end_idx1 = VerilogParser.find_end_with_brackets(self.sanitized_text, port_start_idx, ",")
