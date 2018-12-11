@@ -4,6 +4,7 @@ import re
 import subprocess32 as subprocess
 import signal
 import random
+import logging
 
 DESIGN_INFO_FILE = "design_info.csv"
 ASSERT_FAILED_PATTERN = r"Error:.*?Time:\s*(\d+)\s*([np]s)\s+Started:\s*(\d+)\s*([np]s)\s*Scope:\s*DUT_PATH\.([^\s]+)"
@@ -128,7 +129,7 @@ def parse_assertions(sim_file, dut_path):
     return resultx 
     
 
-def load_signal_valuex(sim_file,time_fact):
+def load_signal_valuex(sim_file, time_fact):
     signal_valuex = {}
     cur_time = 0
     for line in open(sim_file):
@@ -144,6 +145,9 @@ def load_signal_valuex(sim_file,time_fact):
             if not signal_valuex.has_key(sig):
                 signal_valuex[sig] = []
             signal_valuex[sig].append((cur_time,val))
+            
+    for sig in signal_valuex.keys():
+        signal_valuex[sig].insert(0, (0,"x"))
     return signal_valuex
     
     
@@ -172,10 +176,10 @@ def choose_failures(all_failx, num_results):
     
 def get_failures(buggy_sim, golden_sim, dut_path, num_results=1, time_fact=1):
     if not os.path.exists(buggy_sim):
-        print "Error: file %s does not exist" %(buggy_sim)
+        logging.error("file %s does not exist" %(buggy_sim))
         return []
     elif not os.path.exists(golden_sim):
-        print "Error: file %s does not exist" %(golden_sim)
+        logging.error("file %s does not exist" %(golden_sim))
         return []      
         
     buggy_valuex = load_signal_valuex(buggy_sim,time_fact)
@@ -190,22 +194,21 @@ def get_failures(buggy_sim, golden_sim, dut_path, num_results=1, time_fact=1):
         buggy_valuez = buggy_valuex[sig]
         if not golden_valuex.has_key(sig):
             continue
-        golden_valuez = golden_valuex[sig]
+        golden_valuez = golden_valuex[sig] 
+        assert len(golden_valuez) > 0
         
         while j < len(buggy_valuez) and i < len(golden_valuez):
+            if golden_valuez[i][0] > buggy_valuez[j][0]:
+                assert i == 0 and j == 0            
             while i < len(golden_valuez) and golden_valuez[i][0] <= buggy_valuez[j][0]:
                 i += 1
             i -= 1
-                
-            try:
-                buggy_val = buggy_valuez[j][1] #wtf is this failing?
-            except:
-                print buggy_valuez 
-                print "j =",j
-                print buggy_valuez[j]
-                print "j =",j
-                assert False 
+
+            assert 0 <= i < len(golden_valuez)
+            assert 0 <= j < len(buggy_valuez)
+            buggy_val = buggy_valuez[j][1]
             golden_val = golden_valuez[i][1]
+                
             if "x" not in buggy_val and "x" not in golden_val and "z" not in buggy_val and "z" not in golden_val and buggy_val != golden_val:
                 f = SignalFailure(sig,buggy_valuez[j][0],buggy_val,golden_val)
                 sig_fails.append(f)
@@ -305,16 +308,24 @@ def create_template(failure, project, design_infox, window_size, args):
         elif linez[i].startswith("FILELIST="):
             linez[i] = "FILELIST=filelist.l\n"
             
+
         elif linez[i].startswith("VECTOR_FILE="):
-            #look for any vcd or fsdb file
+            # look for any vcd or fsdb file, with priority given for vcd files
             for item in os.listdir("sim"):
-                if item.endswith(".vcd") or item.endswith(".fsdb"):
+                if item.endswith(".vcd"): 
                     linez[i] = "VECTOR_FILE=sim/%s\n" %(item)
                     vector_file_success = True 
                     break 
             else:
-                print "Error: no vector file found in sim"
+                for item in os.listdir("sim"):
+                    if item.endswith(".fsdb"):
+                        linez[i] = "VECTOR_FILE=sim/%s\n" %(item)
+                        vector_file_success = True 
+                        break 
+                else:
+                    logging.error("no vector file found in sim")
             
+
         elif linez[i].startswith("RUN="):
             if args.xabr:
                 linez[i] = "RUN=setup,vdb\n"
@@ -370,7 +381,7 @@ def create_template(failure, project, design_infox, window_size, args):
     if success:
         print "Successfully completed template file"
     else:
-        print "Error: unable to complete template file"
+        logging.error("Unable to complete template file")
     return success
     
     
@@ -409,7 +420,7 @@ def run_suffix_expansion(failure, design_name, design_infox, args):
     '''
     print "Creating debug instance for design",design_name
     print failure
-    window_size = 1000
+    window_size = args.min_window
     project = "fail_"+str(failure.id)
     if args.dryrun:
         project += "_dryrun"
@@ -466,58 +477,6 @@ def run_suffix_expansion(failure, design_name, design_infox, args):
         print "vdb successful!"
         return True
         
-        
-'''def build_suffix_instance(design_name, design_infox):
-    print "Creating suffix debug instance for design",design_name
-    project = design_name+"_suffix"
-    
-    #get number of suspects in full debug intsance 
-    stdb_path = "%s.vennsawork/vennsa.stdb.gz" %(design_name)
-    if not os.path.exists(stdb_path):
-        print "Error: must run full debug before suffix debug"
-        return False 
-    report,_ = run("stdb %s report" %(stdb_path))
-    total_suspects = check_solutions(report)[1]
-    
-    print "Trying to create debug instance with %i suspects" %(total_suspects/2)
-    low = 100
-    high = 1000
-    while (high-low > 100):
-        mid = (low+high)/2
-        print "window size:",mid
-        
-        success = create_template(project, design_name, design_infox, mid, args)
-        if not success: 
-            return False 
-        os.system("rm -f onpoint-cmd-%s.log" %(project))
-        print "Running debug..."
-        stdout,stderr = run("onpoint-cmd --template-file=%s.template" %(project))
-            
-        log_file = "onpoint-cmd-%s.log" %(project)
-        if not os.path.exists(log_file):
-            print "vdb failed"
-            low = mid+1 
-        else:
-            log = open(log_file).read()
-            if "error:" in log.lower():
-                print "vdb failed"
-                low = mid+1
-            else: 
-                report,_ = run("stdb %s.vennsawork/vennsa.stdb.gz report" %(project))
-                num_suspects = check_solutions(report)[1]
-                print "number of suspects:",num_suspects
-                if 0.4*total_suspects <= num_suspects <= 0.6*total_suspects:
-                    print "Success!" 
-                    return True 
-                elif num_suspects < 0.4*total_suspects:
-                    #too few suspects, increase window 
-                    low = mid+1
-                else:
-                    #too many suspects, decrease window 
-                    high = mid 
-    print "Unsuccessful"
-    return False '''
-      
     
 def main(args):
     bug_dir = args.bug_dir.rstrip("/")
@@ -525,10 +484,10 @@ def main(args):
     buggy_sim = get_sim_file(bug_dir)
     golden_sim = get_sim_file(golden_dir)
     if buggy_sim == "":
-        print "Error: could not find simulation file"
+        logging.error("Could not find buggy simulation file")
         return False 
     if golden_sim == "":
-        print "Error: could not find golden simulation file"
+        logging.error("Could not find golden simulation file")
         return False
 
     design_infox = load_design_info()
@@ -550,7 +509,7 @@ def main(args):
             run_suffix_expansion(f, design_name, design_infox, args)
             print ""
         if len(failurez) == 0:
-            print "Error: No new failures found"
+            logging.error("No new failures found")
    
    
 def init(parser):
@@ -561,6 +520,7 @@ def init(parser):
     parser.add_argument("-n","--dryrun", action="store_true", default=False, \
                         help="Set up template file but don't run it")
     parser.add_argument("-s", "--show", action="store_true", default=False, help="Show failures but don't do anything")
+    parser.add_argument("--min_window", type=int, default=1000, help="Size in ns of smallest (initial) debug window")
     
     
 if __name__ == "__main__":
