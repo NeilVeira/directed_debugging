@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/forward.v : 43
+Golden:   	u_wr_rn==rn)&&(alu_wr_rn!=
+Bug:      	u_wr_rn==rn)^(alu_wr_rn!=

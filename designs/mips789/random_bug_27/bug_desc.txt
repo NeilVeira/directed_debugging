@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/mem_module.v : 71
+Golden:   	.ctl(dmem_ctl_s),
+Bug:      	

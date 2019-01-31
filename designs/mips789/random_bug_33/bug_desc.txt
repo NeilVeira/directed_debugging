@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/RF_stage.v : 145
+Golden:   	.ins_i(BUS2085),
+Bug:      	

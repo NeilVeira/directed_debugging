@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/decode_pipe.v : 1389
+Golden:   	d2ra_ctl_cls|pause)
+Bug:      	d2ra_ctl_cls&pause)

@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/RF_components.v : 73
+Golden:   	r_addr = pc + imm ;
+Bug:      	r_addr = pc - imm ;

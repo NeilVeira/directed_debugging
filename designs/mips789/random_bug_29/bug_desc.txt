@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/RF_stage.v : 136
+Golden:   	.cls(NET6658|pause),
+Bug:      	.cls(NET6658&pause),

@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/EXEC_stage.v : 173
+Golden:   	.a(a),
+Bug:      	

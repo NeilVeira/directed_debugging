@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/EXEC_stage.v : 240
+Golden:   	out=a + (~b)+1;
+Bug:      	out=a + (~b)-1;
