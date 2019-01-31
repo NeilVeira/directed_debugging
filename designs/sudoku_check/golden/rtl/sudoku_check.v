@@ -1,10 +1,11 @@
-module sudoku_check (clk,rst,num_correct,num_wrong,cycles);
+module sudoku_check (clk,rst,num_correct,num_wrong,cycles, extra_out);
 
 input clk,rst;
 
 output [9:0] num_correct;
 output [9:0] num_wrong;
 output [31:0] cycles;
+output [9*9*4-1:0] extra_out; 
 
 reg [9:0] num_correct;
 reg [9:0] num_wrong;
@@ -29,7 +30,8 @@ sudoku s (
 	.puzzle_oe(oe),
 	.next_puzzle(next_p),
 	.solution(solution),
-	.give_up(give_up)	
+	.give_up(give_up),
+	.extra_out(extra_out)
 );
 
 assign index = (oe ? check_index : show_index);

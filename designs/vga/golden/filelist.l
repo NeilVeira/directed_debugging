@@ -21,4 +21,5 @@ sva/vga_colproc.sv
 sva/vga_fifo.sv
 sva/vga_pgen.sv
 sva/vga_top.sv
-sva/wb_slave.sv
+sva/wb_master.sv
+

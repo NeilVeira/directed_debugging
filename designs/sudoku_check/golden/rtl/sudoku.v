@@ -34,7 +34,8 @@ module sudoku (
 	puzzle_oe,
 	next_puzzle,
 	solution,
-	give_up	
+	give_up,
+	extra_out	
 );
 
 input clk,rst;
@@ -43,6 +44,7 @@ tri [9*9*4-1:0] puzzle_io;
 output puzzle_oe;
 output next_puzzle;
 output solution,give_up;
+output [9*9*4-1:0] extra_out; 
 
 // PLL signals
 wire   clk_150;
@@ -111,6 +113,8 @@ sudoku_core sc (.clk(clk_150),
 				.puzzle_out(ofifo_datain),
 				.read_puzzle(ififo_rdreq),
 				.done_puzzle(ofifo_wrreq));
+
+assign extra_out = ofifo_datain ^ ififo_rdreq ^ ofifo_wrreq;
 
 sudoku_solution ss (.puzzle_ans(ofifo_dataout),
 					.solution(solution_wire));

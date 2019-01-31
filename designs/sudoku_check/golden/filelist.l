@@ -13,4 +13,6 @@ rtl/sudoku_mask.v
 rtl/sudoku_partials.v
 rtl/sudoku_solution.v
 rtl/sudoku.v
-
+rtl/altpll.v
+rtl/common.v
+rtl/dcfifo.v 

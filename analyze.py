@@ -122,10 +122,10 @@ def plot_recall_vs_time(base_points, new_points, outfile=None):
     # c1 = "r" 
     # c2 = "b"
     plt.clf()
-    plt.plot(x, y_base, color=c1, label="baseline debug", linestyle="--", linewidth=3)
-    plt.plot(x, y_new, color=c2, label="directed debug", linewidth=2)
-    plt.fill_between(x, np.zeros(len(x)), y_base, color=c1, alpha=0.5)
-    plt.fill_between(x, y_base, y_new, color=c2, alpha=0.25)
+    plt.plot(x, y_base, color=c2, label="baseline debug", linestyle="--", linewidth=3)
+    plt.plot(x, y_new, color=c1, label="directed debug", linewidth=2)
+    plt.fill_between(x, np.zeros(len(x)), y_base, color=c2, alpha=0.5)
+    plt.fill_between(x, y_base, y_new, color=c1, alpha=0.25)
 
     if len(base_points) == 1:
         R_base = auc_recall_time(base_points[0])
@@ -133,10 +133,10 @@ def plot_recall_vs_time(base_points, new_points, outfile=None):
         font = FontProperties()
         font.set_weight("heavy")
         plt.text(0.7, 0.3, "$R_{base}=%.3f$" %(R_base), fontsize=18, weight="heavy")
-        plt.text(0.56, 0.6, "$R'=%.3f$" %(R_new), fontsize=18, weight="heavy")
+        plt.text(0.56, 0.6, "$R_{new}=%.3f$" %(R_new), fontsize=18, weight="heavy")
 
-    plt.xlabel("Relative runtime", fontsize=14)
-    plt.ylabel("Suspect recall", fontsize=14)
+    plt.xlabel("Relative runtime", fontsize=16)
+    plt.ylabel("Suspect recall", fontsize=16)
     plt.xlim((0,1))
     plt.ylim((-0.05,1.05))
     plt.legend(loc="upper left")

@@ -372,6 +372,9 @@ def create_template(failure, project, design_infox, window_size, args):
         elif linez[i].startswith("GENERAL_OPTIONS"):
             linez[i] = 'GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"'
             
+        elif linez[i].startswith("VERBOSITY="):
+            linez[i] = "VERBOSITY=debug\n"
+
     f = open(project+".template","w")
     for line in linez:
         f.write(line)
@@ -414,18 +417,18 @@ def check_solutions(report):
     return found,suspect_cnt
     
     
-def run_suffix_expansion(failure, design_name, design_infox, args):
+def run_window_debug(failure, design_name, design_infox, args):
     '''
     Main function for creating and running the debug instance. 
     '''
     print "Creating debug instance for design",design_name
     print failure
-    window_size = args.min_window
+    window_size = args.window
     project = "fail_"+str(failure.id)
     if args.dryrun:
         project += "_dryrun"
     
-    while True:
+    while window_size > 100:
         success = create_template(failure, project, design_infox[design_name], window_size, args)
         if not success or args.dryrun:
             return False             
@@ -449,19 +452,16 @@ def run_suffix_expansion(failure, design_name, design_infox, args):
             return False
             
         log = open(log_file).read()
-        if "error:" in log.lower():
+        if "error: Memory usage exceeded user-defined MEMORY_LIMIT" in log: 
+            window_size /= 2 
+            print "Memory limited exceeded. Decreasing window size to %i ns" %(window_size)
+
+        elif "error:" in log.lower():
             print "vdb failed, check logs"
             #restore stdb file from last successful run 
             if os.path.exists("vennsa.stdb.gz"):
                 run("mv vennsa.stdb.gz %s.vennsawork" %(project))
             return False
-            
-        elif "warning: solutions were found to fix the problem at the beginning of the diagnose window" in log.lower():
-            window_size *= 2 
-            print "Solutions were found at the beginning the the diagnose window. Expanding window size to %i ns." %(window_size)
-            report,_ = run("stdb %s.vennsawork/vennsa.stdb.gz report" %(project))
-            #backup stdb file as .tmp in case the next run fails 
-            run("cp %s.vennsawork/vennsa.stdb.gz ." %(project))
             
         else:
             report,_ = run("stdb %s.vennsawork/vennsa.stdb.gz report" %(project))
@@ -506,7 +506,7 @@ def main(args):
     if not args.show:
         os.chdir(bug_dir)
         for f in failurez:
-            run_suffix_expansion(f, design_name, design_infox, args)
+            run_window_debug(f, design_name, design_infox, args)
             print ""
         if len(failurez) == 0:
             logging.error("No new failures found")
@@ -520,7 +520,7 @@ def init(parser):
     parser.add_argument("-n","--dryrun", action="store_true", default=False, \
                         help="Set up template file but don't run it")
     parser.add_argument("-s", "--show", action="store_true", default=False, help="Show failures but don't do anything")
-    parser.add_argument("--min_window", type=int, default=1000, help="Size in ns of smallest (initial) debug window")
+    parser.add_argument("--window", type=int, default=800, help="Size in ns of initial debug window")
     
     
 if __name__ == "__main__":

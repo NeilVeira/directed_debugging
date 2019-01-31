@@ -82,6 +82,7 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
         utils.write_template(new_name+".template", "PROJECT=", "PROJECT="+new_name)
         general_options = VDB_OPTIONS + " --solver-cpu-limit=%i" %(pass_timeout)
         utils.write_template(new_name+".template", "GENERAL_OPTIONS=", "GENERAL_OPTIONS=\"%s\"" %(general_options))
+        utils.write_template(new_name+".template", "VERBOSITY=", "VERBOSITY=debug")
     
         pre_runtime = parse_pre_runtime(base_name)
         if verbose:
