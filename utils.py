@@ -6,6 +6,9 @@ import signal
 TIMESTAMP_PATTERN = "\d+-\w+-\d+ \d+:\d+:\d+ \((\d+):(\d+):(\d+)\.(\d+)\)"
 
 def run(cmd, verbose=False, timeout=5*60*60*24):
+    '''
+    Run a command with a time limit. 
+    '''
     if verbose:
         print cmd
     try:
@@ -15,6 +18,7 @@ def run(cmd, verbose=False, timeout=5*60*60*24):
     except subprocess.TimeoutExpired:
         os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
         return None,None  
+
 
 def debug_passed(failure):
     stdb_file = os.path.join(failure+".vennsawork","vennsa.stdb.gz")
@@ -144,6 +148,10 @@ def copy_file(source, target, strip_header=False, verbose=True):
         
         
 def write_template(fname, key, line):
+    '''
+    Set the line starting with key in the template file given by fname 
+    to the given line. 
+    '''
     linez = open(fname).readlines()
     for i in range(len(linez)):
         if linez[i].startswith(key):
@@ -166,3 +174,18 @@ def rename_project(old_name, new_name):
             print "WARNING: project %s.vennsawork already exists" %(new_name)
         os.system("mv %s.vennsawork %s.vennsawork" %(old_name, new_name))
     
+
+def parse_ids(string):
+    '''
+    Convert comma-seperated string of ints and ranges (eg '3-6') into a list of ints. 
+    '''
+    tokens = string.split(",")
+    ids = []
+    for token in tokens:
+        if "-" in token:
+            low,high = map(int,token.split("-"))
+            ids.extend(range(low,high+1))
+        else:
+            ids.append(int(token))
+    return ids 
+

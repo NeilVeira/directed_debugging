@@ -6,6 +6,8 @@ import signal
 import random
 import logging
 
+import utils
+
 DESIGN_INFO_FILE = "design_info.csv"
 ASSERT_FAILED_PATTERN = r"Error:.*?Time:\s*(\d+)\s*([np]s)\s+Started:\s*(\d+)\s*([np]s)\s*Scope:\s*DUT_PATH\.([^\s]+)"
 TIME_PATTERN = r".*Time:\s*(\d+)\s*([np]s)"
@@ -356,6 +358,7 @@ def create_template(failure, project, design_infox, window_size, args):
             
         elif linez[i].startswith("FINISH_TIME="):
             if len(linez[i]) > len("FINISH_TIME=")+2:
+                # If a finish time already exists, try to set the start time accordingly 
                 finish_time_success = True 
                 try:
                     finish_time = int(linez[i].strip()[12:-2].strip())
@@ -417,25 +420,17 @@ def check_solutions(report):
     return found,suspect_cnt
     
     
-def run_window_debug(failure, design_name, design_infox, args):
+def run_window_debug(project, window_size, finish_time):
     '''
     Main function for creating and running the debug instance. 
-    '''
-    print "Creating debug instance for design",design_name
-    print failure
-    window_size = args.window
-    project = "fail_"+str(failure.id)
-    if args.dryrun:
-        project += "_dryrun"
-    
-    while window_size > 100:
-        success = create_template(failure, project, design_infox[design_name], window_size, args)
-        if not success or args.dryrun:
-            return False             
-        
+    Must be called from the project directory.
+    '''    
+    template_file = project+".template" 
+
+    while window_size > 100:      
         os.system("rm -f onpoint-cmd-%s.log" %(project))
         print "Running debug..."
-        stdout,stderr = run("onpoint-cmd --template-file=%s.template" %(project))
+        stdout,stderr = run("onpoint-cmd --template-file=%s" %(template_file))
         
         if stdout == None:
             print "onpoint-cmd exceeded time limit of 48 hours"
@@ -455,6 +450,9 @@ def run_window_debug(failure, design_name, design_infox, args):
         if "error: Memory usage exceeded user-defined MEMORY_LIMIT" in log: 
             window_size /= 2 
             print "Memory limited exceeded. Decreasing window size to %i ns" %(window_size)
+            # TODO: overwrite start time in template   
+            start_time = max(0, finish_time-window_size)
+            utils.write_template(template_file, "START_TIME=", "START_TIME=%ins" %(start_time))
 
         elif "error:" in log.lower():
             print "vdb failed, check logs"
@@ -468,14 +466,15 @@ def run_window_debug(failure, design_name, design_infox, args):
             break    
         
     run("rm -f vennsa.stdb.gz")
-    print report
-    if not check_solutions(report)[0]:
+
+    success, suspect_cnt = check_solutions(report)
+    print "vdb complete (%i suspects found)" %(suspect_cnt) 
+    if success:
+        print "vdb found the correct bug location"
+        return True
+    else:
         print "vdb did not find actual bug location"
         return False
-    else:
-        print report
-        print "vdb successful!"
-        return True
         
     
 def main(args):
@@ -501,13 +500,25 @@ def main(args):
     print "" 
     
     if not args.overwrite:
-        failurez = filter_failures(failurez,bug_dir)
+        failurez = filter_failures(failurez, bug_dir)
     
     if not args.show:
         os.chdir(bug_dir)
         for f in failurez:
-            run_window_debug(f, design_name, design_infox, args)
+            print "Creating debug instance for design",design_name
+            print f
+            init_window = min(args.window, f.get_debug_end())
+            project = "fail_"+str(f.id)
+            if args.dryrun:
+                project += "_dryrun"
+
+            success = create_template(f, project, design_infox[design_name], args.window, args)
+            if not success or args.dryrun:
+                break  
+
+            run_window_debug(project, init_window, f.get_debug_end()) 
             print ""
+
         if len(failurez) == 0:
             logging.error("No new failures found")
    

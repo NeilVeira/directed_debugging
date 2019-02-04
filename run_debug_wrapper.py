@@ -33,7 +33,7 @@ def main(design_dir, args):
             id = ids_to_debug[i]
             dir = os.path.join(design_dir, bug_dir_start+str(id))
             if os.path.exists(dir):
-                cmd = "python run_debug_data.py %s --max_fails=%i --min_window=%i" %(dir, args.max_fails, args.min_window)
+                cmd = "python run_debug_data.py %s --max_fails=%i --window=%i" %(dir, args.max_fails, args.window)
                 if args.xabr:
                     cmd += " --xabr"
                 if args.dryrun:
@@ -57,7 +57,7 @@ def init(parser):
     parser.add_argument("-n","--dryrun",action="store_true",default=False,\
                         help="Set up template file but don't run it")
     parser.add_argument("-s", "--show", action="store_true", default=False, help="Show failures but don't do anything")
-    parser.add_argument("--min_window", type=int, default=1000, help="Size in ns of smallest (initial) debug window")
+    parser.add_argument("--window", type=int, default=1000, help="Size in ns of initial debug window")
    
    
 if __name__ == "__main__":
