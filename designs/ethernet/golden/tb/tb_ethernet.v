@@ -212,7 +212,7 @@ always @(ERROR) begin
     err_cnt = err_cnt + 1;
     if(err_cnt >= MAX_ERROR) begin
         $display("Total Error Captured: %0d", err_cnt);
-        -> END_SIM;
+        // -> END_SIM;
     end
 end
 
