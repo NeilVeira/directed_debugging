@@ -189,3 +189,14 @@ def parse_ids(string):
             ids.append(int(token))
     return ids 
 
+
+def write_suspect_list(failure):
+    suspect_list_file = failure.replace("designs","suspect_lists")+"_suspects.txt"
+    suspectz = parse_suspects(failure)
+    with open("temp_suspect_list.txt","w") as f:
+        for s in suspectz:
+            f.write(s+"\n")
+    copy_file("temp_suspect_list.txt", suspect_list_file, verbose=False)
+
+
+

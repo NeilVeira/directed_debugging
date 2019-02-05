@@ -471,10 +471,9 @@ def run_window_debug(project, window_size, finish_time):
     print "vdb complete (%i suspects found)" %(suspect_cnt) 
     if success:
         print "vdb found the correct bug location"
-        return True
     else:
         print "vdb did not find actual bug location"
-        return False
+    return True
         
     
 def main(args):
@@ -503,7 +502,7 @@ def main(args):
         failurez = filter_failures(failurez, bug_dir)
     
     if not args.show:
-        os.chdir(bug_dir)
+        orig_cwd = os.getcwd()
         for f in failurez:
             print "Creating debug instance for design",design_name
             print f
@@ -512,11 +511,19 @@ def main(args):
             if args.dryrun:
                 project += "_dryrun"
 
+            os.chdir(bug_dir)
             success = create_template(f, project, design_infox[design_name], args.window, args)
             if not success or args.dryrun:
                 break  
 
-            run_window_debug(project, init_window, f.get_debug_end()) 
+            success = run_window_debug(project, init_window, f.get_debug_end()) 
+            os.chdir(orig_cwd)
+
+            if success: 
+                # write suspects to suspect_lists file 
+                fail_name = "%s/%s" %(bug_dir,project)
+                utils.write_suspect_list(fail_name)
+
             print ""
 
         if len(failurez) == 0:

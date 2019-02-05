@@ -97,20 +97,12 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
         num_suspects = utils.parse_suspects(new_name)
         if len(num_suspects) == 0:
             return False 
-        
-        if guidance_method == "block":
-            analysis_func = analyze.blocking_analysis
-        elif guidance_method in ["assump", "opt_assump", "rev_assump", "assump_block"]:
-            analysis_func = analyze.assumption_analysis
-        else:        
-            os.chdir(orig_dir)  
-            return True
             
         try:
             if "_1pass" in new_name:
-                analysis_func(base_name+"_1pass", new_name, verbose=verbose, min_runtime=0)
+                analyze.assumption_analysis(base_name+"_1pass", new_name, verbose=verbose, min_runtime=0)
             else:
-                analysis_func(base_name, new_name, verbose=verbose, min_runtime=0)
+                analyze.assumption_analysis(base_name, new_name, verbose=verbose, min_runtime=0)
         except:
             os.chdir(orig_dir)
             return False 
