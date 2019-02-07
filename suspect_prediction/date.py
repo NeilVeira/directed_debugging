@@ -3,11 +3,11 @@ import scipy.optimize
 import warnings 
 warnings.filterwarnings('ignore')
 
-class SuspectPrediction(object):
+class DATEPrediction(object):
 
     def __init__(self, prior_var=0.2):
         '''
-        Initialize SuspectPrediction object. 
+        Initialize DATEPrediction object. 
         Parameters
         -------------
         prior_var:

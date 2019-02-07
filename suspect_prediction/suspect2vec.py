@@ -108,7 +108,7 @@ class Suspect2Vec(object):
         
     def predict(self, sample, k=None, aggressiveness=0.5):
         '''       
-        Predict the remaiing suspects in the given suspect subset. 
+        Predict the remaining suspects in the given suspect subset. 
         sample: iterable of suspects
         Returns: list of suspects
         '''

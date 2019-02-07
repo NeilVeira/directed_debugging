@@ -7,11 +7,9 @@ import numpy as np
 import sklearn.metrics
 from sklearn.model_selection import KFold 
 
-import sys 
-sys.path.append("suspect2vec")
 import utils 
-from suspect_prediction import SuspectPrediction
-from suspect2vec import Suspect2Vec
+from suspect_prediction.date import DATEPrediction
+from suspect_prediction.suspect2vec import Suspect2Vec
 
 INF = 1e12
         
@@ -33,7 +31,7 @@ def experiment_suspect2vec(data, suspect_union, args, all_failurez):
     '''
     m = len(data)
     n = len(suspect_union)
-    date = SuspectPrediction(args.prior_var)
+    date = DATEPrediction(args.prior_var)
 
     metrics_base = np.zeros((m,4)) # (precision, recall, fscore, size_error)
     metrics_new = np.zeros((m,4))
