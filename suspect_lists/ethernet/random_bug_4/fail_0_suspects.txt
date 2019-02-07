@@ -1,9 +1,9 @@
 eth_top
-eth_top/always_1/block_1/if_1/block_2
-eth_top/always_1/block_1/if_1
-eth_top/wire_wb_dat_o
-eth_top/reg_temp_wb_dat_o_reg
 eth_top/always_1
-eth_top/assign_14_wb_dat_o
-eth_top/always_1/block_1/if_1/block_2/stmt_2
 eth_top/always_1/block_1
+eth_top/always_1/block_1/if_1
+eth_top/always_1/block_1/if_1/block_2
+eth_top/always_1/block_1/if_1/block_2/stmt_2
+eth_top/assign_14_wb_dat_o
+eth_top/reg_temp_wb_dat_o_reg
+eth_top/wire_wb_dat_o

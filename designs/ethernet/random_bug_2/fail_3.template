@@ -36,7 +36,7 @@ CONSTRAIN_SIGNAL=wb_ack_o:h1:12400ns
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=11400ns
+START_TIME=6225ns
 FINISH_TIME=12450ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 

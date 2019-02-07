@@ -36,7 +36,7 @@ CONSTRAIN_SIGNAL=mdc_pad_o:h1:31700ns
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=30700ns
+START_TIME=0ns
 FINISH_TIME=31750ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 

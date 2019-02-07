@@ -190,13 +190,17 @@ def parse_ids(string):
     return ids 
 
 
+
+
 def write_suspect_list(failure):
     suspect_list_file = failure.replace("designs","suspect_lists")+"_suspects.txt"
     suspectz = parse_suspects(failure)
+    suspectz.sort()
     with open("temp_suspect_list.txt","w") as f:
         for s in suspectz:
             f.write(s+"\n")
     copy_file("temp_suspect_list.txt", suspect_list_file, verbose=False)
 
-
-
+def write_all_suspect_lists(design):
+    for failure in find_all_failures(design):
+        write_suspect_list(failure)
