@@ -1,16 +1,15 @@
 import os 
 import argparse 
 import sys 
-sys.path.insert(0,"suspect2vec")
 
 import utils 
-from suspect2vec import Suspect2Vec
+from suspect_prediction.suspect2vec import Suspect2Vec
 
 def init(parser):
     parser.add_argument("design")
     
     
-def write_embeddingx(embeddingx, file_name):
+def write_embeddings(embeddingx, file_name):
     with open(file_name,"w") as f:
         for key in embeddingx:
             f.write(key)
@@ -33,8 +32,8 @@ def main(args):
         predictor = Suspect2Vec()
         predictor.fit(train_data)
         embed_inx, embed_outx = predictor.get_embeddings()
-        write_embeddingx(embed_inx, all_failurez[i]+"_input_embeddings.txt")
-        write_embeddingx(embed_outx, all_failurez[i]+"_output_embeddings.txt")
+        write_embeddings(embed_inx, all_failurez[i]+"_input_embeddings.txt")
+        write_embeddings(embed_outx, all_failurez[i]+"_output_embeddings.txt")
         
     
 if __name__ == "__main__":

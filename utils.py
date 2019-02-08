@@ -49,9 +49,10 @@ def find_all_failures(dir, include_failed=False):
                     if include_failed or debug_passed(failure_name):
                         results.append(failure_name)
                     else:
+                        print "WARNING: Ignoring failure %s which appears to have failed" %(failure_name)
                         failed_cnt += 1 
-    if failed_cnt > 0:
-        print "WARNING: Ignoring %i failures where debug appears to have failed" %(failed_cnt)
+    # if failed_cnt > 0:
+        # print "WARNING: Ignoring %i failures where debug appears to have failed" %(failed_cnt)
     return results 
     
     

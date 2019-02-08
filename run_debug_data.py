@@ -426,6 +426,9 @@ def run_window_debug(project, window_size, finish_time):
     Must be called from the project directory.
     '''    
     template_file = project+".template" 
+    start_time = max(0, finish_time-window_size)
+    utils.write_template(template_file, "START_TIME=", "START_TIME=%ins" %(start_time))
+    os.system("rm -rf args.txt") # just in case 
 
     while window_size > 100:      
         os.system("rm -f onpoint-cmd-%s.log" %(project))
@@ -449,8 +452,7 @@ def run_window_debug(project, window_size, finish_time):
         log = open(log_file).read()
         if "error: Memory usage exceeded user-defined MEMORY_LIMIT" in log: 
             window_size /= 2 
-            print "Memory limited exceeded. Decreasing window size to %i ns" %(window_size)
-            # TODO: overwrite start time in template   
+            print "Memory limited exceeded. Decreasing window size to %i ns" %(window_size)  
             start_time = max(0, finish_time-window_size)
             utils.write_template(template_file, "START_TIME=", "START_TIME=%ins" %(start_time))
 
