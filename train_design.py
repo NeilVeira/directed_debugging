@@ -7,6 +7,8 @@ from suspect_prediction.suspect2vec import Suspect2Vec
 
 def init(parser):
     parser.add_argument("design")
+    parser.add_argument("--skip_check", action="store_true", default=False, \
+        help="Skip check for successful debug runs. This should not be used on pczisis.")
     
     
 def write_embeddings(embeddingx, file_name):
@@ -19,7 +21,20 @@ def write_embeddings(embeddingx, file_name):
                 
     
 def main(args):
-    all_failurez = utils.find_all_failures(args.design)
+    if args.skip_check:
+        # search for failures by template file instead of .vennsawork
+        all_failurez = []
+        for item in sorted(os.listdir(args.design)):
+        if item.startswith("random_bug_") or item.startswith("buggy"):             
+            for sub_item in sorted(os.listdir(os.path.join(dir,item))):
+                m = re.match(r"fail_\d+\.template\Z", sub_item)
+                if m:
+                    failure_name = os.path.join(dir, item, sub_item[:-len(".template")])
+                    all_failurez.append(failure_name)
+    else:
+        all_failurez = utils.find_all_failures(args.design)
+
+    print "Training %i failures in leave-one-out" %(len(all_failurez))
     all_suspectz = []
     for failure in all_failurez:
         suspect_list_file = failure.replace("designs","suspect_lists")+"_suspects.txt"

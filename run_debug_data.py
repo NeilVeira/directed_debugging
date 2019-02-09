@@ -524,7 +524,7 @@ def main(args):
             if success: 
                 # write suspects to suspect_lists file 
                 fail_name = "%s/%s" %(bug_dir,project)
-                utils.write_suspect_list(fail_name)
+                write_suspect_lists.do(fail_name)
 
             print ""
 

@@ -6,6 +6,7 @@ import re
 
 import run_debug_data
 import utils 
+import write_suspect_lists
 
 
 def main(args):
@@ -59,8 +60,7 @@ def main(args):
                 print "" 
 
                 if success:
-                    utils.write_suspect_list(f)
-
+                    write_suspect_lists.do(f)
 
 
 def init(parser):
