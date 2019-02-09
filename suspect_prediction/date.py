@@ -87,7 +87,7 @@ class DATEPrediction(object):
                 self.weights[i][j] = self.map_weights[self.cnt_suspect[i]][cnt_pairs[i][j]]
         
         
-    def predict(self, sample, k=None, return_full_rank=False):
+    def predict(self, sample, k=None, score_query=None):
         '''
         Predict remaining suspects in the sample suspect set. 
         Parameters
@@ -97,9 +97,8 @@ class DATEPrediction(object):
         k: 
             Number of suspects to predict, including the length of the sample. If None, the number of 
             suspects is estimated using the stopping criterion. 
-        return_full_rank: 
-            If True, return all possible suspects ranked by probability of occurring with the sample 
-            as well as the estimated k.         
+        score_query: list of suspects or None. If not None then also return an array of scores 
+            for each item in score_query.         
         '''
         
         # Convert to ids, handling any new suspects
@@ -145,7 +144,8 @@ class DATEPrediction(object):
         ordered_suspectz = []
         for i in range(n):
             if i not in ranking:
-                ordered_suspectz.append((neg_log_notp[i], i, 1-np.exp(-neg_log_notp[i])))
+                ordered_suspectz.append((neg_log_notp[i], i))
+                
         ordered_suspectz.sort()
         ordered_suspectz.reverse() 
         full_ranking = sample + [x[1] for x in ordered_suspectz] 
@@ -183,9 +183,12 @@ class DATEPrediction(object):
             
         # Convert back to suspects 
         ranking = [self.suspect_union[i] for i in ranking]
-        full_ranking = [self.suspect_union[i] for i in full_ranking]
             
-        if return_full_rank:
-            return ranking, full_ranking 
+        if score_query:
+            ret_scores = np.zeros(len(score_query))
+            for i,s in enumerate(score_query):
+                if s in self.suspect2id:
+                    ret_scores[i] = neg_log_notp[self.suspect2id[s]]                
+            return ranking, ret_scores
         else:
             return ranking 

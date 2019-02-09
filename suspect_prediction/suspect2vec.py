@@ -1,5 +1,6 @@
 import os 
 import subprocess 
+import pickle 
 import numpy as np 
 import sklearn.model_selection
 import sklearn.metrics
@@ -106,10 +107,12 @@ class Suspect2Vec(object):
         return self.embed_in 
         
         
-    def predict(self, sample, k=None, aggressiveness=0.5):
+    def predict(self, sample, k=None, aggressiveness=0.5, score_query=None):
         '''       
         Predict the remaining suspects in the given suspect subset. 
         sample: iterable of suspects
+        score_query: list of suspects or None. If not None then also return an array of scores 
+            for each item in score_query. 
         Returns: list of suspects
         '''
         n = len(self.suspect_union)
@@ -122,7 +125,6 @@ class Suspect2Vec(object):
             for i in range(n):
                 if scores[i] >= aggressiveness and self.suspect_union[i] not in ret:
                     ret.append(self.suspect_union[i])
-            return ret 
         else:
             # return ranking of all suspects by scores 
             suspect_scorez = []
@@ -134,7 +136,16 @@ class Suspect2Vec(object):
                 if s[1] not in ret:
                     ret.append(s[1])
                     if len(ret) >= k:
-                        break
+                        break   
+
+        if score_query is not None:
+            ret_scores = np.zeros(len(score_query))
+            for i,s in enumerate(score_query):
+                if s in self.suspect2id:
+                    ret_scores[i] = scores[self.suspect2id[s]]
+            return ret, ret_scores 
+            
+        else:
             return ret 
 
             
@@ -148,3 +159,15 @@ class Suspect2Vec(object):
             embed_inx[s] = self.embed_in[self.suspect2id[s]]
             embed_outx[s] = self.embed_out[self.suspect2id[s]]
         return embed_inx, embed_outx
+        
+        
+    def save(self, fname):
+        with open(fname,"wb") as f:
+            pickle.dump(self, f)
+    
+    @staticmethod 
+    def load(fname):
+        with open(fname,"rb") as f:
+            obj = pickle.load(f)
+        return obj 
+        
