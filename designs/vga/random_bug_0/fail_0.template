@@ -55,7 +55,7 @@ TIME_LIMIT=24h
 #  * setup,combo,gui_db              - for viewing periodic intermediate results
 #  * setup,abr,vdb,gui_db            - for improved performance, but no intermediate results
 #  * setup,abr,sdp,causality,gui_db  - for long diagnose windows, no intermediate results
-RUN=setup,abr,causality,vdb
+RUN=setup,vdb
 
 ###------------------------------------------### 
 ###  ADVANCED OPTIONS                        ###

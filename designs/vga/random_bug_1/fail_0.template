@@ -36,8 +36,8 @@ CONSTRAIN_SIGNAL=
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=9000ns
-FINISH_TIME=10000ns
+START_TIME=8980ns
+FINISH_TIME=9980ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
 #  constrain signal's or firing assertion's start time
@@ -55,7 +55,7 @@ TIME_LIMIT=24h
 #  * setup,combo,gui_db              - for viewing periodic intermediate results
 #  * setup,abr,vdb,gui_db            - for improved performance, but no intermediate results
 #  * setup,abr,sdp,causality,gui_db  - for long diagnose windows, no intermediate results
-RUN=setup,abr,vdb
+RUN=setup,vdb
 
 ###------------------------------------------### 
 ###  ADVANCED OPTIONS                        ###
