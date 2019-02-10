@@ -11,7 +11,7 @@ import utils
 DESIGN_INFO_FILE = "design_info.csv"
 ASSERT_FAILED_PATTERN = r"Error:.*?Time:\s*(\d+)\s*([np]s)\s+Started:\s*(\d+)\s*([np]s)\s*Scope:\s*DUT_PATH\.([^\s]+)"
 TIME_PATTERN = r".*Time:\s*(\d+)\s*([np]s)"
-                    
+VDB_OPTIONS = "--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"
                         
 class SignalFailure(object):
     def __init__(self, name, time, buggy, golden):
@@ -373,7 +373,7 @@ def create_template(failure, project, design_infox, window_size, args):
             linez[i] = "#TIME_LIMIT=\n"
             
         elif linez[i].startswith("GENERAL_OPTIONS"):
-            linez[i] = 'GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"'
+            linez[i] = 'GENERAL_OPTIONS="%s"' %(VDB_OPTIONS)
             
         elif linez[i].startswith("VERBOSITY="):
             linez[i] = "VERBOSITY=debug\n"

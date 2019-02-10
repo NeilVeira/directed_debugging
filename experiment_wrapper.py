@@ -11,8 +11,8 @@ INF = 1e12
 def fill_row(row, metrics):
     mean_metrics = np.mean(metrics, axis=0)
     median_metrics = np.median(metrics, axis=0)
-    names = ["precision","recall","fscore","size_err"]
-    for i in range(4):
+    names = ["precision","recall","fscore","auprc","size_err"]
+    for i in range(5):
         row["mean_"+names[i]] = mean_metrics[i]
         row["median_"+names[i]] = median_metrics[i]
         
@@ -27,8 +27,8 @@ def main(args):
     else:
         data = pd.DataFrame(
             columns=["design","predictor","sample_type","sample_size","folds","dim","lambd",
-                    "mean_precision","mean_recall","mean_fscore","mean_size_err",
-                    "median_precision","median_recall","median_fscore","median_size_err",
+                    "mean_precision","mean_recall","mean_fscore","mean_auprc","mean_size_err",
+                    "median_precision","median_recall","median_fscore","median_auprc","median_size_err",
                     ]
         )
         

@@ -41,14 +41,15 @@ def main(args):
         suspectz = open(suspect_list_file).readlines()
         all_suspectz.append([s.strip() for s in suspectz])
     
-    for i in range(len(all_failurez)):
-        print all_failurez[i]
+    for i,failure in enumerate(all_failurez):
+        print failure
         train_data = all_suspectz[:i] + all_suspectz[i+1:]
         predictor = Suspect2Vec()
         predictor.fit(train_data)
         embed_inx, embed_outx = predictor.get_embeddings()
-        write_embeddings(embed_inx, all_failurez[i]+"_input_embeddings.txt")
-        write_embeddings(embed_outx, all_failurez[i]+"_output_embeddings.txt")
+        write_embeddings(embed_inx, failure+"_input_embeddings.txt")
+        write_embeddings(embed_outx, failure+"_output_embeddings.txt")
+        predictor.save(failure+".suspect2vec.pkl")
         
     
 if __name__ == "__main__":
