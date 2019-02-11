@@ -7,6 +7,7 @@ import random
 import logging
 
 import utils
+import write_suspect_lists
 
 DESIGN_INFO_FILE = "design_info.csv"
 ASSERT_FAILED_PATTERN = r"Error:.*?Time:\s*(\d+)\s*([np]s)\s+Started:\s*(\d+)\s*([np]s)\s*Scope:\s*DUT_PATH\.([^\s]+)"

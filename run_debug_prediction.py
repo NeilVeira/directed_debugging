@@ -8,7 +8,7 @@ import utils
 import analyze
 import run_debug_data 
 
-METHODS = [None,"assump","opt_assump","assump_block"]
+METHODS = [None,"assump","optAssump","assumpBlock","optAssumpBlock","optAssumpBlock0"]
 
 def run_debug(name, timeout=60*60*24, verbose=False):
     print "Running debug on %s..." %(name)
@@ -48,11 +48,15 @@ def parse_pre_runtime(name):
     
     
 def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guidance_method=None, 
-    timeout=3600, pass_timeout=4000, verbose=False):
+    timeout=3600, pass_timeout=100000, verbose=False):
     if not os.path.exists(base_name+".template"):
         raise ValueError("File %s does not exist" %(base_name+".template"))
+
     dir = os.path.dirname(base_name)    
     orig_dir = os.getcwd()
+    suspect_list_file = base_name.replace("designs","suspect_lists") + "_suspects.txt"
+    cmd = "cp %s %s/true_suspects.txt" %(suspect_list_file, dir)
+    assert os.system(cmd) == 0
     os.chdir(dir)
     base_name = os.path.basename(base_name)
     new_name = os.path.basename(new_name)
@@ -74,12 +78,6 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             assert os.system("cp %s_input_embeddings.txt input_embeddings.txt" %(base_name)) == 0
             assert os.system("cp %s_output_embeddings.txt output_embeddings.txt" %(base_name)) == 0
         assert os.system("cp %s.template %s.template" %(base_name,new_name)) == 0
-        
-        # true_suspectz = utils.parse_suspects(base_name)
-        # with open("true_suspects.txt","w") as f:
-            # f.write("\n".join(true_suspectz))        
-        suspect_list_file = base_name.replace("designs","suspect_lists") + "_suspects.txt"
-        os.system("cp %s true_suspects.txt" %(suspect_list_file))
         
         # Modify template file as needed 
         utils.write_template(new_name+".template", "PROJECT=", "PROJECT="+new_name)
@@ -128,7 +126,7 @@ def init(parser):
     parser.add_argument("--aggressiveness", type=float, default=0.5, help="Threshold below which suspects are blocked")
     parser.add_argument("-v","--verbose", action="store_true", default=False, help="Display more info")
     parser.add_argument("--timeout", type=int, default=3600, help="Time limit in seconds for a single debugging run.")
-    parser.add_argument("--pass_timeout", type=int, default=4000, help="Time limit in seconds for a single pass.")
+    parser.add_argument("--pass_timeout", type=int, default=100000, help="Time limit in seconds for a single pass.")
     parser.add_argument("--method", type=str, default=None, help="Solver guidance method. " \
         "Must be one of %s" %METHODS)
    
