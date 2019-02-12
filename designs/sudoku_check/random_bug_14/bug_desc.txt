@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/sudoku_mask.v : 31
+Golden:   										(|partial_z[i*
+Bug:      										(&partial_z[i*

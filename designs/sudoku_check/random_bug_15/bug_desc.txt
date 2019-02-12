@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/sudoku_mask_stg2.v : 50
+Golden:   	((i/9)%9)/3)*3; yi < (((i
+Bug:      	((i/9)%9)/3)+3; yi < (((i

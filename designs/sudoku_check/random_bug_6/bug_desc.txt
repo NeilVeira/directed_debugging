@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/sudoku_bin2hex.v : 38
+Golden:   	hex = 4'h 6;
+Bug:      	hex = 1;

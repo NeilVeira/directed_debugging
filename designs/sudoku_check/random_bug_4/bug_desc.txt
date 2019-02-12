@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/sudoku_check.v : 52
+Golden:   	show_index <= show_index + 1;
+Bug:      	show_index <= 0;

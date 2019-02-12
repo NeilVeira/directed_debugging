@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/sudoku.v : 119
+Golden:   	WIDTH = 4;
+Bug:      	WIDTH = 0;

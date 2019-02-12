@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/sudoku_core.v : 138
+Golden:   	puzzle_reg_bin_pipe <= puzzle_reg_bin;
+Bug:      	puzzle_reg_bin_pipe <= 0;

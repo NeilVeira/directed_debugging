@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/sudoku_core.v : 121
+Golden:   	UM_PIPE_STGS-1) priming_p
+Bug:      	UM_PIPE_STGS+1) priming_p

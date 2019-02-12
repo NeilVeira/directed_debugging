@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/sudoku_core.v : 106
+Golden:   	waiting_for_puzzle <= waiting_for_puzzle + 1'b1;
+Bug:      	waiting_for_puzzle <= 0;

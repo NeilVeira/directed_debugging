@@ -1,0 +1,109 @@
+###------------------------------### 
+###  INITIALIZATION FOR ONPOINT  ###
+###------------------------------### 
+# Initial Configuration
+#  PROJECT:     * unique name to identify the project
+#  DESIGN:      * name of the top-level module (dut)
+#  DUT_PATH:    * absolute path to the dut (ex: tb.path.dut_inst)
+#  FILELIST:    * filelist of the design and assertion files (no testbench files)
+#               * filelist format is similar to the -F option in most simulators
+#  VECTOR_FILE: * vector dump from the simulation
+#               * the extension of the file should match it's format
+PROJECT=fail_0
+DESIGN=sudoku_check
+DUT_PATH=sudoku_check_bench.st
+FILELIST=filelist.l
+VECTOR_FILE=sim/main.vcd
+
+
+# The assertion that fired in simulation
+#  format: path.to.assertion[:start[-finish]]
+TARGET_ASSERTION=
+
+# Setup for the constrain signal
+#  A constrain signal is a signal whose value must be corrected from 
+#  the simulated value
+# format: path.to.signal:value:start[-finish]
+# path.to.signal:   * path to the signal, from the DUT
+# value:            * value to constrain to, in binary
+#                   * hex values can be prefixed with 'h'
+#                   * decimal values can be prefixed with 'd'
+# start-finish:     * time (or time range) during which to constrain the signal
+CONSTRAIN_SIGNAL=index[7:0]:h7c:81230ns
+#  Or use a constrain file to specify multiple constrain signals
+#CONSTRAIN_FILE=
+
+# Setup the debug window
+# The firing assertion or constrain signal time should be 
+#  contained within the debug window
+START_TIME=80230ns
+FINISH_TIME=81280ns
+#  Or setup the dynamic debug window
+#  Use this to set the start time relative to the 
+#  constrain signal's or firing assertion's start time
+START_TIME_OFFSET=
+
+# Set the hard limits for memory and time
+MEMORY_LIMIT=16GB
+#TIME_LIMIT=
+
+# List of commands to run. Use "," to separate.
+# setup, clean_up, combo, abr, sdp, vdb, causality, gui_db
+#
+# To create, diganose, and prep a project for loading in the OnPoint GUI, 
+#  recommended combinations of commands are:
+#  * setup,combo,gui_db              - for viewing periodic intermediate results
+#  * setup,abr,vdb,gui_db            - for improved performance, but no intermediate results
+#  * setup,abr,sdp,causality,gui_db  - for long diagnose windows, no intermediate results
+RUN=setup,abr,vdb
+
+###------------------------------------------### 
+###  ADVANCED OPTIONS                        ###
+###------------------------------------------###
+# Specify trust/blackbox. Use arrays for multiple items.
+#  e.g., TRUST_MODULE=( "moduleA" "moduleB" )
+TRUST_FILE=()
+TRUST_DIRECTORY=()
+TRUST_PATTERN=()
+TRUST_MODULE=()
+TRUST_INSTANCE=()
+BLACKBOX_FILE=()
+BLACKBOX_DIRECTORY=()
+BLACKBOX_PATTERN=()
+BLACKBOX_MODULE=()
+BLACKBOX_INSTANCE=()
+
+# Support for Verdi in the GUI
+# If not using the Verdi gui, leave this line commented
+# GUI=verdi
+
+# Extracts memory
+#  can set to: 'off', 'all', 'clocked'
+EXTRACT_MEMORY=clocked
+
+# Sets the limit for a combo pass
+INTERMEDIATE_RESULTS_PERIOD=10min
+
+# Set maximum time solutions (higher number may slow down diagnosis)
+#TIME_MAX_SOLUTIONS=20
+
+# If the file list contains non-standard files, encrypted files, or binaries that
+# will cause reading/parsing errors in OnPoint, turn on this option to ignore the errors
+# and continue running OnPoint without exiting.
+#IGNORE_PARSE_ERRORS=1
+
+# Turn on this option to remove suspects related to antecedent in an assertion
+REDUCE_IMPLICATION_SUSPECTS=0
+
+# When this option is turned on the causality analysis finds which 
+# RTL statements are traversed within signal paths.
+#RTL_CAUSALITY=1
+
+# Sets verbosity level (only change when you encounter an error)
+VERBOSITY=quiet
+
+# Forces a project overwrite on creation
+FORCE=1
+
+# Appends to general vdb options
+GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"

@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/puz_bank3.v : 696
+Golden:   	clue = 324'h000005420_050800000_900040800_030701000_200000090_500306001_704000000_000007509_000209000;
+Bug:      	clue = 0;

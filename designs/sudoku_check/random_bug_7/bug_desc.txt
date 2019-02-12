@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/sudoku_solution.v : 17
+Golden:   	assign solution = & non_zero;
+Bug:      	assign solution = 1;

@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/sudoku.v : 104
+Golden:   	if (rst)
+Bug:      	if (1)

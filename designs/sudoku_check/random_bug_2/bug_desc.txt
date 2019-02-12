@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/fifo.v : 72
+Golden:   	q = sub_wire4[323:0];
+Bug:      	q = 1;

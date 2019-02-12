@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/sudoku_hex2bin.v : 38
+Golden:   	bin = 9'b 000100000;
+Bug:      	bin = 0;

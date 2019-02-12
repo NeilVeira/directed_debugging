@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/sudoku_mask_stg2.v : 32
+Golden:   	if ((i/(9*9))/3 == xi/3)
+Bug:      	if (1)

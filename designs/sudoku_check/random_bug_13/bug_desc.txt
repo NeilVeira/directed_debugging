@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/sudoku_ans.v : 29
+Golden:   	9+9-1:i*9]) |
+Bug:      	9+9-1:i*9]) &&

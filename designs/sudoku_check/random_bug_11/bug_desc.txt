@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/sudoku_mask_stg2.v : 30
+Golden:   	i*3*9+(yi%3)*9+xi] = 1'b0
+Bug:      	i*3*9+(yi%3)+9+xi] = 1'b0

@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/fifo.v : 76
+Golden:   	.rdreq (rdreq),
+Bug:      	
