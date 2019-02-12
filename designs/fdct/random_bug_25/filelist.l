@@ -1,0 +1,10 @@
+sva/VennsaChecker.sv
+rtl/dct.v
+rtl/dctub.v
+rtl/dctu.v
+rtl/dct_mac.v
+rtl/fdct.v
+rtl/zigzag.v
++incdir+rtl/include
++define+VENNSA_DYNAMIC_SIMULATION
++define+VENNSA_END_CHECKER

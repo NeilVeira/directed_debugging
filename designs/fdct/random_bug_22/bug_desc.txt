@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/dctu.v : 4422
+Golden:   	-coef_width +1] ),
+Bug:      	-coef_width *1] ),

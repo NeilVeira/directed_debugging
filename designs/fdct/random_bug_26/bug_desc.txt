@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/dct.v : 160
+Golden:   	<= #1 ddcnt & ~dddcnt;
+Bug:      	<= #1 ddcnt || ~dddcnt;
