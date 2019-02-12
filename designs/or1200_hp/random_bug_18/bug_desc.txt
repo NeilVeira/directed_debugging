@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/or1200_ctrl.v : 759
+Golden:   	(!ex_freeze & id_freeze |
+Bug:      	(!ex_freeze | id_freeze |

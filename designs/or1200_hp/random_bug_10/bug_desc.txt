@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/dc_tag_blk_cm2.v : 162
+Golden:   	assign doutb = mem[addrb_reg];
+Bug:      	assign doutb = 1;

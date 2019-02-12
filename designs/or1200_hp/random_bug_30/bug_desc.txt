@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/or1200_dmmu_tlb.v : 198
+Golden:   	assign tlb_tr_en = tlb_en | (spr_cs & spr_addr[`OR1200_DTLB_TM_ADDR]);
+Bug:      	assign tlb_tr_en = 1;

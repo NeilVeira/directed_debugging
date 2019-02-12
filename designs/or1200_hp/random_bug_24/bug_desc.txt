@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/or1200_ic_tag.v : 158
+Golden:   	.clka(clk),
+Bug:      	

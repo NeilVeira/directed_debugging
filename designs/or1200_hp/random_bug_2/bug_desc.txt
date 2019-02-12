@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/dtlb_mr_sub.v : 77
+Golden:   	assign ena_wire = ena;
+Bug:      	assign ena_wire = 0;

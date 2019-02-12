@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/or1200_cpu.v : 382
+Golden:   	assign dc_en = sr[`OR1200_SR_DCE];
+Bug:      	assign dc_en = 1;

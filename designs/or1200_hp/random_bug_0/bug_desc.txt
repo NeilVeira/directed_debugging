@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/or1200_reg2mem.v : 134
+Golden:   	memdata_ll = regdata[7:0];
+Bug:      	memdata_ll = 0;

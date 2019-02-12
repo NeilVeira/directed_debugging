@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/itlb_mr_blk_cm2.v : 169
+Golden:   		if (ena && wea)
+Bug:      		if (ena ^ wea)

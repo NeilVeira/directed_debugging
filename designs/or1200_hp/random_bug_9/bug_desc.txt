@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/or1200_wbmux.v : 152
+Golden:   	muxout = muxin_c;
+Bug:      	muxout = 0;

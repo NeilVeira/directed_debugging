@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/or1200_ic_fsm.v : 180
+Golden:   	assign first_miss_ack = (state == `OR1200_ICFSM_CFETCH) & biudata_valid;
+Bug:      	assign first_miss_ack = 0;

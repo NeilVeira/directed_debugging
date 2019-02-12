@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/or1200_dc_top.v : 149
+Golden:   	input	[dw-1:0]		dcsb_d
+Bug:      	input	[dw*1:0]		dcsb_d

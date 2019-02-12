@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/or1200_lsu.v : 156
+Golden:   	assign dcpu_we_o = lsu_op[3];
+Bug:      	assign dcpu_we_o = 1;

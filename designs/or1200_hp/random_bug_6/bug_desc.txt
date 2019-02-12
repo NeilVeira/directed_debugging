@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/itlb_tr_sub.v : 80
+Golden:   	assign dina_wire = dina;
+Bug:      	assign dina_wire = 0;

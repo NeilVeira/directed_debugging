@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/dtlb_mr_sub.v : 84
+Golden:   	.clka(clka),
+Bug:      	

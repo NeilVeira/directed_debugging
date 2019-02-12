@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/or1200_dc_ram.v : 149
+Golden:   	assign addr_wire = addr;
+Bug:      	assign addr_wire = 0;

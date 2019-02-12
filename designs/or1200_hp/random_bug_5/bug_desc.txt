@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/or1200_ic_top.v : 261
+Golden:   	assign to_icram = icbiu_dat_i;
+Bug:      	assign to_icram = 1;

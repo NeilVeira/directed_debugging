@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/or1200_except.v : 537
+Golden:   	epcr <= #1 datain;
+Bug:      	epcr <= 1;

@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/or1200_dc_ram.v : 119
+Golden:   	_CTRL_WIDTH - 1:0] mbist_
+Bug:      	_CTRL_WIDTH * 1:0] mbist_

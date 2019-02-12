@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/dc_ram_blk_cm2.v : 202
+Golden:   	if (ena && wea[1])
+Bug:      	if (1)

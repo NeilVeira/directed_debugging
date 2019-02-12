@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/or1200_alu.v : 203
+Golden:   	if (result === 32'bx)
+Bug:      	if (1)

@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/or1200_mult_mac.v : 311
+Golden:   	if (mac_op_r3 == `OR1200_MACOP_MAC)
+Bug:      	if (1)

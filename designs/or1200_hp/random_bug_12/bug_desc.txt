@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/ic_tag_blk_cm2.v : 158
+Golden:   	mem [(1<<10)-1:0];	// RAM
+Bug:      	mem [(1<<10)+1:0];	// RAM

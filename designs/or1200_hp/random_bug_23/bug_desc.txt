@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/or1200_iwb_biu.v : 248
+Golden:   	if (repeated_access & biu_cyc_i & biu_stb_i)
+Bug:      	if (1)

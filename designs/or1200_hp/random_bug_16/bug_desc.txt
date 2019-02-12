@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/rf_dist_cm2_model.v : 66
+Golden:   	r (i = 0; i < 64; i = i +
+Bug:      	r (i = 0; i > 64; i = i +

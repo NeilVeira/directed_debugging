@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/or1200_wb_biu.v : 261
+Golden:   	valid_div <= #1 valid_div + 1'd1;
+Bug:      	valid_div <= 1;

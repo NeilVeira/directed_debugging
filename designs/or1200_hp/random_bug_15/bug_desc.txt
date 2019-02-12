@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/or1200_rf.v : 125
+Golden:   	input	[dw-1:0]		dataw;
+Bug:      	input	[dw+1:0]		dataw;

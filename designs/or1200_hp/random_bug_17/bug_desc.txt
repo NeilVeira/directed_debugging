@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/or1200_immu_tlb.v : 163
+Golden:   	1200_ITLBTRW-1:0]	tlb_tr_
+Bug:      	1200_ITLBTRW*1:0]	tlb_tr_
