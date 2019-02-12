@@ -1,0 +1,4 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/wb_dma_de.v : 617
+Golden:   	next_state = LD_DESC5;
+Bug:      	next_state = 0;

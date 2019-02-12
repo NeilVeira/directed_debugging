@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/wb_dma_rf.v : 648
+Golden:   	if(csr_we)
+Bug:      	if (1)

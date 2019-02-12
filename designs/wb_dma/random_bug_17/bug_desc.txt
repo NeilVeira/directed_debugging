@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/wb_dma_de.v : 270
+Golden:   	if(de_start | ptr_set)
+Bug:      	if (1)

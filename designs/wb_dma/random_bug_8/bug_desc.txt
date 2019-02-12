@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/wb_dma_wb_slv.v : 174
+Golden:   	 & wb_stb_i &  wb_we_i & 
+Bug:      	 & wb_stb_i |  wb_we_i & 

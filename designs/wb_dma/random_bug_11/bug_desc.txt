@@ -1,0 +1,4 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/wb_dma_wb_mast.v : 159
+Golden:   	mast_we_r <= #1 mast_we;
+Bug:      	mast_we_r <= 0;

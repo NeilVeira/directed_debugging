@@ -1,0 +1,4 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/wb_dma_ch_rf.v : 296
+Golden:   	if(this_ptr_set)	pointer_r <= #1 de_csr[31:4];
+Bug:      	if(this_ptr_set)	pointer_r <= 0;

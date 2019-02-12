@@ -1,0 +1,4 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/wb_dma_rf.v : 333
+Golden:   	assign pause_req = csr_r[0];
+Bug:      	assign pause_req = 1;

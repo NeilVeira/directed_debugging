@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/wb_dma_wb_slv.v : 171
+Golden:   	e <= rf_sel & wb_cyc_i & 
+Bug:      	e <= rf_sel ^ wb_cyc_i & 

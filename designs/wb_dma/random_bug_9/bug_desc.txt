@@ -1,0 +1,4 @@
+Bug Description:  stuck-at-1
+Location: 	rtl/wb_dma_ch_rf.v : 250
+Golden:   	assign ch_err_we	= CH_EN & (ch_sel==CH_NO) & dma_err;
+Bug:      	assign ch_err_we	= 1;

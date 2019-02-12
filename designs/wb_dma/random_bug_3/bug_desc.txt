@@ -1,0 +1,4 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/wb_dma_inc30r.v : 90
+Golden:   	out_r <= #1 in[(INC30_CENTER - 1):0] + 1;
+Bug:      	out_r <= 0;

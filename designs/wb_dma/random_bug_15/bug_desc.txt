@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/wb_dma_ch_rf.v : 296
+Golden:   	if(pointer_we)
+Bug:      	if (1)

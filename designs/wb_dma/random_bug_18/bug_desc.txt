@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/wb_dma_wb_if.v : 175
+Golden:   	.clk(		clk		),
+Bug:      	

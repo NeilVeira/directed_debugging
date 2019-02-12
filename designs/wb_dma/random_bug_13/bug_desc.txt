@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/wb_dma_rf.v : 639
+Golden:   		= wb_rf_we & (wb_rf_adr 
+Bug:      		= wb_rf_we ^ (wb_rf_adr 

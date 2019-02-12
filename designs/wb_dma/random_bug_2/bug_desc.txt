@@ -1,0 +1,4 @@
+Bug Description:  stuck-at-0
+Location: 	rtl/wb_dma_de.v : 585
+Golden:   	ptr_adr_low = 2'h1;
+Bug:      	ptr_adr_low = 0;
