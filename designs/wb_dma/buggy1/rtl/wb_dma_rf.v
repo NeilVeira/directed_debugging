@@ -1,0 +1,1 @@
+../../golden/rtl/wb_dma_rf.v
