@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/SM_OW_S3CTRL.v : 472
+Golden:   	TST_E_VALID && TST_BERROR)
+Bug:      	TST_E_VALID | TST_BERROR)

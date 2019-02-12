@@ -1,0 +1,4 @@
+Bug Description: incorrect logic operator
+Location: 	rtl/one_hot_mux.v : 51
+Golden:   	
+Bug:      	

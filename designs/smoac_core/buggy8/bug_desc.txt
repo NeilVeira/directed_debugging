@@ -1,0 +1,4 @@
+Bug Description: stuck-at-constant
+Location: 	rtl/SM_RP_REG_ENTRY.v : 57
+Golden:   	
+Bug:      	

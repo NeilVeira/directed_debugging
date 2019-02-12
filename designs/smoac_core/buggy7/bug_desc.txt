@@ -1,0 +1,4 @@
+Bug Description: incorrect bus connection
+Location: 	rtl/SM_RP_BRAINS.v : 124
+Golden:   	
+Bug:      	

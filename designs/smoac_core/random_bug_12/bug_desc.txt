@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/SM_MM_SDRAM_INIT_STATE.v : 84
+Golden:   	1 << HD[3:0]- 1'h1;
+Bug:      	1 << HD[3:0]* 1'h1;

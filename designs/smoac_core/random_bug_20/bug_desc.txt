@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/SM_OW_SPE.v : 42
+Golden:   	if(READY1 & REQ1)
+Bug:      	if (1)

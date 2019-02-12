@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/SM_AS_16FIFO.v : 56
+Golden:   	EAD <= READ + 4'h1;
+Bug:      	EAD <= READ * 4'h1;

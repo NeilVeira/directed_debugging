@@ -1,0 +1,4 @@
+Bug Description: bad condition check bit
+Location: 	rtl/SM_RP_REG_ENTRY.v : 56
+Golden:   	
+Bug:      	

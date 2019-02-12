@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/SM_RX_ACKF_RDCNTL.v : 60
+Golden:   	 ! VACK_F[1]& RD_PTR)|
+Bug:      	 ! VACK_F[1]|| RD_PTR)|

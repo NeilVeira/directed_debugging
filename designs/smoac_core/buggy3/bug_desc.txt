@@ -1,0 +1,4 @@
+Bug Description: incorrect bus connection
+Location: 	rtl/SM_RP_MUX_TO_REG.v : 193
+Golden:   	
+Bug:      	

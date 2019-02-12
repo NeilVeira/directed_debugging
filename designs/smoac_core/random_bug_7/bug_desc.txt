@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/SM_RX_RD_CNTL.v : 230
+Golden:   	UPD_HPTR=BG | INV_REQ_arb;
+Bug:      	UPD_HPTR= 0;

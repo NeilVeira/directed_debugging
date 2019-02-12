@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/SM_RX_CNTL2.v : 103
+Golden:   	assign VALID_FRAME[1]=! WR_INDEX & BR_250;
+Bug:      	assign VALID_FRAME[1]= 0;

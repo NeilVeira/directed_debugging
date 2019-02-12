@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/SM_OW_GRAM_DELAY.v : 39
+Golden:   	neg_clk=~(CLK ^ BIST_MODE);
+Bug:      	neg_clk= 1;

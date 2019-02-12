@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/SM_OW_SST.v : 235
+Golden:   	 SST_PARITY ^{SST_ACTIVE,
+Bug:      	 SST_PARITY &&{SST_ACTIVE,

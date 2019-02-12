@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/SM_SYNC_SIGNAL.v : 16
+Golden:   	SYNCED_SIGNAL <=#1 LIN_SIGNAL;
+Bug:      	SYNCED_SIGNAL <= 1;

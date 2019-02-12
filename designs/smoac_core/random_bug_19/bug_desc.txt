@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/SM_RS_MAIN.v : 111
+Golden:   	if(hard_high | soft_high)
+Bug:      	if (1)

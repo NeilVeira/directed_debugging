@@ -1,0 +1,4 @@
+Bug Description: incorrect bus connection
+Location: 	rtl/smoac_upshift.v : 2371
+Golden:   	
+Bug:      	

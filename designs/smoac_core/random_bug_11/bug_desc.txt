@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/SM_OW_S1ARB.v : 83
+Golden:   	rDOBTRANS=0;
+Bug:      	rDOBTRANS= 1;

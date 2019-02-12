@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/SM_MM_REF_INIT_OUT.v : 198
+Golden:   	if(STAT_Y_H[7]&& ! CSY_ACK_REG[7]&& !(CSY_BUSY_L0[7]| CSY_BUSY_L1[7]))
+Bug:      	if (1)

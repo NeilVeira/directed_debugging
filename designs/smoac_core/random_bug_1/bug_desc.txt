@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/SM_AS_TOP.v : 264
+Golden:   	assign OSIZECTRL=HDR_GRA[19:16];
+Bug:      	assign OSIZECTRL= 0;

@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/SM_OW_SDINIT.v : 38
+Golden:   	assign SD_CONFIG=(state == 59);
+Bug:      	assign SD_CONFIG= 1;

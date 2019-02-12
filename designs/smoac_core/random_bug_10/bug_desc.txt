@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/SM_AS_16FIFO.v : 22
+Golden:   	ITE == READ)& ! WRAPPED;
+Bug:      	ITE == READ)|| ! WRAPPED;

@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/smoac_upshift.v : 2411
+Golden:   	.clk250(in_data_clk250),
+Bug:      	

@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/SM_RX_STAG.v : 72
+Golden:   	TAG_REG3[0])&
+Bug:      	TAG_REG3[0])|

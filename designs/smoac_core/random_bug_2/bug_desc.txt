@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/SM_MM_REFRESH_CNTR.v : 118
+Golden:   	MHPDAT[5:0]<= HD_IN;
+Bug:      	MHPDAT[5:0]<= 0;

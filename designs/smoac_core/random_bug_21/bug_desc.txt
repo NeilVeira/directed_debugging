@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/SM_XAI_TX.v : 433
+Golden:   	.rst(RST),
+Bug:      	

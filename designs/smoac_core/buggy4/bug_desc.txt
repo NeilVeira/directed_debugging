@@ -1,0 +1,4 @@
+Bug Description: disconnection in a bus
+Location: 	rtl/SM_RP_MUX_TO_REG.v : 153
+Golden:   	
+Bug:      	

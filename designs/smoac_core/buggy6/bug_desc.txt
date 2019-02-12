@@ -1,0 +1,4 @@
+Bug Description: incorrect signal connectionsn
+Location: 	rtl/SM_RP_MAIN.v : 331
+Golden:   	
+Bug:      	

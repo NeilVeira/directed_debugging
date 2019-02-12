@@ -1,0 +1,5 @@
+Bug Description: stuck-at-1
+Location: 	rtl/SM_OW_TAGLOCK.v : 23
+Golden:   	TAGLOCK_HIT=TAGLOK_LOCK & ! TAGLOK_RANGE & tl_line_hit
+| TAGLOK_LOCK & TAGLOK_RANGE & tl_range_hit;
+Bug:      	TAGLOCK_HIT= 1;
