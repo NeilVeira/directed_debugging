@@ -9,7 +9,7 @@
 #               * filelist format is similar to the -F option in most simulators
 #  VECTOR_FILE: * vector dump from the simulation
 #               * the extension of the file should match it's format
-PROJECT=fail_0
+PROJECT=fail_1
 DESIGN=fpu
 DUT_PATH=test.dut
 FILELIST=filelist.l
@@ -18,7 +18,7 @@ VECTOR_FILE=sim/fpu.vcd
 
 # The assertion that fired in simulation
 #  format: path.to.assertion[:start[-finish]]
-TARGET_ASSERTION=u1.chk_pre_norm.a_check_larger_opa
+TARGET_ASSERTION=chk_fpu.a_rem:250ns-250ns
 
 # Setup for the constrain signal
 #  A constrain signal is a signal whose value must be corrected from 
@@ -37,7 +37,7 @@ CONSTRAIN_SIGNAL=
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
 START_TIME=0ns
-FINISH_TIME=850ns
+FINISH_TIME=300ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
 #  constrain signal's or firing assertion's start time
@@ -45,7 +45,7 @@ START_TIME_OFFSET=
 
 # Set the hard limits for memory and time
 MEMORY_LIMIT=16GB
-TIME_LIMIT=24h
+TIME_LIMIT=10h
 
 # List of commands to run. Use "," to separate.
 # setup, clean_up, combo, abr, sdp, vdb, causality, gui_db
@@ -55,7 +55,7 @@ TIME_LIMIT=24h
 #  * setup,combo,gui_db              - for viewing periodic intermediate results
 #  * setup,abr,vdb,gui_db            - for improved performance, but no intermediate results
 #  * setup,abr,sdp,causality,gui_db  - for long diagnose windows, no intermediate results
-RUN=setup,vdb
+RUN=setup,abr,vdb
 
 ###------------------------------------------### 
 ###  ADVANCED OPTIONS                        ###
@@ -100,11 +100,11 @@ REDUCE_IMPLICATION_SUSPECTS=0
 #RTL_CAUSALITY=1
 
 # Sets verbosity level (only change when you encounter an error)
-VERBOSITY=debug
+VERBOSITY=quiet
 
 # Forces a project overwrite on creation
 FORCE=1
 
 # Appends to general vdb options
-GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all"
+GENERAL_OPTIONS=
 

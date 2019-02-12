@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/except.v : 83
+Golden:   	pa_ff <= #1 &expa;
+Bug:      	pa_ff <= #1 |expa;

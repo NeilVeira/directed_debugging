@@ -36,8 +36,8 @@ CONSTRAIN_SIGNAL=
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=
-FINISH_TIME=
+START_TIME=0ns
+FINISH_TIME=1000ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
 #  constrain signal's or firing assertion's start time
