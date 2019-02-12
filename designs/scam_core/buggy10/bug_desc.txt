@@ -1,0 +1,4 @@
+Bug Description:  unknown
+Location: 	rtl/scam_core.v: 1244
+Golden:   	unknown
+Bug:      	unknown

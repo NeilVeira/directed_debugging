@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/scam_rdpp_mux.v : 37
+Golden:   	sts_12_data <= SPE;
+Bug:      	sts_12_data <= 0;

@@ -1,0 +1,12 @@
+Bug Description: stuck-at-0
+Location: 	rtl/scam_147a_SiPo.v : 39
+Golden:   	p_out <= {((p_out[12] & (~ts12)) | (ts12 & s_in)), ((p_out[11] &
+		      (~ts8)) | (ts8 & s_in)), ((p_out[10] & (~ts4)) | (ts4 &
+		      s_in)), ((p_out[9] & (~ts11)) | (ts11 & s_in)), ((p_out[8]
+		      & (~ts7)) | (ts7 & s_in)), ((p_out[7] & (~ts3)) | (ts3 &
+		      s_in)), ((p_out[6] & (~ts10)) | (ts10 & s_in)), ((p_out[5]
+		      & (~ts6)) | (ts6 & s_in)), ((p_out[4] & (~ts2)) | (ts2 &
+		      s_in)), ((p_out[3] & (~ts9)) | (ts9 & s_in)), ((p_out[2] &
+		      (~ts5)) | (ts5 & s_in)), ((p_out[1] & (~ts1)) | (ts1 &
+		      s_in))};
+Bug:      	p_out <= 0;

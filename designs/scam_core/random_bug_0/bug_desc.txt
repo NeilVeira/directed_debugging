@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/XXX_RW8.v : 25
+Golden:   	REG_DATA <= RESET_VALUE;
+Bug:      	REG_DATA <= 0;

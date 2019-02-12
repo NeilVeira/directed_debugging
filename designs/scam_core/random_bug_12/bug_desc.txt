@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/scam_row_counter.v : 30
+Golden:   	 MAX_STS_1) & (column == 
+Bug:      	 MAX_STS_1) || (column == 

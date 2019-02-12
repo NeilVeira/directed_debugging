@@ -1,0 +1,4 @@
+Bug Description:  unknown
+Location: 	rtl/scam_tx_mdi_cntl.v: 34
+Golden:   	unknown
+Bug:      	unknown

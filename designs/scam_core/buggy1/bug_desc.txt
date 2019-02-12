@@ -1,0 +1,4 @@
+Bug Description:  unknown
+Location: 	rtl/scam_sonet_scram.v : 30
+Golden:   	unknown
+Bug:      	unknown

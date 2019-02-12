@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/scam_sonet_scram.v : 16
+Golden:   	ataIn[15:0] ^ {2 {Q6[7:0]
+Bug:      	ataIn[15:0] || {2 {Q6[7:0]

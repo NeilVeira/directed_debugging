@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/scam_tx_mdi.v : 88
+Golden:   	sts_n_out_0 <= sts_n_scramd_0;
+Bug:      	sts_n_out_0 <= 0;

@@ -1,0 +1,4 @@
+Bug Description:  unknown
+Location: 	rtl/scam_BIP2.v: 33
+Golden:   	unknown
+Bug:      	unknown

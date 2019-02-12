@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/scam_rdpp_mux.v : 36
+Golden:   	if (tx_toh == 1'b0)
+Bug:      	if (1)

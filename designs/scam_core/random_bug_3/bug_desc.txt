@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/memory/scam_STMem.v : 141
+Golden:   	AR1L <= AR1;
+Bug:      	AR1L <= 1;

@@ -1,0 +1,4 @@
+Bug Description:  unknown
+Location: 	rtl/scam_read_timing.v : 126
+Golden:   	unknown
+Bug:      	unknown

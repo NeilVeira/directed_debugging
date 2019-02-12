@@ -1,0 +1,4 @@
+Bug Description:  unknown
+Location: 	rtl/scam_b3_calc_fsm.v: 245
+Golden:   	unknown
+Bug:      	unknown

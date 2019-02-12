@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/scam_rdpp_sreg.v : 15
+Golden:   	assign s_out = p_out[11];
+Bug:      	assign s_out = 1;

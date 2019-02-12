@@ -1,0 +1,4 @@
+Bug Description: stuck-at-0
+Location: 	rtl/scam_mpc_registers_sck78.v : 587
+Golden:   	SEL_CNTL_REG_STS_w[12] = 1'b1;
+Bug:      	SEL_CNTL_REG_STS_w[12] = 0;

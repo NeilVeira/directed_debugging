@@ -1,0 +1,4 @@
+Bug Description: stuck-at-1
+Location: 	rtl/scam_sts_counter.v : 22
+Golden:   	sts_1 <= sts_1_init;
+Bug:      	sts_1 <= 1;
