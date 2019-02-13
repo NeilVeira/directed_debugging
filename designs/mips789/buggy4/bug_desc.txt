@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/EXEC_stage.v:72
 Golden:   	unknown
 Bug:      	unknown

@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/fpu.v : 138
 Golden:   	unknown
 Bug:      	unknown

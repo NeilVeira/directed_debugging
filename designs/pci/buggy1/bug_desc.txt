@@ -1,5 +1,4 @@
 Bug Description: Unknown manual bug
-Location: 	rtl/post_norm.v : 461
+Location: 	rtl/pci_target32_devs_crit.v : 88
 Golden:   	unknown
 Bug:      	unknown
-Module: post_norm

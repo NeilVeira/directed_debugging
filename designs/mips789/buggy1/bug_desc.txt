@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/ctl_fsm.v:57
 Golden:   	unknown
 Bug:      	unknown

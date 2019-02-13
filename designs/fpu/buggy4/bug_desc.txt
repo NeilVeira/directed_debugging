@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/except.v : 112
 Golden:   	unknown
 Bug:      	unknown

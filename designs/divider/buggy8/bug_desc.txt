@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/div_su.v : 163
 Golden:   	unknown
 Bug:      	unknown

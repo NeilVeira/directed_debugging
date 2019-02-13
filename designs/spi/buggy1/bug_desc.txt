@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/fifo4.v: 118
 Golden:   	unknown
 Bug:      	unknown

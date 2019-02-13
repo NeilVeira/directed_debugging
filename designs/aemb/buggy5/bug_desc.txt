@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/aeMB_aslu.v: 143
 Golden:   	unknown
 Bug:      	unknown

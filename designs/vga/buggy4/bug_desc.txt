@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/vga_wb_slave.v: 244
 Golden:   	unknown
 Bug:      	unknown

@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/scam_tx_mdi_cntl.v: 34
 Golden:   	unknown
 Bug:      	unknown

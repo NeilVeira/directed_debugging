@@ -1,4 +1,4 @@
-Bug Description:  unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/vga_colproc.v : 466
 Golden:   	unknown
 Bug:      	unknown

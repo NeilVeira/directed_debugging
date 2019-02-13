@@ -1,4 +1,4 @@
-Bug Description: Unknown
+Bug Description: Unknown manual bug
 Location: 	rtl/eth_top.v : 516
 Original: 	unknown
 Bug:      	unknown
