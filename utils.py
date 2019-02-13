@@ -36,6 +36,17 @@ def debug_passed(failure):
     log = open(log_file).read()
     return "error:" not in log 
         
+
+def find_all_templates(dir):
+    results = []
+    for item in sorted(os.listdir(dir)):
+        if item.startswith("random_bug") or item.startswith("buggy"):             
+            for sub_item in sorted(os.listdir(os.path.join(dir,item))):
+                m = re.match(r"fail_\d+\.template\Z", sub_item)
+                if m:
+                    failure_name = os.path.join(dir, item, sub_item[:-len(".template")])
+                    results.append(failure_name)
+    return results 
         
 def find_all_failures(dir, include_failed=False):
     results = []

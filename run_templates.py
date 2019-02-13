@@ -11,7 +11,7 @@ import write_suspect_lists
 
 def main(args):
     design_dir = args.design_dir.rstrip("/") 
-    failurez = utils.find_all_failures(design_dir, include_failed=True) 
+    failurez = utils.find_all_templates(design_dir) 
     if args.ids:
         ids = utils.parse_ids(args.ids) 
     orig_dir = os.getcwd()
