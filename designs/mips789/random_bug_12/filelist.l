@@ -9,7 +9,7 @@ rtl/forward.v
 rtl/mem_module.v
 rtl/mips_core.v
 rtl/mips_dvc.v
-rtl_sol/mips_sys.sv
+rtl/mips_sys.v
 rtl/ulit.v
 rtl/wb_if.v
 sva/ctl_fsm.sv

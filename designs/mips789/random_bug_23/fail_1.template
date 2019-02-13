@@ -36,7 +36,7 @@ CONSTRAIN_SIGNAL=zz_pc_o[31:0]:h00000210:229000ns
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=165000ns
+START_TIME=219000ns
 FINISH_TIME=229050ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
@@ -55,7 +55,7 @@ MEMORY_LIMIT=16GB
 #  * setup,combo,gui_db              - for viewing periodic intermediate results
 #  * setup,abr,vdb,gui_db            - for improved performance, but no intermediate results
 #  * setup,abr,sdp,causality,gui_db  - for long diagnose windows, no intermediate results
-RUN=setup,abr,vdb
+RUN=setup,vdb
 
 ###------------------------------------------### 
 ###  ADVANCED OPTIONS                        ###

@@ -1,6 +1,4 @@
-+define+VENNSA_DYNAMIC_SIMULATION
-+incdir+rtl/include
-+incdir+tb/include
++incdir+rtl/include/
 rtl/EXEC_stage.v
 rtl/RF_components.v
 rtl/RF_stage.v

@@ -36,7 +36,7 @@ CONSTRAIN_SIGNAL=zz_wr_en_o[3:0]:h0:221000ns
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=217000ns
+START_TIME=215000ns
 FINISH_TIME=221050ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
