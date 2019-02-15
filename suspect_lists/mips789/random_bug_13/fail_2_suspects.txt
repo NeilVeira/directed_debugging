@@ -486,4 +486,3 @@ reg_array/always_2/if_1/cond/expr_2
 alu/always_1/block_1/case_1/stmt_3/expr_1
 alu_muxa/always_1/block_1/case_1/stmt_1/expr_1/expr_1
 alu_muxa/always_1/block_1/case_1/stmt_1/expr_1
-mips_sys/constraint_zz_addr_o

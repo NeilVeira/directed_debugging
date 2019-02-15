@@ -152,4 +152,3 @@ ctl_FSM/always_5/block_1/case_1/block_1/if_1/if_1/if_1/if_1/if_1/cond
 ext_ctl_reg_clr_cls/always_1/if_1/if_1/cond
 ctl_FSM/always_5/block_1/case_1/cond
 ext_ctl_reg_clr_cls/always_1/if_1/cond
-assert_rf_stage/assert_ext_sl

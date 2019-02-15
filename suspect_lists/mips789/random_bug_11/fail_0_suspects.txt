@@ -14,4 +14,3 @@ cal_cpi/always_1
 cal_cpi/always_1/if_1/stmt_1
 cal_cpi/always_1/if_1/stmt_2
 cal_cpi/always_1/if_1
-assert_rf_stage/assert_cal_cpi_clk_count

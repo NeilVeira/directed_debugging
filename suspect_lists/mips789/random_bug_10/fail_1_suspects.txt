@@ -182,4 +182,3 @@ pipelinedregs/inst_U3/expr_1
 dmem_ctl_reg_clr_cls/always_1/if_1/if_1/cond
 mips_dvc/always_6/stmt_1/expr_1
 ctl_FSM/always_5/block_1/case_1/cond
-mips_sys/constraint_zz_wr_en_o

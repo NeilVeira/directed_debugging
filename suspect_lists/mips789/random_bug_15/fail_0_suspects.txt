@@ -42,4 +42,3 @@ ctl_FSM/always_6/block_1/case_1/cond
 pc_gen/always_1/if_1/block_1/if_1/cond
 pc_gen/always_1/if_1/block_1/if_1/block_2/case_1/cond
 ctl_FSM/always_4/if_1/cond
-assert_rf_stage/assert_pc_default

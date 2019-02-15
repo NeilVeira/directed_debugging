@@ -285,4 +285,3 @@ alu/always_1/block_1/case_1/cond
 rf_stage/inst_ins_reg/expr_1
 r32_reg_clr_cls/always_1/if_1/cond
 ext/always_1/case_1/cond
-mips_sys/constraint_zz_addr_o
