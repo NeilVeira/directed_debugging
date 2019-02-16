@@ -153,11 +153,29 @@ def plot_improvements(outfile, recall_auc_improvementz):
     plt.ylabel("Percentage of failures")
     plt.plot(x,y)
     plt.savefig(outfile)
+    
+    
+def check_good_for_analysis(base_failure, new_failure, min_runtime):
+    if not os.path.exists(new_failure+".vennsawork/logs/vdb/vdb.log") or not os.path.exists(base_failure+".vennsawork/logs/vdb/vdb.log"):
+        print "Skipping failure %s as it appears to have failed or not been run." %(new_failure)
+        return False 
+        
+    # base_log = open(base_failure+".vennsawork/logs/vdb/vdb.log").read() 
+    # new_log = open(new_failure+".vennsawork/logs/vdb/vdb.log").read() 
+    # if "tcmalloc: large alloc" in base_log or "tcmalloc: large alloc" in new_log:
+        # print "Skipping failure %s due to tcmalloc error" %(new_failure)
+        # return False 
+        
+    base_runtime = utils.parse_runtime(base_failure)
+    if base_runtime < min_runtime:
+        print "Skipping failure %s due to short runtime" %(new_failure)
+        return False 
+        
+    return True 
 
      
-def assumption_analysis(base_failure, new_failure, verbose=False, min_runtime=0):
-    if not os.path.exists(new_failure+".vennsawork/logs/vdb/vdb.log"):
-        print "Skipping failure %s as it appears to have failed or not been run." %(new_failure)
+def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0):
+    if not check_good_for_analysis(base_failure, new_failure, min_runtime):
         return None,None,None,None,None
     elif verbose:
         print "Analyzing",new_failure
@@ -172,18 +190,15 @@ def assumption_analysis(base_failure, new_failure, verbose=False, min_runtime=0)
         # "Base failure found %i suspects while new found %i" %(len(base_suspectz), len(new_suspectz))        
         
     base_runtime = utils.parse_runtime(base_failure)
-    if base_runtime < min_runtime:
-        print "Skipping failure %s due to short runtime" %(new_failure)
-        return None,None,None,None,None
     new_runtime = utils.parse_runtime(new_failure)
     speedup = new_runtime / base_runtime 
     
-    # analyze peak memory usage
+    # Analyze peak memory usage
     base_mem = parse_peak_memory(base_failure)
     new_mem = parse_peak_memory(new_failure)
     mem_reduce = new_mem / float(base_mem)
         
-    # parse predictions, solutions, and compute accuracy
+    # Parse predictions, solutions, and compute accuracy
     log_file = new_failure+".vennsawork/logs/vdb/vdb.log"
     predictions = []
     found_suspects = set([])
@@ -195,7 +210,6 @@ def assumption_analysis(base_failure, new_failure, verbose=False, min_runtime=0)
             if s != 0:
                 predictions.append(s)
             
-        # m = re.search(r"Found suspect (\d+)", line)
         m = re.search(r"==> solver solution:.*:(\S+)\s+", line)
         if m:
             s = m.group(1)
@@ -245,7 +259,7 @@ def main(args):
     tot_runs_finished = np.zeros(2, dtype=np.int32)
     
     for failure in all_failurez: 
-        recall_auc_improvement, speedup, base_points, new_points, runs_finished = assumption_analysis(failure+args.base_suffix, 
+        recall_auc_improvement, speedup, base_points, new_points, runs_finished = analyze_single_pass(failure+args.base_suffix, 
             failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime)
         
         if recall_auc_improvement is not None:

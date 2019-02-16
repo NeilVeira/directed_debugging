@@ -57,10 +57,10 @@ def main(args):
                 os.chdir(os.path.dirname(f))
                 success = run_debug_data.run_window_debug(project, init_window, finish_time)    
                 os.chdir(orig_dir) 
-                print "" 
 
                 if success:
                     write_suspect_lists.do(f)
+                print "" 
 
 
 def init(parser):

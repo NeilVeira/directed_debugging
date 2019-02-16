@@ -75,8 +75,9 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
     else:         
         print base_name, new_name
         if guidance_method is not None:
-            assert os.system("cp %s_input_embeddings.txt input_embeddings.txt" %(base_name)) == 0
-            assert os.system("cp %s_output_embeddings.txt output_embeddings.txt" %(base_name)) == 0
+            if os.system("cp %s_input_embeddings.txt input_embeddings.txt" %(base_name)) != 0 or \
+                os.system("cp %s_output_embeddings.txt output_embeddings.txt" %(base_name)) != 0:
+                print "WARNING: Could not copy embeddings file into bug directory" 
         assert os.system("cp %s.template %s.template" %(base_name,new_name)) == 0
         
         # Modify template file as needed 
@@ -104,9 +105,9 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             
         try:
             if "_1pass" in new_name:
-                analyze.assumption_analysis(base_name+"_1pass", new_name, verbose=verbose, min_runtime=0)
+                analyze.analyze_single_pass(base_name+"_1pass", new_name, verbose=verbose, min_runtime=0)
             else:
-                analyze.assumption_analysis(base_name, new_name, verbose=verbose, min_runtime=0)
+                analyze.analyze_single_pass(base_name, new_name, verbose=verbose, min_runtime=0)
         except:
             os.system("rm args.txt")
             os.chdir(orig_dir)
