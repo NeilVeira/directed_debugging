@@ -27,19 +27,63 @@ def parse_peak_memory(failure):
     return peak_mem
 
     
-def recall_vs_time_single(failure):
-    log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")
-    start = utils.find_time_of(failure, "Oracle::ask\(\)", default=0)            
-    end_time = utils.parse_runtime(failure)
+# Old version
+# def recall_vs_time_single(failure):
+    # log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")
+    # start = utils.find_time_of(failure, "Oracle::ask\(\)", default=0)            
+    # end_time = utils.parse_runtime(failure)
 
+    # cnt = 0
+    # points = []
+    # for line in open(log_file):
+        # t = utils.parse_time_of(line, "==> solver solution:")
+        # if t:
+            # cnt += 1 
+            # points.append([t-start,cnt])
+    # points.append([end_time,cnt])
+    # print points 
+    # return points
+    
+    
+def parse_start_end_times(failure):    
+    log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")  
+    # Find first pass in the log. It may not be pass 0 in case of abr. 
+    state = 0
+    for line in open(log_file):    
+        if "Starting pass" in line:
+            state += 1 
+                
+        elif "OracleSolver::solveAll()" in line and state == 2:
+            start_time = utils.parse_time_of(line, "OracleSolver::solveAll()")
+            
+        elif "Finished pass" in line and state == 2:
+            end_time = utils.parse_time_of(line, "Finished pass")
+            return start_time, end_time 
+        assert state <= 2 # should find end and return before this 
+            
+    # Couldn't find end of pass. Use last time in log file instead. 
+    end_time = utils.parse_runtime(failure)
+    return start_time, end_time 
+    
+    
+def recall_vs_time_single(failure):
+    log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log") 
+    start_time, end_time = parse_start_end_times(failure)
+    assert start_time <= end_time 
+
+    # Now start searching for solutions 
     cnt = 0
     points = []
-    for line in open(log_file):
+    for line in open(log_file):       
         t = utils.parse_time_of(line, "==> solver solution:")
-        if t:
+        if t and start_time <= t <= end_time:
             cnt += 1 
-            points.append([t-start,cnt])
-    points.append([end_time,cnt])
+            points.append([t-start_time,cnt])
+            
+    points.append([end_time-start_time,cnt])
+    # print start_time, end_time
+    # print points
+    # print "" 
     return points
     
   
@@ -48,8 +92,8 @@ def recall_vs_time(base_failure, new_failure):
     new_points = recall_vs_time_single(new_failure)
     
     #normalize against base failure
-    # end_time = max(base_points[-1][0], new_points[-1][0]) 
-    end_time = base_points[-1][0]
+    end_time = max(base_points[-1][0], new_points[-1][0]) 
+    # end_time = base_points[-1][0]
     base_points.append([end_time,base_points[-1][1]])
     new_points.append([end_time,new_points[-1][1]])    
     max_n = float(base_points[-1][1])
@@ -87,6 +131,7 @@ def auc_recall_time(points):
 
     if points[i-1][0] < 1:
         dt = 1-points[i-1][0]
+        assert dt >= 0 
         dt_tot += dt 
         recall = points[i-1][1]
         auc += recall*dt 
@@ -139,7 +184,7 @@ def plot_recall_vs_time(base_points, new_points, outfile=None):
     plt.ylabel("Suspect recall", fontsize=16)
     plt.xlim((0,1))
     plt.ylim((-0.05,1.05))
-    plt.legend(loc="upper left")
+    plt.legend(loc="lower right")
     if outfile:
         plt.savefig(outfile)
 
@@ -155,27 +200,31 @@ def plot_improvements(outfile, recall_auc_improvementz):
     plt.savefig(outfile)
     
     
-def check_good_for_analysis(base_failure, new_failure, min_runtime):
-    if not os.path.exists(new_failure+".vennsawork/logs/vdb/vdb.log") or not os.path.exists(base_failure+".vennsawork/logs/vdb/vdb.log"):
-        print "Skipping failure %s as it appears to have failed or not been run." %(new_failure)
+def check_good_for_analysis(failure, min_runtime):
+    log_file = failure+".vennsawork/logs/vdb/vdb.log"
+    if not os.path.exists(log_file):
+        print "Skipping failure %s as it appears to have failed or not been run." %(failure)
         return False 
         
-    # base_log = open(base_failure+".vennsawork/logs/vdb/vdb.log").read() 
-    # new_log = open(new_failure+".vennsawork/logs/vdb/vdb.log").read() 
-    # if "tcmalloc: large alloc" in base_log or "tcmalloc: large alloc" in new_log:
-        # print "Skipping failure %s due to tcmalloc error" %(new_failure)
+    log = open(log_file).read() 
+    if log.count("Starting pass") < 2:
+        print "Skipping failure %s due to missing fine-grained debugging pass" %(failure) 
+        return False         
+        
+    start_time, end_time = parse_start_end_times(failure)
+    if end_time - start_time < min_runtime:
+        print "Skipping failure %s due to short runtime" %(failure)
+        return False 
+        
+    # if "tcmalloc: large alloc" in log:
+        # print "Skipping failure %s due to tcmalloc error" %(failure)
         # return False 
-        
-    base_runtime = utils.parse_runtime(base_failure)
-    if base_runtime < min_runtime:
-        print "Skipping failure %s due to short runtime" %(new_failure)
-        return False 
         
     return True 
 
      
 def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0):
-    if not check_good_for_analysis(base_failure, new_failure, min_runtime):
+    if not check_good_for_analysis(base_failure, min_runtime) or not check_good_for_analysis(new_failure, min_runtime):
         return None,None,None,None,None
     elif verbose:
         print "Analyzing",new_failure
@@ -229,6 +278,10 @@ def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0)
     base_points, new_points = recall_vs_time(base_failure, new_failure)
     base_recall_auc = auc_recall_time(base_points)
     new_recall_auc = auc_recall_time(new_points)
+    # print base_points 
+    # print new_points 
+    # print base_recall_auc
+    # print new_recall_auc
     recall_auc_improvement = new_recall_auc / base_recall_auc
     
     runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
