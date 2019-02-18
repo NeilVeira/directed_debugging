@@ -1,0 +1,5 @@
+Bug Description: Incorrect edge sensitivity
+Location: 	rtl/eth_register.v : 97
+Original: 	always @ (posedge Clk or posedge Reset)
+Bug:      	always @ (negedge Clk or posedge Reset)
+Module:		eth_register

@@ -1,0 +1,5 @@
+Bug Description: Incorrect case 
+Location: 	rtl/eth_wishbone.v : 666
+Original: 	5'b100_00 :
+Bug:      	5'b101_00 :
+Module: 	eth_wishbone
