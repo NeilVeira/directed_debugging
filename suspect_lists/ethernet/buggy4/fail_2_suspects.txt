@@ -1,0 +1,9 @@
+eth_top
+eth_top/input_wb_cyc_i
+eth_top/input_wb_sel_i
+eth_top/wire_ByteSelected
+eth_top/assign_1_ByteSelected
+eth_top/wire_RegCs
+eth_top/input_wb_stb_i
+eth_top/input_wb_adr_i
+eth_top/assign_1_ByteSelected/expr_1

@@ -223,20 +223,11 @@ def check_good_for_analysis(failure, min_runtime):
     return True 
 
      
-def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0):
+def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0, debug=False):
     if not check_good_for_analysis(base_failure, min_runtime) or not check_good_for_analysis(new_failure, min_runtime):
         return None,None,None,None,None
     elif verbose:
-        print "Analyzing",new_failure
-        
-    base_suspectz = utils.parse_suspects(base_failure)
-    new_suspectz = utils.parse_suspects(new_failure)
-    if len(base_suspectz) > 0:
-        recall = len(new_suspectz)/float(len(base_suspectz))
-    else:
-        recall = np.nan
-    # assert len(base_suspectz) <= len(new_suspectz), \
-        # "Base failure found %i suspects while new found %i" %(len(base_suspectz), len(new_suspectz))        
+        print "Analyzing",new_failure 
         
     base_runtime = utils.parse_runtime(base_failure)
     new_runtime = utils.parse_runtime(new_failure)
@@ -278,20 +269,23 @@ def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0)
     base_points, new_points = recall_vs_time(base_failure, new_failure)
     base_recall_auc = auc_recall_time(base_points)
     new_recall_auc = auc_recall_time(new_points)
-    # print base_points 
-    # print new_points 
-    # print base_recall_auc
-    # print new_recall_auc
+    recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
     recall_auc_improvement = new_recall_auc / base_recall_auc
-    
     runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
     
+    if debug:
+        print base_points 
+        print new_points 
+        print base_recall_auc
+        print new_recall_auc    
+    
+    print "Recall auc improvement: %.3f" %(recall_auc_improvement)
     if verbose:
-        print "Number of true suspects: %i" %(len(base_suspectz))
-        print "Number of found suspects: %i (recall %.3f)" %(len(new_suspectz), recall)
+        print "Number of base points: %i" %(len(base_points))
+        print "Number of new points: %i (recall %.3f)" %(len(new_points), recall)
+        print "Runtime: %.1fs" %(base_runtime)
         print "Relative runtime: %.3f" %(speedup)
         print "Prediction accuracy auc: %.3f" %(auc_acc)
-        print "Recall auc improvement: %.3f" %(recall_auc_improvement)
         print "Peak memory reduction: %.3f" %(mem_reduce)
         print ""
         
@@ -313,7 +307,7 @@ def main(args):
     
     for failure in all_failurez: 
         recall_auc_improvement, speedup, base_points, new_points, runs_finished = analyze_single_pass(failure+args.base_suffix, 
-            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime)
+            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime, debug=args.debug)
         
         if recall_auc_improvement is not None:
             tot_runs_finished += runs_finished 
@@ -348,11 +342,12 @@ def init(parser):
     parser.add_argument("base_suffix", nargs='?', default="", help="[optional] Suffix of failure names to compare against the baseline")
     parser.add_argument("--design", help="Design to analyze.")
     parser.add_argument("--failure", help="Analyze a single failure (base name).")    
-    parser.add_argument("--min_runtime", type=int, default=0, help="Exclude designs with runtime less than this.")
+    parser.add_argument("--min_runtime", type=int, default=1, help="Exclude designs with runtime less than this.")
     parser.add_argument("-p", "--plot", action="store_true", default=False, help="Generate recall-time plot aggregated over all failures.")
     parser.add_argument("-pi", "--plot_individual", action="store_true", default=False, 
-                        help="Generate recall-time plot for individual failrues")
+                        help="Generate recall-time plot for individual failures")
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
+    parser.add_argument("--debug", action="store_true", default=False)
     
   
 if __name__ == "__main__":
