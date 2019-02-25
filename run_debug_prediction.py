@@ -8,7 +8,10 @@ import utils
 import analyze
 import run_debug_data 
 
-METHODS = [None,"assump","optAssump","assumpBlock","optAssumpBlock","optAssumpBlock0"]
+METHODS = [None, "assump", "optAssump", "assumpBlock", "optAssumpBlock", "optAssumpBlock0",
+            None, None, None, None, # placeholders 
+            "optMulti", "Multi"
+            ]
 
 def run_debug(name, timeout=60*60*24, verbose=False):
     print "Running debug on %s..." %(name)
@@ -107,7 +110,9 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             if "_1pass" in new_name:
                 analyze.analyze_single_pass(base_name+"_1pass", new_name, verbose=verbose, min_runtime=0)
             else:
-                analyze.analyze_single_pass(base_name, new_name, verbose=verbose, min_runtime=0)
+                # TODO: multi-pass analysis 
+                pass 
+                # analyze.analyze_multi_pass(base_name, new_name, verbose=verbose, min_runtime=0)
         except:
             os.system("rm args.txt")
             os.chdir(orig_dir)

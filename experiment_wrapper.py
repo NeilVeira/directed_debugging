@@ -60,18 +60,18 @@ def main(args):
         
 
 def init(parser):
-    parser.add_argument("designs",help="Comma-seperated list of designs to run")
-    parser.add_argument("--sample_size",type=float,default=0.5 ,help="Number of suspects in initial subset (sample) of suspect set that" \
-                        " is to be ranking.")
-    parser.add_argument("--sample_type",default="random",help="Method to choose observed suspect set. 'random' for random or "
+    parser.add_argument("designs",help="Comma-separated list of designs to run")
+    parser.add_argument("--sample_size", type=float,default=0.5, help="Number of suspects in initial subset (sample) of suspect set " \
+                        "that is to be ranking.")
+    parser.add_argument("--sample_type", default="solver", help="Method to choose observed suspect set. 'random' for random or "
                         "'solver' for order in which the solver finds them.")
-    parser.add_argument("--verbosity",type=int,default=0,help="Verbosity level")
-    parser.add_argument("--prior_var",type=float,default=0.2,help="Hyperparameter for prior in MAP estimation")
-    parser.add_argument("--folds",type=int,default=INF)
-    parser.add_argument("--epochs",type=int,default=4000)
-    parser.add_argument("--eta",type=float,default=0.01,help="Learning rate")
-    parser.add_argument("--dim",type=int,default=20,help="Embedding dimension")
-    parser.add_argument("--lambd",type=float,default=0,help="Regularization factor")
+    parser.add_argument("--verbosity", "-v", type=int, default=0, help="Verbosity level")
+    parser.add_argument("--prior_var", type=float, default=0.2, help="Hyperparameter for prior in MAP estimation")
+    parser.add_argument("--folds", type=int, default=INF)
+    parser.add_argument("--epochs", type=int, default=4000)
+    parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
+    parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
+    parser.add_argument("--lambd", type=float, default=None, help="Regularization factor")
    
 
 if __name__ == "__main__":

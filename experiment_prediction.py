@@ -46,14 +46,14 @@ def experiment_suspect2vec(data, suspect_union, args, all_failurez):
         
         # Train models
         date.fit(train_data)
-        if args.load_pretrain:
-            if args.verbosity >= 1:
-                print "Loading pretrained model"
-            fname = all_failurez[i].replace("suspect_lists","designs")[:-len("_suspects.txt")] + ".suspect2vec.pkl"
-            s2v = Suspect2Vec.load(fname)
-        else:
-            s2v = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
-            s2v.fit(train_data)
+        # if args.load_pretrain:
+            # if args.verbosity >= 1:
+                # print "Loading pretrained model"
+            # fname = all_failurez[i].replace("suspect_lists","designs")[:-len("_suspects.txt")] + ".suspect2vec.pkl"
+            # s2v = Suspect2Vec.load(fname)
+        # else:
+        s2v = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
+        s2v.fit(train_data)
 
         # Testing
         new = []
@@ -147,7 +147,7 @@ def init(parser):
     parser.add_argument("design_dir", help="Path to design to run")
     parser.add_argument("--sample_size", type=float,default=0.5, help="Fraction of suspects in initial subset (sample) of suspect set that" \
                         " is to be ranking.")
-    parser.add_argument("--sample_type", default="random", help="Method to choose observed suspect set. 'random' for random or "
+    parser.add_argument("--sample_type", default="solver", help="Method to choose observed suspect set. 'random' for random or "
                         "'solver' for order in which the solver finds them.")
     parser.add_argument("--prior_var", type=float, default=0.2, help="Hyperparameter for prior in MAP estimation")
     parser.add_argument("--verbosity", "-v", type=int, default=1, help="Verbosity level")

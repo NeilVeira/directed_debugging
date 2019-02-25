@@ -3,11 +3,10 @@ import argparse
 import re
 import numpy as np
 
-import sys 
-sys.path.append("suspect2vec")
 import utils 
-import suspect2vec
-import suspect_prediction
+from suspect_prediction.date import DATEPrediction
+from suspect_prediction.suspect2vec import Suspect2Vec
+
     
 def load_embeddings(file_name):
     embedx = {}
@@ -16,27 +15,32 @@ def load_embeddings(file_name):
         embedx[stuff[0]] = np.array(map(float,stuff[1:]))
     return embedx
     
+def load_suspects(failure):
+    suspect_list = failure.replace("designs","suspect_lists") + "_suspects.txt"
+    return [line.strip() for line in open(suspect_list)]
+    
     
 def simulate_prediction(failure, args):
     if args.verbose:
         print "\nRunning failure",failure
     pieces = failure.split("/")
     design = "/".join(pieces[:-2])
-    train_data = []
+    ground_truth = set(load_suspects(failure))
     
-    for f in utils.find_all_failures(design):
-        if f != failure:
-            train_data.append(utils.parse_suspects(f))
-    ground_truth = set(utils.parse_suspects(failure))
+    if args.method != "loaded":
+        train_data = []
+        for f in utils.find_all_failures(design):
+            if f != failure:
+                train_data.append(load_suspects(f))
             
     loaded_embed_inx = load_embeddings(failure+"_input_embeddings.txt")
     loaded_embed_outx = load_embeddings(failure+"_output_embeddings.txt")
     known_suspects = set(loaded_embed_inx.keys())
     
-    log_file = failure+".vennsawork/logs/vdb/vdb.log"
+    log_file = failure+"_1pass.vennsawork/logs/vdb/vdb.log"
     obs = []
     active = set([])
-    suspect_union = set([]) # all suspects modelled in this failure 
+    suspect_union = set([]) # all suspects modeled in this failure 
     for line in open(log_file):
         m = re.search(r"## suspect: (\S+), output\(s\): \d+, literal: \d+", line)
         if m:
@@ -51,7 +55,7 @@ def simulate_prediction(failure, args):
     
     if len(obs) < args.min_suspects:
         if args.verbose:
-            print "No prediction"
+            print "No prediction (%i suspects)" %(len(obs))
         return 1.0, 1.0, 0        
     
     # print obs
@@ -63,11 +67,12 @@ def simulate_prediction(failure, args):
     if args.method == "suspect2vec":
         if args.verbose:
             print "Training..."
-        predictor = suspect2vec.Suspect2Vec()
+        predictor = Suspect2Vec()
         predictor.fit(train_data)
         pred = set(predictor.predict(obs, aggressiveness=args.aggressiveness)) 
 
     elif args.method == "loaded":
+        print obs
         embed_inx = loaded_embed_inx 
         embed_outx = loaded_embed_outx
         v_obs = np.mean([embed_inx[s] for s in obs if s in embed_inx], axis=0)
@@ -83,23 +88,23 @@ def simulate_prediction(failure, args):
     elif args.method.upper() == "DATE":
         if args.verbose:
             print "Training..."
-        predictor = suspect_prediction.SuspectPrediction()
+        predictor = DATEPrediction()
         predictor.fit(train_data)
         pred = set(predictor.predict(obs))  
         
     else:
         raise ValueError("Invalid method %s" %(args.method))
     
-    for s in suspect_union:
-        if s not in known_suspects:
-            pred.add(s)
+    # for s in suspect_union:
+        # if s not in known_suspects:
+            # pred.add(s)
     
     correct = 0
     blocked = set([])
     for s in suspect_union:
         if s not in pred:
             blocked.add(s)
-            assert s in known_suspects
+            # assert s in known_suspects
             if s not in true_active:
                 correct += 1  
                 
@@ -115,6 +120,7 @@ def simulate_prediction(failure, args):
         print "True active suspects:",len(true_active)
         print "Known active suspects:", len(active.intersection(known_suspects))
         print "Known true suspects: %i (%.1f%%)" %(len(known_true), float(len(known_true))/len(ground_truth)*100)
+        print "Total predicted: %i" %(len(pred))
         print "Total blocked: %i (%.3f)" %(len(blocked),percent_blocked)
         print "Active blocked: %i" %(len(blocked.intersection(active)))
         print "Blocking accuracy: %.3f" %(acc)    
@@ -154,7 +160,7 @@ def init(parser):
     parser.add_argument("--design", help="Run on all failures in this design and take mean")
     parser.add_argument("--aggressiveness",type=float,default=0.5)
     parser.add_argument("--min_suspects", type=int, default=40, help="Minimum number of suspects to find before predicting")
-    parser.add_argument("--min_runtime", type=int, default=0, help="Exclude failures with runtime less than this.")
+    parser.add_argument("--min_runtime", type=int, default=1, help="Exclude failures with runtime less than this.")
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
     parser.add_argument("--method", default="loaded", help="Prediction method. Must be one of ['loaded','suspect2vec','DATE'].")
     

@@ -4,11 +4,6 @@ import sys
 
 import utils 
 from suspect_prediction.suspect2vec import Suspect2Vec
-
-def init(parser):
-    parser.add_argument("design")
-    parser.add_argument("--skip_check", action="store_true", default=False, \
-        help="Skip check for successful debug runs. This should not be used on pczisis.")
     
     
 def write_embeddings(embeddingx, file_name):
@@ -25,12 +20,12 @@ def main(args):
         # search for failures by template file instead of .vennsawork
         all_failurez = []
         for item in sorted(os.listdir(args.design)):
-        if item.startswith("random_bug_") or item.startswith("buggy"):             
-            for sub_item in sorted(os.listdir(os.path.join(dir,item))):
-                m = re.match(r"fail_\d+\.template\Z", sub_item)
-                if m:
-                    failure_name = os.path.join(dir, item, sub_item[:-len(".template")])
-                    all_failurez.append(failure_name)
+            if item.startswith("random_bug_") or item.startswith("buggy"):             
+                for sub_item in sorted(os.listdir(os.path.join(dir,item))):
+                    m = re.match(r"fail_\d+\.template\Z", sub_item)
+                    if m:
+                        failure_name = os.path.join(dir, item, sub_item[:-len(".template")])
+                        all_failurez.append(failure_name)
     else:
         all_failurez = utils.find_all_failures(args.design)
 
@@ -44,17 +39,26 @@ def main(args):
     for i,failure in enumerate(all_failurez):
         print failure
         train_data = all_suspectz[:i] + all_suspectz[i+1:]
-        predictor = Suspect2Vec()
+        predictor = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
         predictor.fit(train_data)
         embed_inx, embed_outx = predictor.get_embeddings()
         write_embeddings(embed_inx, failure+"_input_embeddings.txt")
         write_embeddings(embed_outx, failure+"_output_embeddings.txt")
         predictor.save(failure+".suspect2vec.pkl")
         
+
+def init(parser):
+    parser.add_argument("design")
+    parser.add_argument("--skip_check", action="store_true", default=False, \
+        help="Skip check for successful debug runs. This should not be used on pczisis.")
+    parser.add_argument("--epochs", type=int, default=4000)
+    parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
+    parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
+    parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
+
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    
     init(parser)
     args = parser.parse_args()
     main(args)
