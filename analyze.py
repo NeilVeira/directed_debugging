@@ -45,7 +45,7 @@ def parse_peak_memory(failure):
     # return points
     
     
-def parse_start_end_times(failure):    
+def parse_start_end_times(failure): 
     log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")  
     # Find first pass in the log. It may not be pass 0 in case of abr. 
     state = 0
@@ -66,12 +66,16 @@ def parse_start_end_times(failure):
     return start_time, end_time 
     
     
-def recall_vs_time_single(failure):
-    log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log") 
-    start_time, end_time = parse_start_end_times(failure)
+def recall_vs_time_single(failure, single_pass=True):
+    if single_pass:
+        start_time, end_time = parse_start_end_times(failure)
+    else:
+        start_time = utils.find_time_of(failure, "Oracle::ask\(\)", default=0)            
+        end_time = utils.parse_runtime(failure)
     assert start_time <= end_time 
 
-    # Now start searching for solutions 
+    # Search for solutions 
+    log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log") 
     cnt = 0
     points = []
     for line in open(log_file):       
@@ -87,20 +91,16 @@ def recall_vs_time_single(failure):
     return points
     
   
-def recall_vs_time(base_failure, new_failure):
-    base_points = recall_vs_time_single(base_failure)
-    new_points = recall_vs_time_single(new_failure)
+def recall_vs_time(base_failure, new_failure, single_pass=True):
+    base_points = recall_vs_time_single(base_failure, single_pass)
+    new_points = recall_vs_time_single(new_failure, single_pass)
     
-    #normalize against base failure
+    # Normalize against base failure
     end_time = max(base_points[-1][0], new_points[-1][0]) 
     # end_time = base_points[-1][0]
     base_points.append([end_time,base_points[-1][1]])
     new_points.append([end_time,new_points[-1][1]])    
     max_n = float(base_points[-1][1])
-    # print base_points 
-    # print new_points
-    # for i in range(len(base_points)):
-        # print i,base_points[i][0],new_points[i][0]
     
     for i in range(len(base_points)):
         base_points[i][0] /= end_time
@@ -223,14 +223,16 @@ def check_good_for_analysis(failure, min_runtime):
     return True 
 
      
-def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0, debug=False):
+def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0):
     if not check_good_for_analysis(base_failure, min_runtime) or not check_good_for_analysis(new_failure, min_runtime):
         return None,None,None,None,None
     elif verbose:
-        print "Analyzing",new_failure 
+        print "Single-pass analyzing",new_failure 
         
-    base_runtime = utils.parse_runtime(base_failure)
-    new_runtime = utils.parse_runtime(new_failure)
+    start_time, end_time = parse_start_end_times(base_failure)
+    base_runtime = end_time - start_time
+    start_time, end_time = parse_start_end_times(new_failure)
+    new_runtime = end_time - start_time 
     speedup = new_runtime / base_runtime 
     
     # Analyze peak memory usage
@@ -273,12 +275,11 @@ def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0,
     recall_auc_improvement = new_recall_auc / base_recall_auc
     runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
     
-    if debug:
-        print base_points 
-        print new_points 
-        print base_recall_auc
-        print new_recall_auc    
-    
+    # print base_points 
+    # print new_points 
+    # print base_recall_auc
+    # print new_recall_auc    
+
     print "Recall auc improvement: %.3f" %(recall_auc_improvement)
     if verbose:
         print "Number of base points: %i" %(len(base_points))
@@ -290,7 +291,75 @@ def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0,
         print ""
         
     return recall_auc_improvement, speedup, base_points, new_points, runs_finished
-  
+
+
+
+def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0):
+    # if not check_good_for_analysis(base_failure, 1, 4) or not check_good_for_analysis(new_failure, 1, 4):
+    #     return None,None,None,None,None
+    base_log = base_failure+".vennsawork/logs/vdb/vdb.log"
+    if not os.path.exists(base_log):
+        print "Skipping failure %s as it appears to have failed or not been run." %(base_failure)
+        return None,None,None,None,None
+
+    num_passes = open(base_log).read().count("Starting pass")
+    if num_passes < 4:
+        print "Skipping failure %s due to too few passes" %(failure) 
+        return None,None,None,None,None
+
+    if verbose:
+        print "Multi-pass analyzing",new_failure 
+
+    base_runtime = utils.parse_runtime(base_failure)
+    new_runtime = utils.parse_runtime(new_failure)
+    speedup = new_runtime / base_runtime 
+
+    # Analyze peak memory usage
+    base_mem = parse_peak_memory(base_failure)
+    new_mem = parse_peak_memory(new_failure)
+    mem_reduce = new_mem / float(base_mem)
+
+    # TODO: some kind of prediction accuracy analysis 
+
+    base_points, new_points = recall_vs_time(base_failure, new_failure, single_pass=False)
+    base_recall_auc = auc_recall_time(base_points)
+    new_recall_auc = auc_recall_time(new_points)
+    recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
+    recall_auc_improvement = new_recall_auc / base_recall_auc
+
+    runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
+    print "Recall auc improvement: %.3f" %(recall_auc_improvement)
+    if verbose:
+        print "Number of base points: %i" %(len(base_points))
+        print "Number of new points: %i (recall %.3f)" %(len(new_points), recall)
+        print "Number of passes: %i" %(num_passes)
+        print "Runtime: %.1fs" %(base_runtime)
+        print "Relative runtime: %.3f" %(speedup)
+        print "Peak memory reduction: %.3f" %(mem_reduce)
+        print ""
+
+    return recall_auc_improvement, speedup, base_points, new_points, runs_finished
+
+
+def analyze(base_failure, new_failure, verbose=False, min_runtime=0):
+    # determine what analysis function to use 
+    log_file = new_failure+".vennsawork/logs/vdb/vdb.log"
+    if not os.path.exists(log_file):
+        print "Skipping failure %s as it appears to have failed or not been run." %(new_failure)
+        return None, None, None, None, None  
+
+    log = open(log_file).read()
+    m = re.search(r"Guidance method = (\d+)", log)
+    if m:
+        method = int(m.group(1))
+        if method >= 10:
+            return analyze_multi_pass(base_failure, new_failure, verbose, min_runtime)
+        elif method > 0:
+            return analyze_single_pass(base_failure, new_failure, verbose, min_runtime)
+    
+    print "Could not determine analysis method for failure", new_failure 
+    return None, None, None, None, None 
+
   
 def main(args):
     if args.design:
@@ -306,8 +375,8 @@ def main(args):
     tot_runs_finished = np.zeros(2, dtype=np.int32)
     
     for failure in all_failurez: 
-        recall_auc_improvement, speedup, base_points, new_points, runs_finished = analyze_single_pass(failure+args.base_suffix, 
-            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime, debug=args.debug)
+        recall_auc_improvement, speedup, base_points, new_points, runs_finished = analyze(failure+args.base_suffix, 
+            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime)
         
         if recall_auc_improvement is not None:
             tot_runs_finished += runs_finished 
@@ -347,7 +416,6 @@ def init(parser):
     parser.add_argument("-pi", "--plot_individual", action="store_true", default=False, 
                         help="Generate recall-time plot for individual failures")
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
-    parser.add_argument("--debug", action="store_true", default=False)
     
   
 if __name__ == "__main__":

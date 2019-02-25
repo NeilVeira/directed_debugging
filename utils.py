@@ -116,7 +116,7 @@ def find_time_of(failure, pattern, default=None):
     return default
         
         
-def parse_runtime(failure):
+def parse_runtime(failure, time_limit=3600):
     start = find_time_of(failure, "Oracle::ask\(\)")
     if not start:
         start = find_time_of(failure, "OracleSolver::solveAll\(\)")
@@ -128,8 +128,8 @@ def parse_runtime(failure):
         return end - start 
     else:
         # No way to know actual time limit since it's not recorded anywhere...
-        print "WARNING: failure %s did not finish. Assuming a total runtime of 3600 seconds." %(failure)
-        return 3600 - start
+        print "WARNING: failure %s did not finish. Assuming a total runtime of %i seconds." %(failure, time_limit)
+        return time_limit - start
         
         
 def parse_run_finished(failure):
