@@ -1,6 +1,7 @@
 import os 
 import argparse 
 import sys 
+import re
 
 import utils 
 from suspect_prediction.suspect2vec import Suspect2Vec
@@ -21,10 +22,10 @@ def main(args):
         all_failurez = []
         for item in sorted(os.listdir(args.design)):
             if item.startswith("random_bug_") or item.startswith("buggy"):             
-                for sub_item in sorted(os.listdir(os.path.join(dir,item))):
+                for sub_item in sorted(os.listdir(os.path.join(args.design,item))):
                     m = re.match(r"fail_\d+\.template\Z", sub_item)
                     if m:
-                        failure_name = os.path.join(dir, item, sub_item[:-len(".template")])
+                        failure_name = os.path.join(args.design, item, sub_item[:-len(".template")])
                         all_failurez.append(failure_name)
     else:
         all_failurez = utils.find_all_failures(args.design)
