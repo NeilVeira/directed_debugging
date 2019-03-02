@@ -71,7 +71,7 @@ def recall_vs_time_single(failure, single_pass=True):
         start_time, end_time = parse_start_end_times(failure)
     else:
         start_time = utils.find_time_of(failure, "Oracle::ask\(\)", default=0)            
-        end_time = utils.parse_runtime(failure)
+        end_time = utils.parse_runtime(failure, time_limit=21600)
     assert start_time <= end_time 
 
     # Search for solutions 
@@ -85,6 +85,7 @@ def recall_vs_time_single(failure, single_pass=True):
             points.append([t-start_time,cnt])
             
     points.append([end_time-start_time,cnt])
+	# print failure 
     # print start_time, end_time
     # print points
     # print "" 
@@ -96,7 +97,8 @@ def recall_vs_time(base_failure, new_failure, single_pass=True):
     new_points = recall_vs_time_single(new_failure, single_pass)
     
     # Normalize against base failure
-    end_time = max(base_points[-1][0], new_points[-1][0]) 
+    # end_time = max(base_points[-1][0], new_points[-1][0]) 
+    end_time = min(base_points[-1][0], new_points[-1][0]) 
     # end_time = base_points[-1][0]
     base_points.append([end_time,base_points[-1][1]])
     new_points.append([end_time,new_points[-1][1]])    
@@ -310,8 +312,8 @@ def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0):
     if verbose:
         print "Multi-pass analyzing",new_failure 
 
-    base_runtime = utils.parse_runtime(base_failure)
-    new_runtime = utils.parse_runtime(new_failure)
+    base_runtime = utils.parse_runtime(base_failure, time_limit=21600)
+    new_runtime = utils.parse_runtime(new_failure, time_limit=21600)
     speedup = new_runtime / base_runtime 
 
     # Analyze peak memory usage

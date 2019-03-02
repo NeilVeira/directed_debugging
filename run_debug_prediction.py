@@ -10,7 +10,7 @@ import run_debug_data
 
 METHODS = [None, "assump", "optAssump", "assumpBlock", "optAssumpBlock", "optAssumpBlock0",
             None, None, None, None, # placeholders 
-            "optMulti", "Multi"
+            "optMulti", "Multi", "Multiv2"
             ]
 
 def run_debug(name, timeout=60*60*24, verbose=False):
@@ -108,11 +108,8 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             
         try:
             if "_1pass" in new_name:
-                analyze.analyze_single_pass(base_name+"_1pass", new_name, verbose=verbose, min_runtime=0)
-            else:
-                # TODO: multi-pass analysis 
-                pass 
-                # analyze.analyze_multi_pass(base_name, new_name, verbose=verbose, min_runtime=0)
+                base_name += "_1pass"
+            analyze.analyze(base_name, new_name, verbose=verbose, min_runtime=0)
         except:
             os.system("rm args.txt")
             os.chdir(orig_dir)
