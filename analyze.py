@@ -47,19 +47,21 @@ def parse_peak_memory(failure):
     
 def parse_start_end_times(failure): 
     log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")  
-    # Find first pass in the log. It may not be pass 0 in case of abr. 
+    # Find the start and end of the second pass that runs solveAll. 
+    # It may not be pass 0 in case of abr, and strangely, some passes don't run solveAll. 
     state = 0
+    found_start = False 
     for line in open(log_file):    
         if "Starting pass" in line:
             state += 1 
                 
-        elif "OracleSolver::solveAll()" in line and state == 2:
+        elif "OracleSolver::solveAll()" in line and state >= 2:
+            found_start = True 
             start_time = utils.parse_time_of(line, "OracleSolver::solveAll()")
             
-        elif "Finished pass" in line and state == 2:
+        elif "Finished pass" in line and found_start:
             end_time = utils.parse_time_of(line, "Finished pass")
             return start_time, end_time 
-        assert state <= 2 # should find end and return before this 
             
     # Couldn't find end of pass. Use last time in log file instead. 
     end_time = utils.parse_runtime(failure)
@@ -71,7 +73,7 @@ def recall_vs_time_single(failure, single_pass=True):
         start_time, end_time = parse_start_end_times(failure)
     else:
         start_time = utils.find_time_of(failure, "Oracle::ask\(\)", default=0)            
-        end_time = utils.parse_runtime(failure, time_limit=21600)
+        end_time = utils.parse_runtime(failure, time_limit=10800)
     assert start_time <= end_time 
 
     # Search for solutions 
@@ -85,21 +87,24 @@ def recall_vs_time_single(failure, single_pass=True):
             points.append([t-start_time,cnt])
             
     points.append([end_time-start_time,cnt])
-	# print failure 
+    # print failure 
     # print start_time, end_time
     # print points
     # print "" 
     return points
     
   
-def recall_vs_time(base_failure, new_failure, single_pass=True):
+def recall_vs_time(base_failure, new_failure, single_pass=True, end_method="max"):
     base_points = recall_vs_time_single(base_failure, single_pass)
     new_points = recall_vs_time_single(new_failure, single_pass)
     
     # Normalize against base failure
-    # end_time = max(base_points[-1][0], new_points[-1][0]) 
-    end_time = min(base_points[-1][0], new_points[-1][0]) 
-    # end_time = base_points[-1][0]
+    if end_method == "max":
+        end_time = max(base_points[-1][0], new_points[-1][0]) 
+    elif end_method == "min":
+        end_time = min(base_points[-1][0], new_points[-1][0]) 
+    else:
+        end_time = base_points[-1][0]
     base_points.append([end_time,base_points[-1][1]])
     new_points.append([end_time,new_points[-1][1]])    
     max_n = float(base_points[-1][1])
@@ -202,34 +207,39 @@ def plot_improvements(outfile, recall_auc_improvementz):
     plt.savefig(outfile)
     
     
-def check_good_for_analysis(failure, min_runtime):
+def check_good_for_analysis(failure, min_runtime, verbose=False):
     log_file = failure+".vennsawork/logs/vdb/vdb.log"
     if not os.path.exists(log_file):
-        print "Skipping failure %s as it appears to have failed or not been run." %(failure)
+        if verbose:
+            print "Skipping failure %s (failed or not run)" %(failure)
         return False 
         
     log = open(log_file).read() 
     if log.count("Starting pass") < 2:
-        print "Skipping failure %s due to missing fine-grained debugging pass" %(failure) 
+        if verbose:
+            print "Skipping failure %s due to missing fine-grained debugging pass" %(failure) 
         return False         
         
     start_time, end_time = parse_start_end_times(failure)
     if end_time - start_time < min_runtime:
-        print "Skipping failure %s due to short runtime" %(failure)
+        if verbose:
+            print "Skipping failure %s due to short runtime" %(failure)
         return False 
         
     # if "tcmalloc: large alloc" in log:
-        # print "Skipping failure %s due to tcmalloc error" %(failure)
+        # if verbose:
+            # print "Skipping failure %s due to tcmalloc error" %(failure)
         # return False 
         
     return True 
 
      
 def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0):
-    if not check_good_for_analysis(base_failure, min_runtime) or not check_good_for_analysis(new_failure, min_runtime):
+    if not check_good_for_analysis(base_failure, min_runtime, verbose) or \
+        not check_good_for_analysis(new_failure, min_runtime, verbose):
         return None,None,None,None,None
-    elif verbose:
-        print "Single-pass analyzing",new_failure 
+
+    print "Single-pass analyzing",new_failure 
         
     start_time, end_time = parse_start_end_times(base_failure)
     base_runtime = end_time - start_time
@@ -270,9 +280,16 @@ def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0)
     if total > 0:
         auc_acc /= total
     
-    base_points, new_points = recall_vs_time(base_failure, new_failure)
+    base_points, new_points = recall_vs_time(base_failure, new_failure, end_method=args.end_method)
     base_recall_auc = auc_recall_time(base_points)
     new_recall_auc = auc_recall_time(new_points)
+    if base_recall_auc == 0 or new_recall_auc == 0 or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
+        # This can happen when using end_method=min in the rare case that one of the experiments finds 
+        # all or almost all suspects before the other finds any.
+        # Such cases are probably not very meaningful so skipping is probably justified. 
+        print "WARNING: skipping extreme outlier" 
+        return None,None,None,None,None
+        
     recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
     recall_auc_improvement = new_recall_auc / base_recall_auc
     runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
@@ -301,19 +318,20 @@ def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0):
     #     return None,None,None,None,None
     base_log = base_failure+".vennsawork/logs/vdb/vdb.log"
     if not os.path.exists(base_log):
-        print "Skipping failure %s as it appears to have failed or not been run." %(base_failure)
+        if verbose:
+            print "Skipping failure %s (failed or not run)" %(base_failure)
         return None,None,None,None,None
 
     num_passes = open(base_log).read().count("Starting pass")
     if num_passes < 4:
-        print "Skipping failure %s due to too few passes" %(failure) 
+        if verbose:
+            print "Skipping failure %s due to too few passes" %(failure) 
         return None,None,None,None,None
 
-    if verbose:
-        print "Multi-pass analyzing",new_failure 
+    print "Multi-pass analyzing",new_failure 
 
-    base_runtime = utils.parse_runtime(base_failure, time_limit=21600)
-    new_runtime = utils.parse_runtime(new_failure, time_limit=21600)
+    base_runtime = utils.parse_runtime(base_failure, time_limit=10800)
+    new_runtime = utils.parse_runtime(new_failure, time_limit=10800)
     speedup = new_runtime / base_runtime 
 
     # Analyze peak memory usage
@@ -323,9 +341,17 @@ def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0):
 
     # TODO: some kind of prediction accuracy analysis 
 
-    base_points, new_points = recall_vs_time(base_failure, new_failure, single_pass=False)
-    base_recall_auc = auc_recall_time(base_points)
+    base_points, new_points = recall_vs_time(base_failure, new_failure, single_pass=False, end_method=args.end_method)
+    base_recall_auc = auc_recall_time(base_points)    
     new_recall_auc = auc_recall_time(new_points)
+    
+    if base_recall_auc == 0 or new_recall_auc == 0 or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
+        # This can happen when using end_method=min in the rare case that one of the experiments finds 
+        # all or almost all suspects before the other finds any.
+        # Such cases are probably not very meaningful so skipping is probably justified. 
+        print "WARNING: skipping extreme outlier" 
+        return None,None,None,None,None
+        
     recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
     recall_auc_improvement = new_recall_auc / base_recall_auc
 
@@ -347,7 +373,8 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0):
     # determine what analysis function to use 
     log_file = new_failure+".vennsawork/logs/vdb/vdb.log"
     if not os.path.exists(log_file):
-        print "Skipping failure %s as it appears to have failed or not been run." %(new_failure)
+        if verbose:
+            print "Skipping failure %s (failed or not run)." %(new_failure)
         return None, None, None, None, None  
 
     log = open(log_file).read()
@@ -417,6 +444,7 @@ def init(parser):
     parser.add_argument("-p", "--plot", action="store_true", default=False, help="Generate recall-time plot aggregated over all failures.")
     parser.add_argument("-pi", "--plot_individual", action="store_true", default=False, 
                         help="Generate recall-time plot for individual failures")
+    parser.add_argument("--end_method", default="max", help="Use min, max, or base as end time (default max)")
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
     
   
