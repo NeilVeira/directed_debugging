@@ -94,7 +94,7 @@ def recall_vs_time_single(failure, single_pass=True):
     return points
     
   
-def recall_vs_time(base_failure, new_failure, single_pass=True, end_method="max"):
+def recall_vs_time(base_failure, new_failure, single_pass=True, end_method="min"):
     base_points = recall_vs_time_single(base_failure, single_pass)
     new_points = recall_vs_time_single(new_failure, single_pass)
     
@@ -444,7 +444,7 @@ def init(parser):
     parser.add_argument("-p", "--plot", action="store_true", default=False, help="Generate recall-time plot aggregated over all failures.")
     parser.add_argument("-pi", "--plot_individual", action="store_true", default=False, 
                         help="Generate recall-time plot for individual failures")
-    parser.add_argument("--end_method", default="max", help="Use min, max, or base as end time (default max)")
+    parser.add_argument("--end_method", default="min", help="Use min, max, or base as end time (default max)")
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
     
   
