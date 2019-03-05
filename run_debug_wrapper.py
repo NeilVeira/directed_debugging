@@ -33,7 +33,7 @@ def main(design_dir, args):
             id = ids_to_debug[i]
             dir = os.path.join(design_dir, bug_dir_start+str(id))
             if os.path.exists(dir):
-                cmd = "python run_debug_data.py %s --max_fails=%i --window=%i" %(dir, args.max_fails, args.window)
+                cmd = "python run_debug_data.py %s --num_fails=%i --window=%i" %(dir, args.num_fails, args.window)
                 if args.xabr:
                     cmd += " --xabr"
                 if args.dryrun:
@@ -52,7 +52,7 @@ def init(parser):
     parser.add_argument("--ids",help="Comma-seperated list of indices of random_bug_* directories to debug")
     parser.add_argument("--xabr",action="store_true",default=False,help="Don't use abr strategy")
     parser.add_argument("--overwrite",action="store_true",default=False,help="Delete any pre-existing template file")
-    parser.add_argument("--max_fails",type=int,default=1,help="Number of distinct failures to debug")
+    parser.add_argument("--num_fails",type=int,default=1,help="Number of distinct failures to debug")
     parser.add_argument("--buggy",action="store_true",default=False,help="Run buggy* designs rather than random_bug*")
     parser.add_argument("-n","--dryrun",action="store_true",default=False,\
                         help="Set up template file but don't run it")
