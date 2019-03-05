@@ -154,30 +154,37 @@ def load_signal_valuex(sim_file, time_fact):
     return signal_valuex
     
     
-def choose_failures(all_failx, num_results):
+def choose_failures(all_failx, num_results, bug_dir):
     if num_results < 0:
         num_results = min(-num_results,len(all_failx.keys()))
         
-    chosen = []
     #randomly pick num_results items from all_failx
     keyz = all_failx.keys()
     random.shuffle(keyz)
     for sig in keyz:
         random.shuffle(all_failx[sig])
-    num_results = min(num_results, len(chosen)+sum(map(len,all_failx.values())))
     
-    indices = [0]*len(keyz)
-    i = 0
+    prev_failurez, idz = get_preexisting_failures(bug_dir)
+    
+    next_id = 0
+    chosen = []
     for sig in keyz:
+        if sig in prev_failurez:
+            continue 
+        chosen.append(all_failx[sig][0])
+        
+        while next_id in idz:
+            next_id += 1
+        chosen[-1].id = next_id 
+        next_id += 1 
+        
         if len(chosen) == num_results:
             break 
-        chosen.append(all_failx[sig][0])
-        chosen[-1].id = len(chosen)-1
     
     return chosen
         
     
-def get_failures(buggy_sim, golden_sim, dut_path, num_results=1, time_fact=1):
+def get_failures(bug_dir, buggy_sim, golden_sim, dut_path, num_results=1, time_fact=1):
     if not os.path.exists(buggy_sim):
         logging.error("file %s does not exist" %(buggy_sim))
         return []
@@ -221,59 +228,36 @@ def get_failures(buggy_sim, golden_sim, dut_path, num_results=1, time_fact=1):
             
     assertion_failx = parse_assertions(buggy_sim, dut_path)
     all_failx.update(assertion_failx)
-    ret_fails = choose_failures(all_failx, num_results)
-    return ret_fails
+    
+    chosen = choose_failures(all_failx, num_results, bug_dir)
+    return chosen
     
   
-def get_preexisting_failures(bug_path):
+def get_preexisting_failures(bug_dir):
     '''
     Return a list containing names of all failures already covered by vennsawork 
-    folders in the bug_path. A second list contains their corresponding ids.
+    folders in the bug_dir. A second list contains their corresponding ids.
     '''
     failurez = []
     idz = []
-    for item in os.listdir(bug_path):
+    for item in os.listdir(bug_dir):
         m = re.match(r"fail_(\d+)\.vennsawork",item)
         if not m:
             continue 
             
         id = int(m.group(1))
-        template_path = os.path.join(bug_path,"fail_%i.template" %id)
+        template_path = os.path.join(bug_dir,"fail_%i.template" %id)
         if os.path.exists(template_path):
             for line in open(template_path):
                 m = re.match(r"TARGET_ASSERTION\s*=\s*([\w\.]+)",line)
                 if m:
                     failurez.append(m.group(1)) 
                     idz.append(id)
-                m = re.match(r"CONSTRAIN_SIGNAL\s*=\s*(\w+(?:\[\d+:\d+\])?)",line)
+                m = re.match(r"CONSTRAIN_SIGNAL\s*=\s*(\w+)(?:\[\d+:\d+\])?",line)
                 if m:
                     failurez.append(m.group(1))
                     idz.append(id)
     return failurez,idz
-    
-    
-def filter_failures(failurez, bug_path):
-    '''
-    Remove any items from failurez which are already covered by vennsawork folders 
-    in the bug_path. 
-    '''
-    pre_failurez,idz = get_preexisting_failures(bug_path)
-    i = 0
-    while i < len(failurez):
-        if failurez[i].name in pre_failurez:
-            del failurez[i]
-        else:
-            i += 1
-            
-    #reset their ids to avoid conflicts 
-    id = 0
-    for i in range(len(failurez)):
-        while id in idz:
-            id += 1 
-        failurez[i].id = id
-        id += 1
-        
-    return failurez
 
   
 def create_template(failure, project, design_infox, window_size, args):
@@ -495,14 +479,11 @@ def main(args):
     design_name = bug_dir.split("/")[-2]
     time_fact = int(design_infox[design_name]["time factor"])
           
-    failurez = get_failures(buggy_sim, golden_sim, design_infox[design_name]["dut path"], args.max_fails, time_fact)
+    failurez = get_failures(bug_dir, buggy_sim, golden_sim, design_infox[design_name]["dut path"], args.num_fails, time_fact)
     print "Failures:"
     for f in failurez:
         print f 
     print "" 
-    
-    if not args.overwrite:
-        failurez = filter_failures(failurez, bug_dir)
     
     if not args.show:
         orig_cwd = os.getcwd()
@@ -536,8 +517,7 @@ def main(args):
 def init(parser):
     parser.add_argument("bug_dir", help="Directory of design to debug")
     parser.add_argument("--xabr", action="store_true", default=False, help="Don't use abr strategy")
-    parser.add_argument("--overwrite", action="store_true", default=False, help="Delete any pre-existing template file")
-    parser.add_argument("--max_fails", type=int, default=1, help="Number of distinct failures to debug")
+    parser.add_argument("--num_fails", type=int, default=1, help="Number of distinct failures to debug")
     parser.add_argument("-n","--dryrun", action="store_true", default=False, \
                         help="Set up template file but don't run it")
     parser.add_argument("-s", "--show", action="store_true", default=False, help="Show failures but don't do anything")

@@ -128,7 +128,7 @@ def parse_runtime(failure, time_limit=3600):
         return end - start 
     else:
         # No way to know actual time limit since it's not recorded anywhere...
-        print "WARNING: failure %s did not finish. Assuming a total runtime of %i seconds." %(failure, time_limit)
+        # print "WARNING: failure %s did not finish. Assuming a total runtime of %i seconds." %(failure, time_limit)
         return time_limit - start
         
         
