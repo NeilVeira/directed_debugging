@@ -26,13 +26,21 @@ def main(args):
         data = pd.read_csv(data_file, index_col=0)
     else:
         data = pd.DataFrame(
-            columns=["design","predictor","sample_type","sample_size","folds","dim","lambd",
+            columns=["design","predictor","sample_type","sample_size","train_size","folds","dim","lambd",
                     "mean_precision","mean_recall","mean_fscore","mean_auprc","mean_size_err",
                     "median_precision","median_recall","median_fscore","median_auprc","median_size_err",
                     ]
         )
         
+    if args.train_test_split == "leave-one-out":
+        args.folds = experiment_prediction.INF 
+        args.train_test_split = "folds"
+        
     row_common = {"sample_type":args.sample_type, "sample_size":args.sample_size, "folds":args.folds}
+    if args.train_test_split == "folds":
+        row_common["folds"] = args.folds 
+    else: 
+        row_common["train_size"] = args.train_test_split
     
     for design in args.designs.split(","):
         design_dir = "suspect_lists/"+design.strip()
@@ -53,14 +61,16 @@ def main(args):
         
         data.to_csv(data_file)
         
-    data.drop_duplicates(subset=["design","predictor","sample_type","sample_size","folds","dim","lambd"], inplace=True)
-    data.sort_values(by=["sample_size","sample_type","folds","design","predictor","lambd","dim"], inplace=True)
+    data.drop_duplicates(subset=["design","predictor","sample_type","train_size","sample_size","folds","dim","lambd"], inplace=True)
+    data.sort_values(by=["sample_size","train_size","sample_type","folds","design","predictor","lambd","dim"], inplace=True)
     data.reset_index(drop=True, inplace=True)
     data.to_csv(data_file)
         
 
 def init(parser):
     parser.add_argument("designs",help="Comma-separated list of designs to run")
+    parser.add_argument("--train_test_split", default="folds", help="Strategy to use for generating train and test " \
+                        "splits. Must be one of ['leave-one-out', 'folds', 'random-to-buggy'] or whole number.")
     parser.add_argument("--sample_size", type=float,default=0.5, help="Number of suspects in initial subset (sample) of suspect set " \
                         "that is to be ranking.")
     parser.add_argument("--sample_type", default="solver", help="Method to choose observed suspect set. 'random' for random or "
