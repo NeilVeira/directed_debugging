@@ -110,7 +110,9 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             if "_1pass" in new_name:
                 base_name += "_1pass"
             analyze.analyze(base_name, new_name, verbose=verbose, min_runtime=0)
-        except:
+        except Exception as e:
+            print "analyze failed" 
+            print e 
             os.system("rm args.txt")
             os.chdir(orig_dir)
             return False 

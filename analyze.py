@@ -234,7 +234,7 @@ def check_good_for_analysis(failure, min_runtime, verbose=False):
     return True 
 
      
-def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0):
+def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
     if not check_good_for_analysis(base_failure, min_runtime, verbose) or \
         not check_good_for_analysis(new_failure, min_runtime, verbose):
         return None,None,None,None,None
@@ -280,7 +280,7 @@ def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0)
     if total > 0:
         auc_acc /= total
     
-    base_points, new_points = recall_vs_time(base_failure, new_failure, end_method=args.end_method)
+    base_points, new_points = recall_vs_time(base_failure, new_failure, end_method=end_method)
     base_recall_auc = auc_recall_time(base_points)
     new_recall_auc = auc_recall_time(new_points)
     if base_recall_auc == 0 or new_recall_auc == 0 or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
@@ -313,7 +313,7 @@ def analyze_single_pass(base_failure, new_failure, verbose=False, min_runtime=0)
 
 
 
-def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0):
+def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
     # if not check_good_for_analysis(base_failure, 1, 4) or not check_good_for_analysis(new_failure, 1, 4):
     #     return None,None,None,None,None
     base_log = base_failure+".vennsawork/logs/vdb/vdb.log"
@@ -341,7 +341,7 @@ def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0):
 
     # TODO: some kind of prediction accuracy analysis 
 
-    base_points, new_points = recall_vs_time(base_failure, new_failure, single_pass=False, end_method=args.end_method)
+    base_points, new_points = recall_vs_time(base_failure, new_failure, single_pass=False, end_method=end_method)
     base_recall_auc = auc_recall_time(base_points)    
     new_recall_auc = auc_recall_time(new_points)
     
@@ -369,7 +369,7 @@ def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0):
     return recall_auc_improvement, speedup, base_points, new_points, runs_finished
 
 
-def analyze(base_failure, new_failure, verbose=False, min_runtime=0):
+def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
     # determine what analysis function to use 
     log_file = new_failure+".vennsawork/logs/vdb/vdb.log"
     if not os.path.exists(log_file):
@@ -382,9 +382,9 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0):
     if m:
         method = int(m.group(1))
         if method >= 10:
-            return analyze_multi_pass(base_failure, new_failure, verbose, min_runtime)
+            return analyze_multi_pass(base_failure, new_failure, verbose, min_runtime, end_method)
         elif method > 0:
-            return analyze_single_pass(base_failure, new_failure, verbose, min_runtime)
+            return analyze_single_pass(base_failure, new_failure, verbose, min_runtime, end_method)
     
     print "Could not determine analysis method for failure", new_failure 
     return None, None, None, None, None 
