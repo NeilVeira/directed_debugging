@@ -45,12 +45,26 @@ def parse_peak_memory(failure):
     # return points
     
     
-def parse_start_end_times_1pass(failure): 
+def parse_solutions(log_file, start_time, end_time):
+    cnt = 0
+    points = []
+    for line in open(log_file):       
+        t = utils.parse_time_of(line, "==> solver solution:")
+        if t and start_time <= t <= end_time:
+            cnt += 1 
+            points.append([t-start_time,cnt])
+            
+    points.append([end_time-start_time,cnt])
+    return points 
+    
+    
+def parse_1pass(failure): 
     log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")  
     # Find the start and end of the second pass that runs solveAll. 
     # It may not be pass 0 in case of abr, and strangely, some passes don't run solveAll. 
     num_starts = 0
     found_start = False 
+    found_end = False 
     
     for line in open(log_file):    
         if "Starting pass" in line:
@@ -62,18 +76,29 @@ def parse_start_end_times_1pass(failure):
             
         elif found_start and "Finished pass" in line:
             end_time = utils.parse_time_of(line, "Finished pass")
-            return start_time, end_time 
-            
-    # Couldn't find end of pass. Use last time in log file instead. 
-    end_time = utils.parse_runtime(failure)
-    return start_time, end_time 
+            found_end = True 
+            break 
+          
+    if not found_start:
+        return None,None,None 
+        
+    if not found_end:
+        # Couldn't find end of pass. Use last time in log file instead. 
+        end_time = utils.parse_runtime(failure, time_limit=3600)
+        
+    # print failure
+    # print "start_time =",start_time 
+    # print "end_time =",end_time     
+    points = parse_solutions(log_file, start_time, end_time)    
+    return start_time, end_time, points  
     
     
-def parse_start_end_times_2pass(failure):
+def parse_2pass(failure):
     log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")  
     num_main_passes = 0 # Number of times it's started a new main pass 
     num_starts = 0 
     found_start = False 
+    found_end = False 
     num_finishes = 0
     
     for line in open(log_file): 
@@ -92,56 +117,103 @@ def parse_start_end_times_2pass(failure):
             num_finishes += 1
             if num_finishes >= 2:
                 end_time = utils.parse_time_of(line, "Finished pass")
-                # print "start_time =",start_time 
-                # print "end_time =",end_time 
-                return start_time, end_time 
+                found_end = True 
+                break 
+                
+    if not found_start:
+        return None, None, None 
             
     assert num_main_passes > 0 
-    # Couldn't find end of pass. Use last time in log file instead. 
-    end_time = utils.parse_runtime(failure)
-    # TODO: this includes significant overhead of starting a new pass in between 
-    return start_time, end_time 
+    if not found_end:
+        # Couldn't find end of pass. Use last time in log file instead. 
+        end_time = utils.parse_runtime(failure, time_limit=3600)
     
-    
-def recall_vs_time_single(failure, num_passes=1):
-    if num_passes == 1:
-        start_time, end_time = parse_start_end_times_1pass(failure)
-    elif num_passes == 2:
-        start_time, end_time = parse_start_end_times_2pass(failure)
-    else:
-        start_time = utils.find_time_of(failure, "Oracle::ask\(\)", default=0)            
-        end_time = utils.parse_runtime(failure, time_limit=10800)
-    assert start_time <= end_time 
+    # print failure
+    # print "start_time =",start_time 
+    # print "end_time =",end_time 
+    points = parse_solutions(log_file, start_time, end_time)    
+    return start_time, end_time, points 
 
-    # Search for solutions 
+
+def parse_multipass(failure):  
     log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log") 
-    cnt = 0
-    points = []
-    for line in open(log_file):       
-        t = utils.parse_time_of(line, "==> solver solution:")
-        if t and start_time <= t <= end_time:
-            cnt += 1 
-            points.append([t-start_time,cnt])
+    # Find the second main pass 
+    
+    cur_main_pass = 0
+    cur_main_suspects = set([])
+    cur_suspects = set([])
+    last_finish = 0
+    found_start = False 
+    found_end = False 
+    
+    f = open(log_file)
+    lines = f.readlines()
+    i = 0
+    
+    while i < len(lines):
+        if "Starting pass" in lines[i]:
+            # Starting a new pass. Find the suspects in this pass 
+            cur_suspects = set([])
+            while i < len(lines) and "Running with" not in lines[i]: 
+                i += 1 
+            i += 1
             
-    points.append([end_time-start_time,cnt])
+            if i >= len(lines):
+                # This shouldn't happen unless there is something wrong with the log 
+                print "WARNING: could not parse pass suspects for",failure 
+                return None, None, None 
+            
+            suspect_pattern = r"%s ##\s*([\w/]+)" %(utils.TIMESTAMP_PATTERN)
+            m = re.search(suspect_pattern, lines[i])
+            while m:
+                suspect = m.group(5)
+                cur_suspects.add(suspect)
+                i += 1
+                m = re.search(suspect_pattern, lines[i])
+            
+            # If cur_suspects is not a subset of cur_main_suspects, then this is a new main pass 
+            if not cur_suspects.issubset(cur_main_suspects):
+                cur_main_pass += 1
+                cur_main_suspects = cur_suspects 
+                if cur_main_pass == 3:
+                    assert found_start 
+                    assert last_finish > 0 
+                    end_time = last_finish 
+                    found_end = True 
+                    break 
+                
+        elif not found_start and cur_main_pass == 2 and "OracleSolver::solveAll()" in lines[i]:
+            found_start = True 
+            start_time = utils.parse_time_of(lines[i], "OracleSolver::solveAll()")
+            
+        elif "Finished pass" in lines[i]:
+            last_finish = utils.parse_time_of(lines[i], "Finished pass")
+            
+        i += 1
+        
+    if not found_start:
+        return None, None, None         
+    
+    if not found_end:
+        end_time = utils.parse_runtime(failure, time_limit=10800)
+        
     # print failure 
-    # print start_time, end_time
-    # print points
-    # print "" 
-    return points
+    # print "start_time =",start_time 
+    # print "end_time =",end_time 
+    points = parse_solutions(log_file, start_time, end_time)    
+    return start_time, end_time, points 
+
     
   
-def recall_vs_time(base_failure, new_failure, num_passes, end_method="min"):
-    base_points = recall_vs_time_single(base_failure, 1 if num_passes == 2 else num_passes)
-    new_points = recall_vs_time_single(new_failure, num_passes)
-    
-    # Normalize against base failure
+def normalize(base_points, new_points, end_method="min"):    
+    # Normalize times against end time 
     if end_method == "max":
         end_time = max(base_points[-1][0], new_points[-1][0]) 
     elif end_method == "min":
         end_time = min(base_points[-1][0], new_points[-1][0]) 
     else:
         end_time = base_points[-1][0]
+        
     base_points.append([end_time,base_points[-1][1]])
     new_points.append([end_time,new_points[-1][1]])    
     max_n = float(base_points[-1][1])
@@ -152,6 +224,7 @@ def recall_vs_time(base_failure, new_failure, num_passes, end_method="min"):
     for i in range(len(new_points)):
         new_points[i][0] /= end_time 
         new_points[i][1] /= max_n 
+        
     return base_points, new_points
     
     
@@ -244,117 +317,6 @@ def plot_improvements(outfile, recall_auc_improvementz):
     plt.savefig(outfile)
     
     
-def check_good_for_analysis(failure, num_passes, min_runtime, verbose=False):
-    log_file = failure+".vennsawork/logs/vdb/vdb.log"
-    if not os.path.exists(log_file):
-        if verbose:
-            print "Skipping failure %s (failed or not run)" %(failure)
-        return False 
-        
-    log = open(log_file).read() 
-    if log.count("Starting pass") < 2:
-        if verbose:
-            print "Skipping failure %s due to missing fine-grained debugging pass" %(failure) 
-        return False         
-        
-    if num_passes == 1:
-        start_time, end_time = parse_start_end_times_1pass(failure)
-    else:
-        start_time, end_time = parse_start_end_times_2pass(failure)
-        
-    if end_time - start_time < min_runtime:
-        if verbose:
-            print "Skipping failure %s due to short runtime" %(failure)
-        return False 
-        
-    # if "tcmalloc: large alloc" in log:
-        # if verbose:
-            # print "Skipping failure %s due to tcmalloc error" %(failure)
-        # return False 
-        
-    return True 
-
-     
-def analyze_1or2_pass(base_failure, new_failure, num_passes, verbose=False, min_runtime=0, end_method="min"):
-    if not check_good_for_analysis(base_failure, 1, min_runtime, verbose) or \
-        not check_good_for_analysis(new_failure, num_passes, min_runtime, verbose):
-        return None,None,None,None,None
-
-    print "%i-pass analyzing %s" %(num_passes,new_failure)
-        
-    start_time, end_time = parse_start_end_times_1pass(base_failure)
-    base_runtime = end_time - start_time
-    if num_passes == 1:
-        start_time, end_time = parse_start_end_times_1pass(new_failure)
-    elif num_passes == 2:
-        start_time, end_time = parse_start_end_times_2pass(new_failure)
-    new_runtime = end_time - start_time 
-    speedup = new_runtime / base_runtime 
-    
-    # Analyze peak memory usage
-    base_mem = parse_peak_memory(base_failure)
-    new_mem = parse_peak_memory(new_failure)
-    mem_reduce = new_mem / float(base_mem)
-        
-    # Parse predictions, solutions, and compute accuracy
-    log_file = new_failure+".vennsawork/logs/vdb/vdb.log"
-    predictions = []
-    found_suspects = set([])
-    
-    for line in open(log_file):
-        m = re.search(r"Predicting next suspect (\S+)", line)
-        if m:
-            s = m.group(1)
-            if s != 0:
-                predictions.append(s)
-            
-        m = re.search(r"==> solver solution:.*:(\S+)\s+", line)
-        if m:
-            s = m.group(1)
-            found_suspects.add(s)
-            
-    auc_acc = 0
-    correct = 0
-    total = 0
-    for s in predictions:
-        total += 1 
-        if s in found_suspects:
-            correct += 1
-        auc_acc += float(correct)/total 
-    if total > 0:
-        auc_acc /= total
-    
-    base_points, new_points = recall_vs_time(base_failure, new_failure, num_passes, end_method=end_method)
-    base_recall_auc = auc_recall_time(base_points)
-    new_recall_auc = auc_recall_time(new_points)
-    if base_recall_auc == 0 or new_recall_auc == 0 or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
-        # This can happen when using end_method=min in the rare case that one of the experiments finds 
-        # all or almost all suspects before the other finds any.
-        # Such cases are probably not very meaningful so skipping is probably justified. 
-        print "WARNING: skipping extreme outlier" 
-        return None,None,None,None,None
-        
-    recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
-    recall_auc_improvement = new_recall_auc / base_recall_auc
-    runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
-    
-    # print base_points 
-    # print new_points 
-    # print base_recall_auc
-    # print new_recall_auc    
-
-    print "Recall auc improvement: %.3f" %(recall_auc_improvement)
-    if verbose:
-        print "Number of base points: %i" %(len(base_points))
-        print "Number of new points: %i (recall %.3f)" %(len(new_points), recall)
-        print "Runtime: %.1fs" %(base_runtime)
-        print "Relative runtime: %.3f" %(speedup)
-        print "Prediction accuracy auc: %.3f" %(auc_acc)
-        print "Peak memory reduction: %.3f" %(mem_reduce)
-        print ""
-        
-    return recall_auc_improvement, speedup, base_points, new_points, runs_finished
-
 
 def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
     # if not check_good_for_analysis(base_failure, 1, 4) or not check_good_for_analysis(new_failure, 1, 4):
@@ -412,28 +374,85 @@ def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0, 
     return recall_auc_improvement, speedup, base_points, new_points, runs_finished
 
 
-def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
-    # determine what analysis function to use 
-    log_file = new_failure+".vennsawork/logs/vdb/vdb.log"
+def parse_failure(failure, verbose):
+    '''
+    Parse start time, end time, and (time,recall) points of relevant solutions for failure. 
+    '''
+    log_file = failure+".vennsawork/logs/vdb/vdb.log"
     if not os.path.exists(log_file):
         if verbose:
-            print "Skipping failure %s (failed or not run)." %(new_failure)
-        return None, None, None, None, None  
-
+            print "No log file for",failure 
+        return None, None, None 
+        
     log = open(log_file).read()
     m = re.search(r"Guidance method = (\d+)", log)
     if m:
         method = int(m.group(1))
-        if method >= 10:
-            return analyze_multi_pass(base_failure, new_failure, verbose, min_runtime, end_method)
+        if method == 0 or method >= 10:
+            return parse_multipass(failure)
         elif method == 6:
-            return analyze_1or2_pass(base_failure, new_failure, 2, verbose, min_runtime, end_method)
-        elif method > 0:
-            return analyze_1or2_pass(base_failure, new_failure, 1, verbose, min_runtime, end_method)
+            return parse_2pass(failure)
+        else:
+            return parse_1pass(failure)
     
-    print "Could not determine analysis method for failure", new_failure 
-    return None, None, None, None, None 
+    else:
+        print "Could not parse guidance method for failure", new_failure 
+        return None, None, None 
+    
 
+def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
+    base_start, base_end, base_points = parse_failure(base_failure, verbose)
+    if base_start is None: 
+        return None, None, None, None, None  
+        
+    new_start, new_end, new_points = parse_failure(new_failure, verbose)
+    if new_start is None: 
+        return None, None, None, None, None  
+        
+    base_runtime = base_end - base_start 
+    new_runtime = new_end - new_start
+    speedup = new_runtime / base_runtime     
+    
+    if base_runtime < min_runtime:
+        if verbose:
+            print "Skipping %s due to short runtime" %(new_failure) 
+        return None, None, None, None, None  
+    
+    print "Analyzing", new_failure
+    
+    # Analyze peak memory usage
+    base_mem = parse_peak_memory(base_failure)
+    new_mem = parse_peak_memory(new_failure)
+    mem_reduce = new_mem / float(base_mem)
+    
+    base_points, new_points = normalize(base_points, new_points, end_method)
+    base_recall_auc = auc_recall_time(base_points)    
+    new_recall_auc = auc_recall_time(new_points)
+    
+    if base_recall_auc == 0 or new_recall_auc == 0 or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
+        # This can happen when using end_method=min in the rare case that one of the experiments finds 
+        # all or almost all suspects before the other finds any.
+        # Such cases are probably not very meaningful so skipping is probably justified. 
+        print "WARNING: skipping extreme outlier" 
+        return None,None,None,None,None
+    else:
+        recall_auc_improvement = new_recall_auc / base_recall_auc
+        
+    recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
+
+    runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
+    
+    print "Recall auc improvement: %.3f" %(recall_auc_improvement)
+    if verbose:
+        print "Number of base points: %i" %(len(base_points))
+        print "Number of new points: %i (recall %.3f)" %(len(new_points), recall)
+        print "Runtime: %.1fs" %(base_runtime)
+        print "Relative runtime: %.3f" %(speedup)
+        print "Peak memory reduction: %.3f" %(mem_reduce)
+        print ""
+
+    return recall_auc_improvement, speedup, base_points, new_points, runs_finished
+    
   
 def main(args):
     if args.design:
