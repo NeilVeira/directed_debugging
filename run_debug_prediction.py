@@ -8,8 +8,8 @@ import utils
 import analyze
 import run_debug_data 
 
-METHODS = [None, "assump", "optAssump", "assumpBlock", "optAssumpBlock", "optAssumpBlock0",
-            None, None, None, None, # placeholders 
+METHODS = [None, "assump", "optAssump", "assumpBlock", "optAssumpBlock", "optAssumpBlock0", 
+            "2pass", None, None, None, 
             "optMulti", "Multi", "Multiv2"
             ]
 
@@ -20,20 +20,21 @@ def run_debug(name, timeout=60*60*24, verbose=False):
         os.remove(log_file)
         
     stdout,stderr = utils.run("onpoint-cmd --template-file=%s.template" %(name), timeout=timeout)    
-    if stdout == None:
-        print "onpoint-cmd exceeded time limit of %i seconds" %(int(timeout))
-        return False 
     
     #check logs for errors
     if not os.path.exists(log_file):
         print "Error:"
         print stdout
         print stderr 
-        return False        
+        return False       
+        
     log = open(log_file).read()
     if "error:" in log.lower():
         print "vdb failed, check logs"
-        return False        
+        return False       
+
+    if stdout == None:
+        print "onpoint-cmd exceeded time limit of %i seconds" %(int(timeout))        
 
     return True 
     
@@ -63,6 +64,11 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
     os.chdir(dir)
     base_name = os.path.basename(base_name)
     new_name = os.path.basename(new_name)
+    
+    if min_suspects == -1:
+        num_true_suspects = len(open("true_suspects.txt").readlines())
+        min_suspects = int(0.3*num_true_suspects)
+        print "Cheat: Setting min_suspects to",min_suspects
 
     with open("args.txt","w") as f:
         f.write("%i\n" %(min_suspects))
@@ -107,7 +113,7 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             return False 
             
         try:
-            if "_1pass" in new_name:
+            if "_1pass" in new_name or "_2pass" in new_name:
                 base_name += "_1pass"
             analyze.analyze(base_name, new_name, verbose=verbose, min_runtime=0)
         except Exception as e:

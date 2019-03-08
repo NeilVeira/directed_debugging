@@ -14,7 +14,6 @@ def find_failure(failure, all_failurez):
     
     
 def main(args):
-    # TODO: add options for running debug with suspect prediction 
     unsuccessful = []
     all_failurez = utils.find_all_failures(args.design, include_failed=False)
     if args.start is not None:
@@ -42,6 +41,7 @@ def main(args):
         
         if not success:
             unsuccessful.append(failure)
+        print "" 
     
     if len(unsuccessful) > 0:
         print "The following runs were unsuccessful:"
