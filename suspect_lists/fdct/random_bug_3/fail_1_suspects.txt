@@ -1,6 +1,7 @@
-dct
-fdct
+fdct/constraint_douten
 zigzag
+fdct
+dct
 zigzag/input_dstrb
 zigzag/reg_ld_zigzag
 zigzag/input_ena

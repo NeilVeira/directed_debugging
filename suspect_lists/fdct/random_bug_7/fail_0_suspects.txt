@@ -1,10 +1,11 @@
-zigzag
-dct_mac
-dct
-sigMap
+sigMap/assert_assertion_dout
 fdct
+zigzag
+sigMap
+dct
 dctub
 dctu
+dct_mac
 zigzag/always_2
 zigzag/reg_sresult
 zigzag/wire_dout

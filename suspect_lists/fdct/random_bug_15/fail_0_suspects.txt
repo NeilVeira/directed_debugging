@@ -1,10 +1,11 @@
-zigzag
-dct_mac
-dct
-sigMap
+sigMap/assert_assertion_dout
 fdct
+zigzag
+sigMap
+dct
 dctub
 dctu
+dct_mac
 dctu/input_ena
 fdct/input_ena
 fdct/inst_sigMap_i1

@@ -1,7 +1,8 @@
-dct
-fdct
-sigMap
+sigMap/assert_assertion_dout
 zigzag
+sigMap
+fdct
+dct
 zigzag/always_2/if_1/if_1
 zigzag/always_2/if_1
 zigzag/always_2/if_1/if_1/for_1/stmt_3
