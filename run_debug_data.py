@@ -415,7 +415,7 @@ def run_window_debug(project, window_size, finish_time):
     utils.write_template(template_file, "START_TIME=", "START_TIME=%ins" %(start_time))
     os.system("rm -rf args.txt") # just in case 
 
-    while window_size > 100:      
+    while window_size >= 10:      
         os.system("rm -f onpoint-cmd-%s.log" %(project))
         print "Running debug..."
         stdout,stderr = run("onpoint-cmd --template-file=%s" %(template_file))

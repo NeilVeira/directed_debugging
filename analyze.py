@@ -25,24 +25,6 @@ def parse_peak_memory(failure):
             mem = int(m.group(3))
             peak_mem = max(peak_mem,mem)
     return peak_mem
-
-    
-# Old version
-# def recall_vs_time_single(failure):
-    # log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")
-    # start = utils.find_time_of(failure, "Oracle::ask\(\)", default=0)            
-    # end_time = utils.parse_runtime(failure)
-
-    # cnt = 0
-    # points = []
-    # for line in open(log_file):
-        # t = utils.parse_time_of(line, "==> solver solution:")
-        # if t:
-            # cnt += 1 
-            # points.append([t-start,cnt])
-    # points.append([end_time,cnt])
-    # print points 
-    # return points
     
     
 def parse_solutions(log_file, start_time, end_time):
@@ -388,17 +370,18 @@ def parse_failure(failure, verbose):
     m = re.search(r"Guidance method = (\d+)", log)
     if m:
         method = int(m.group(1))
-        if method == 0 or method >= 10:
-            return parse_multipass(failure)
-        elif method == 6:
-            return parse_2pass(failure)
-        else:
-            return parse_1pass(failure)
-    
     else:
-        print "Could not parse guidance method for failure", new_failure 
-        return None, None, None 
-    
+        method = 0
+        
+    if "_1pass" in failure:
+        return parse_1pass(failure)
+    if method == 0 or method >= 10:
+        return parse_multipass(failure)
+    elif method == 6:
+        return parse_2pass(failure)
+    else:
+        return parse_1pass(failure)
+       
 
 def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
     base_start, base_end, base_points = parse_failure(base_failure, verbose)
@@ -429,7 +412,7 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
     base_recall_auc = auc_recall_time(base_points)    
     new_recall_auc = auc_recall_time(new_points)
     
-    if base_recall_auc == 0 or new_recall_auc == 0 or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
+    if base_recall_auc == 0 or new_recall_auc == 0: # or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
         # This can happen when using end_method=min in the rare case that one of the experiments finds 
         # all or almost all suspects before the other finds any.
         # Such cases are probably not very meaningful so skipping is probably justified. 
@@ -469,7 +452,7 @@ def main(args):
     
     for failure in all_failurez: 
         recall_auc_improvement, speedup, base_points, new_points, runs_finished = analyze(failure+args.base_suffix, 
-            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime)
+            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime, end_method=args.end_method)
         
         if recall_auc_improvement is not None:
             tot_runs_finished += runs_finished 
