@@ -36,7 +36,7 @@ CONSTRAIN_SIGNAL=puz_io[323:0]:h000190543000800601001006000000000000620007900090
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=123290ns
+START_TIME=108340ns
 FINISH_TIME=124340ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
@@ -100,10 +100,10 @@ REDUCE_IMPLICATION_SUSPECTS=0
 #RTL_CAUSALITY=1
 
 # Sets verbosity level (only change when you encounter an error)
-VERBOSITY=quiet
+VERBOSITY=debug
 
 # Forces a project overwrite on creation
 FORCE=1
 
 # Appends to general vdb options
-GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"
+GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all"

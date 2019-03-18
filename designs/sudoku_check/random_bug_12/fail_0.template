@@ -29,7 +29,7 @@ TARGET_ASSERTION=
 #                   * hex values can be prefixed with 'h'
 #                   * decimal values can be prefixed with 'd'
 # start-finish:     * time (or time range) during which to constrain the signal
-CONSTRAIN_SIGNAL=extra_out:h000000000000007851050040000042100090069080005010906300970630000600009000120750000:396ns
+CONSTRAIN_SIGNAL=extra_out[323:0]:h000000000000007851050040000042100090069080005010906300970630000600009000120750000:396ns
 #  Or use a constrain file to specify multiple constrain signals
 #CONSTRAIN_FILE=
 
@@ -100,10 +100,10 @@ REDUCE_IMPLICATION_SUSPECTS=0
 #RTL_CAUSALITY=1
 
 # Sets verbosity level (only change when you encounter an error)
-VERBOSITY=quiet
+VERBOSITY=debug
 
 # Forces a project overwrite on creation
 FORCE=1
 
 # Appends to general vdb options
-GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"
+GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all"

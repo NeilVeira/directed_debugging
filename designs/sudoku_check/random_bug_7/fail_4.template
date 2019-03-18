@@ -36,8 +36,8 @@ CONSTRAIN_SIGNAL=index[7:0]:h2c:37530ns
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=36530ns
-FINISH_TIME=37580ns
+START_TIME=5580ns
+FINISH_TIME=53580ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
 #  constrain signal's or firing assertion's start time
@@ -100,10 +100,10 @@ REDUCE_IMPLICATION_SUSPECTS=0
 #RTL_CAUSALITY=1
 
 # Sets verbosity level (only change when you encounter an error)
-VERBOSITY=quiet
+VERBOSITY=debug
 
 # Forces a project overwrite on creation
 FORCE=1
 
 # Appends to general vdb options
-GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"
+GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all"

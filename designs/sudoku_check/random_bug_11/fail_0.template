@@ -29,14 +29,14 @@ TARGET_ASSERTION=
 #                   * hex values can be prefixed with 'h'
 #                   * decimal values can be prefixed with 'd'
 # start-finish:     * time (or time range) during which to constrain the signal
-CONSTRAIN_SIGNAL=extra_out:h840913000970462000230785904694208000300109400100634097082391006513806009069507003:82996ns
+CONSTRAIN_SIGNAL=extra_out[323:0]:h840913000970462000230785904694208000300109400100634097082391006513806009069507003:82996ns
 #  Or use a constrain file to specify multiple constrain signals
 #CONSTRAIN_FILE=
 
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=81996ns
+START_TIME=79046ns
 FINISH_TIME=83046ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
@@ -100,10 +100,10 @@ REDUCE_IMPLICATION_SUSPECTS=0
 #RTL_CAUSALITY=1
 
 # Sets verbosity level (only change when you encounter an error)
-VERBOSITY=quiet
+VERBOSITY=debug
 
 # Forces a project overwrite on creation
 FORCE=1
 
 # Appends to general vdb options
-GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"
+GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all"
