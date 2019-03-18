@@ -1,4 +1,0 @@
-Bug Description: Missing port connection
-Location: 	rtl/sudoku_ans.v : 20
-Golden:   	.partial_y(partial_y),
-Bug:      	
