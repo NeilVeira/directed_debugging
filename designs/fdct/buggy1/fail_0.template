@@ -18,7 +18,7 @@ VECTOR_FILE=sim/fdct.fsdb
 
 # The assertion that fired in simulation
 #  format: path.to.assertion[:start[-finish]]
-TARGET_ASSERTION=sigMap_i1.assertion_dout:462ns-562ns
+TARGET_ASSERTION=sigMap_i1.assertion_dout:462ns-490ns
 
 # Setup for the constrain signal
 #  A constrain signal is a signal whose value must be corrected from 
@@ -36,8 +36,8 @@ CONSTRAIN_SIGNAL=
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=400ns
-FINISH_TIME=562ns
+START_TIME=0ns
+FINISH_TIME=490ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
 #  constrain signal's or firing assertion's start time
