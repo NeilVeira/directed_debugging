@@ -81,7 +81,7 @@ def init(parser):
     parser.add_argument("--epochs", type=int, default=4000)
     parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
     parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
-    parser.add_argument("--lambd", type=float, default=None, help="Regularization factor")
+    parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
    
 
 if __name__ == "__main__":
