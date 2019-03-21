@@ -10,6 +10,7 @@ from sklearn.model_selection import KFold
 import utils 
 from suspect_prediction.date import DATEPrediction
 from suspect_prediction.suspect2vec import Suspect2Vec
+from suspect_prediction.naive import RandomPrediction 
 
 INF = 1e12
         
@@ -23,19 +24,15 @@ def eval_pred(pred, scores, target, n):
     size_err = abs(len(target)-len(pred)) / float(len(target))    
     
     auprc = sklearn.metrics.average_precision_score(y_true, scores)
-    return precision[1], recall[1], fscore[1], auprc, size_err     
-
-
-def run_train_test(data, train_index, test_index, date, base_results, new_results, n, args):
+    return precision[1], recall[1], fscore[1], auprc, size_err             
+        
+        
+def run_train_test(model, data, train_index, test_index, results, n, args):
     train_data = [data[i] for i in train_index]
-    
-    date.fit(train_data)
-    s2v = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
-    s2v.fit(train_data)
+    model.fit(train_data)
         
     # Testing
-    new = []
-    base = []
+    f1s = []
     for i in test_index:
         assert i not in train_index 
         test_data = data[i]
@@ -43,28 +40,33 @@ def run_train_test(data, train_index, test_index, date, base_results, new_result
             random.shuffle(test_data)
         sample = test_data[:int(math.ceil(args.sample_size*len(test_data)))] 
             
-        pred_base, scores = date.predict(sample, score_query=range(n))
+        pred, scores = model.predict(sample, score_query=range(n))
         assert len(scores) == n                 
-        base_results[i] = eval_pred(pred_base, scores, test_data, n)  
-        base.append(base_results[i][2])
-
-        # Prediction using suspect2vec model 
-        pred_new, scores = s2v.predict(sample, score_query=range(n))
-        assert len(scores) == n 
-        new_results[i] = eval_pred(pred_new, scores, test_data, n)   
-        new.append(new_results[i][2])
-        
-        # if args.verbosity >= 2:
-            # print("failure %s metrics" %(all_failurez[i]))
-            # print("\tbase: %s" %(base_results[i]))
-            # print("\tnew: %s" %(new_results[i]))
+        results[i] = eval_pred(pred, scores, test_data, n)  
+        f1s.append(results[i][2])
             
     if args.verbosity >= 1:    
-        print("DATE f1-score:         %.9f" %(np.mean(base)))
-        print("suspect2vec f1-score:  %.9f" %(np.mean(new)))
+        print("%s f1-score:         %.9f" %(type(model).__name__.ljust(20), np.mean(f1s)))
     
 
-def suspect2vec_vs_date(data, suspect_union, args, all_failurez):
+def run_all(data, train_index, test_index, all_results, n, date, args):
+    for i,model_name in enumerate(args.models):
+        if model_name.lower() == "date":
+            model = date 
+            
+        elif model_name.lower() in ["s2v","suspect2vec"]:
+            model = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
+            
+        elif model_name.lower() == "random":
+            model = RandomPrediction()
+            
+        else:
+            raise ValueError("Unknown model %s" %(model_name))            
+        
+        run_train_test(model, data, train_index, test_index, all_results[i], n, args)
+
+
+def experiment(data, suspect_union, args, all_failurez):
     '''
     Evaluate suspect2vec and compare it to the baseline method
     '''
@@ -72,22 +74,22 @@ def suspect2vec_vs_date(data, suspect_union, args, all_failurez):
     n = len(suspect_union)
     date = DATEPrediction(args.prior_var) # Instantiate it once to save time precomputing MAP weights
 
-    base_results = np.zeros((m,5)) # (precision, recall, fscore, auprc, size_error)
-    new_results = np.zeros((m,5))
+    all_results = np.zeros((len(args.models), m, 5)) # (precision, recall, fscore, auprc, size_error)
     
     if args.train_test_split == "leave-one-out":
         args.train_test_split = "folds"
         args.folds = INF 
     
     if args.train_test_split == "folds":    
-        folds = min(args.folds,m)
+        folds = min(args.folds, m)
         kf = KFold(n_splits=folds, random_state=42, shuffle=False)
         
         for fold, (train_index,test_index) in enumerate(kf.split(data)):
             if args.verbosity >= 1:
                 print "Running fold %i/%i" %(fold+1,folds)
                 
-            run_train_test(data, train_index, test_index, date, base_results, new_results, n, args)
+            run_all(data, train_index, test_index, all_results, n, date, args)
+            
             
     elif args.train_test_split == "random-to-buggy":
         # Divide among random and buggy failures 
@@ -98,22 +100,25 @@ def suspect2vec_vs_date(data, suspect_union, args, all_failurez):
                 train_index.append(i)
             elif "/buggy" in all_failurez[i]:
                 test_index.append(i)
-              
+          
+        if len(test_index) == 0:
+            raise Exception("No buggy data found") 
+            
         if args.verbosity >= 1:
             print "Running random-to-buggy on %i random failures to %i buggy failures" %(len(train_index), len(test_index))
-        run_train_test(data, train_index, test_index, date, base_results, new_results, n, args)
+        run_all(data, train_index, test_index, all_results, n, date, args)
         
         # Remove the slots for random bugs from results since we don't evaluate those 
-        compressed_base_results = np.zeros((len(test_index),5))
-        compressed_new_results = np.zeros((len(test_index),5))
-        for i,test_idx in enumerate(test_index):
-            compressed_base_results[i] = base_results[test_idx]
-            compressed_new_results[i] = new_results[test_idx]
-        base_results = compressed_base_results
-        new_results = compressed_new_results
+        compressed_results = np.zeros((len(args.models), len(test_index), 5))
+        for i in range(len(args.models)):
+            compressed_results[i] = np.zeros((len(test_index),5))
+            for j,test_idx in enumerate(test_index):
+                compressed_results[i][j] = all_results[i][test_idx]
+        all_results = compressed_results
+        
     
     else:
-        # Assume train_test_split is the fraction of data to use for training 
+        # Assume train_test_split indicates the number of data points to use for training 
         train_size = min(int(args.train_test_split), m-1)
         assert train_size > 0
         
@@ -129,36 +134,31 @@ def suspect2vec_vs_date(data, suspect_union, args, all_failurez):
             if j < train_size:
                 train_index[j], train_index[-1] = train_index[-1], train_index[j]
                 
-            run_train_test(data, train_index[:train_size], [i], date, base_results, new_results, n, args)
-                
+            run_all(data, train_index[:train_size], [i], all_results, n, date, args)
     
                 
-    mean_base_results = np.mean(base_results,axis=0)
-    mean_new_results = np.mean(new_results,axis=0)
-    median_base_results = np.median(base_results,axis=0)
-    median_new_results = np.median(new_results,axis=0)
+    mean_results = np.mean(all_results, axis=1) 
+    median_results = np.median(all_results, axis=1) 
     
     if args.verbosity >= 1:
-        print("DATE metrics:")
-        print("    precision = %.3f" %(mean_base_results[0]))
-        print("    recall = %.3f" %(mean_base_results[1]))
-        print("    f1-score = %.3f" %(mean_base_results[2]))
-        print("    AUC-PR = %.3f" %(median_base_results[3]))
-        print("suspect2vec metrics:")
-        print("    precision = %.3f" %(mean_new_results[0]))
-        print("    recall = %.3f" %(mean_new_results[1]))
-        print("    f1-score = %.3f" %(mean_new_results[2]))
-        print("    AUC-PR = %.3f" %(median_new_results[3]))
+        for i,model in enumerate(args.models):
+            print "%s metrics:" %(model)
+            print("    precision = %.3f" %(mean_results[i][0]))
+            print("    recall = %.3f" %(mean_results[i][1]))
+            print("    f1-score = %.3f" %(mean_results[i][2]))
+            print("    AUC-PR = %.3f" %(mean_results[i][3]))
     
-    return base_results, new_results
-
+    return all_results
 
             
 def main(args):
     design_dir = args.design_dir.rstrip("/") 
     if not os.path.exists(design_dir):
         raise ValueError("design %s does not exist" %(design_dir))
-        return False     
+        return False  
+
+    if type(args.models) == str:
+        args.models = args.models.split(",")
         
     all_failurez = []
     suspect_union = set([]) 
@@ -189,11 +189,12 @@ def main(args):
             print(item)
         print("")
     
-    return suspect2vec_vs_date(data, suspect_union, args, all_failurez)
+    return experiment(data, suspect_union, args, all_failurez)
     
         
 def init(parser):
     parser.add_argument("design_dir", help="Path to design to run")
+    parser.add_argument("models", help="List of models to run")
     parser.add_argument("--train_test_split", default="folds", help="Strategy to use for generating train and test " \
                         "splits. Must be one of ['leave-one-out', 'folds', 'random-to-buggy'] or whole number.")
     parser.add_argument("--sample_size", type=float, default=0.5, help="Fraction of suspects in initial subset (sample) of " \
@@ -201,14 +202,12 @@ def init(parser):
     parser.add_argument("--sample_type", default="solver", help="Method to choose observed suspect set. 'random' for "
                         "random or 'solver' for order in which the solver finds them.")
     parser.add_argument("--prior_var", type=float, default=0.2, help="Hyperparameter for prior in MAP estimation")
-    parser.add_argument("--verbosity", "-v", type=int, default=1, help="Verbosity level")
+    parser.add_argument("--verbosity", "-v", type=int, default=0, help="Verbosity level")
     parser.add_argument("--folds", type=int, default=INF)
     parser.add_argument("--epochs", type=int, default=4000)
     parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
     parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
     parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
-    # parser.add_argument("--load_pretrain", action="store_true", default=False, 
-        # help="Load suspect2vec model from disk rather than retraining")
    
 
 if __name__ == "__main__":

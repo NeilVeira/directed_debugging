@@ -32,6 +32,8 @@ def main(args):
                     ]
         )
         
+    args.models = args.models.split(",")
+    
     if args.train_test_split == "leave-one-out":
         args.folds = experiment_prediction.INF 
         args.train_test_split = "folds"
@@ -46,18 +48,15 @@ def main(args):
         design_dir = "suspect_lists/"+design.strip()
         args.design_dir = design_dir
         print design_dir         
-        metrics_base, metrics_new = experiment_prediction.main(args)
+        all_results = experiment_prediction.main(args)
         
         row_common["design"] = design
-        base_row = dict(row_common)
-        base_row.update({"predictor":"DATE"})
-        fill_row(base_row, metrics_base)
-        data = data.append(base_row, ignore_index=True)
         
-        new_row = dict(row_common)
-        new_row.update({"predictor":"suspect2vec", "lambd":args.lambd, "dim":args.dim})
-        fill_row(new_row, metrics_new)
-        data = data.append(new_row, ignore_index=True)
+        for i,model in enumerate(args.models):
+            row = dict(row_common)
+            row.update({"predictor":model.lower()})
+            fill_row(row, all_results[i])
+            data = data.append(row, ignore_index=True)
         
         data.to_csv(data_file)
         
@@ -69,6 +68,7 @@ def main(args):
 
 def init(parser):
     parser.add_argument("designs",help="Comma-separated list of designs to run")
+    parser.add_argument("models", help="List of models to run")
     parser.add_argument("--train_test_split", default="folds", help="Strategy to use for generating train and test " \
                         "splits. Must be one of ['leave-one-out', 'folds', 'random-to-buggy'] or whole number.")
     parser.add_argument("--sample_size", type=float,default=0.5, help="Number of suspects in initial subset (sample) of suspect set " \
