@@ -118,8 +118,11 @@ class Suspect2Vec(object):
         n = len(self.suspect_union)
         ret = list(sample)
         sample = [self.suspect2id[s] for s in sample if s in self.suspect2id]
-        sample_vec = np.mean(self.embed_in[sample], axis=0)
-        scores = 1.0 / (1 + np.exp(-np.matmul(self.embed_out,sample_vec)))
+        if len(sample) == 0:
+            scores = np.zeros(len(self.suspect2id))
+        else:
+            sample_vec = np.mean(self.embed_in[sample], axis=0)
+            scores = 1.0 / (1 + np.exp(-np.matmul(self.embed_out,sample_vec)))
         
         if k is None:
             for i in range(n):

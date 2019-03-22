@@ -39,6 +39,7 @@ def run_train_test(model, data, train_index, test_index, results, n, args):
         if args.sample_type == "random":
             random.shuffle(test_data)
         sample = test_data[:int(math.ceil(args.sample_size*len(test_data)))] 
+        assert len(sample) > 0 
             
         pred, scores = model.predict(sample, score_query=range(n))
         assert len(scores) == n                 

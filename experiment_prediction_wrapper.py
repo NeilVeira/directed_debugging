@@ -47,7 +47,7 @@ def main(args):
     for design in args.designs.split(","):
         design_dir = "suspect_lists/"+design.strip()
         args.design_dir = design_dir
-        print design_dir         
+        print design_dir     
         all_results = experiment_prediction.main(args)
         
         row_common["design"] = design
@@ -60,7 +60,7 @@ def main(args):
         
         data.to_csv(data_file)
         
-    data.drop_duplicates(subset=["design","predictor","sample_type","train_size","sample_size","folds","dim","lambd"], inplace=True)
+    data.drop_duplicates(subset=["design","predictor","sample_type","train_size","sample_size","folds","dim","lambd"], inplace=True, keep="last")
     data.sort_values(by=["sample_size","train_size","sample_type","folds","design","predictor","lambd","dim"], inplace=True)
     data.reset_index(drop=True, inplace=True)
     data.to_csv(data_file)
