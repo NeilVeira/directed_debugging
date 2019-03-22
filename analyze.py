@@ -39,85 +39,8 @@ def parse_solutions(log_file, start_time, end_time):
     points.append([end_time-start_time,cnt])
     return points 
     
-    
-def parse_1pass(failure): 
-    log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")  
-    # Find the start and end of the second pass that runs solveAll. 
-    # It may not be pass 0 in case of abr, and strangely, some passes don't run solveAll. 
-    num_starts = 0
-    found_start = False 
-    found_end = False 
-    
-    for line in open(log_file):    
-        if "Starting pass" in line:
-            num_starts += 1 
-                
-        elif num_starts >= 2 and "OracleSolver::solveAll()" in line:
-            found_start = True 
-            start_time = utils.parse_time_of(line, "OracleSolver::solveAll()")
-            
-        elif found_start and "Finished pass" in line:
-            end_time = utils.parse_time_of(line, "Finished pass")
-            found_end = True 
-            break 
-          
-    if not found_start:
-        return None,None,None 
-        
-    if not found_end:
-        # Couldn't find end of pass. Use last time in log file instead. 
-        end_time = utils.parse_runtime(failure, time_limit=3600)
-        
-    # print failure
-    # print "start_time =",start_time 
-    # print "end_time =",end_time     
-    points = parse_solutions(log_file, start_time, end_time)    
-    return start_time, end_time, points  
-    
-    
-def parse_2pass(failure):
-    log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log")  
-    num_main_passes = 0 # Number of times it's started a new main pass 
-    num_starts = 0 
-    found_start = False 
-    found_end = False 
-    num_finishes = 0
-    
-    for line in open(log_file): 
-        if "Running diagnosePassAndRetry" in line:
-            assert num_main_passes <= 1 
-            num_main_passes += 1 
-            
-        elif num_main_passes == 2 and "Starting pass" in line:  
-            num_starts += 1
-            
-        elif num_starts == 2 and "OracleSolver::solveAll()" in line:
-            found_start = True 
-            start_time = utils.parse_time_of(line, "OracleSolver::solveAll()")
-            
-        elif found_start and "Finished pass" in line:
-            num_finishes += 1
-            if num_finishes >= 2:
-                end_time = utils.parse_time_of(line, "Finished pass")
-                found_end = True 
-                break 
-                
-    if not found_start:
-        return None, None, None 
-            
-    assert num_main_passes > 0 
-    if not found_end:
-        # Couldn't find end of pass. Use last time in log file instead. 
-        end_time = utils.parse_runtime(failure, time_limit=3600)
-    
-    # print failure
-    # print "start_time =",start_time 
-    # print "end_time =",end_time 
-    points = parse_solutions(log_file, start_time, end_time)    
-    return start_time, end_time, points 
 
-
-def parse_multipass(failure):  
+def parse_start_end_time(failure):  
     log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log") 
     # Find the second main pass 
     
@@ -174,6 +97,7 @@ def parse_multipass(failure):
         i += 1
         
     if not found_start:
+        print "WARNING: could not find start for",failure 
         return None, None, None         
     
     if not found_end:
@@ -185,6 +109,25 @@ def parse_multipass(failure):
     points = parse_solutions(log_file, start_time, end_time)    
     return start_time, end_time, points 
 
+
+def parse_failure(failure, verbose):
+    '''
+    Parse start time, end time, and (time,recall) points of relevant solutions for failure. 
+    '''
+    log_file = failure+".vennsawork/logs/vdb/vdb.log"
+    if not os.path.exists(log_file):
+        if verbose:
+            print "No log file for",failure 
+        return None, None, None 
+        
+    log = open(log_file).read()
+    m = re.search(r"Guidance method = (\d+)", log)
+    if m:
+        method = int(m.group(1))
+    else:
+        method = 0
+
+    return parse_start_end_time(failure)
     
   
 def normalize(base_points, new_points, end_method="min"):    
@@ -299,90 +242,6 @@ def plot_improvements(outfile, recall_auc_improvementz):
     plt.savefig(outfile)
     
     
-
-def analyze_multi_pass(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
-    # if not check_good_for_analysis(base_failure, 1, 4) or not check_good_for_analysis(new_failure, 1, 4):
-    #     return None,None,None,None,None
-    base_log = base_failure+".vennsawork/logs/vdb/vdb.log"
-    if not os.path.exists(base_log):
-        if verbose:
-            print "Skipping failure %s (failed or not run)" %(base_failure)
-        return None,None,None,None,None
-
-    num_passes = open(base_log).read().count("Starting pass")
-    if num_passes < 4:
-        if verbose:
-            print "Skipping failure %s due to too few passes" %(failure) 
-        return None,None,None,None,None
-
-    print "Multi-pass analyzing",new_failure 
-
-    base_runtime = utils.parse_runtime(base_failure, time_limit=10800)
-    new_runtime = utils.parse_runtime(new_failure, time_limit=10800)
-    speedup = new_runtime / base_runtime 
-
-    # Analyze peak memory usage
-    base_mem = parse_peak_memory(base_failure)
-    new_mem = parse_peak_memory(new_failure)
-    mem_reduce = new_mem / float(base_mem)
-
-    # TODO: some kind of prediction accuracy analysis 
-
-    base_points, new_points = recall_vs_time(base_failure, new_failure, num_passes=-1, end_method=end_method)
-    base_recall_auc = auc_recall_time(base_points)    
-    new_recall_auc = auc_recall_time(new_points)
-    
-    if base_recall_auc == 0 or new_recall_auc == 0 or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
-        # This can happen when using end_method=min in the rare case that one of the experiments finds 
-        # all or almost all suspects before the other finds any.
-        # Such cases are probably not very meaningful so skipping is probably justified. 
-        print "WARNING: skipping extreme outlier" 
-        return None,None,None,None,None
-        
-    recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
-    recall_auc_improvement = new_recall_auc / base_recall_auc
-
-    runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
-    print "Recall auc improvement: %.3f" %(recall_auc_improvement)
-    if verbose:
-        print "Number of base points: %i" %(len(base_points))
-        print "Number of new points: %i (recall %.3f)" %(len(new_points), recall)
-        print "Number of passes: %i" %(num_passes)
-        print "Runtime: %.1fs" %(base_runtime)
-        print "Relative runtime: %.3f" %(speedup)
-        print "Peak memory reduction: %.3f" %(mem_reduce)
-        print ""
-
-    return recall_auc_improvement, speedup, base_points, new_points, runs_finished
-
-
-def parse_failure(failure, verbose):
-    '''
-    Parse start time, end time, and (time,recall) points of relevant solutions for failure. 
-    '''
-    log_file = failure+".vennsawork/logs/vdb/vdb.log"
-    if not os.path.exists(log_file):
-        if verbose:
-            print "No log file for",failure 
-        return None, None, None 
-        
-    log = open(log_file).read()
-    m = re.search(r"Guidance method = (\d+)", log)
-    if m:
-        method = int(m.group(1))
-    else:
-        method = 0
-        
-    if "_1pass" in failure:
-        return parse_1pass(failure)
-    if method == 0 or method >= 10:
-        return parse_multipass(failure)
-    elif method == 6:
-        return parse_2pass(failure)
-    else:
-        return parse_1pass(failure)
-       
-
 def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
     base_start, base_end, base_points = parse_failure(base_failure, verbose)
     if base_start is None: 
