@@ -117,7 +117,9 @@ class Suspect2Vec(object):
         '''
         n = len(self.suspect_union)
         ret = list(sample)
+        orig_sample = list(sample)
         sample = [self.suspect2id[s] for s in sample if s in self.suspect2id]
+        
         if len(sample) == 0:
             scores = np.zeros(len(self.suspect2id))
         else:
@@ -144,7 +146,9 @@ class Suspect2Vec(object):
         if score_query is not None:
             ret_scores = np.zeros(len(score_query))
             for i,s in enumerate(score_query):
-                if s in self.suspect2id:
+                if s in orig_sample:
+                    ret_scores[i] = 1e12 
+                elif s in self.suspect2id:
                     ret_scores[i] = scores[self.suspect2id[s]]
             return ret, ret_scores 
             

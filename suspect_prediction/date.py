@@ -102,6 +102,7 @@ class DATEPrediction(object):
         '''
         
         # Convert to ids, handling any new suspects
+        orig_sample = list(sample)
         n = len(self.suspect_union)
         for s in sample:
             if s not in self.suspect2id:
@@ -187,8 +188,12 @@ class DATEPrediction(object):
         if score_query:
             ret_scores = np.zeros(len(score_query))
             for i,s in enumerate(score_query):
-                if s in self.suspect2id:
-                    ret_scores[i] = neg_log_notp[self.suspect2id[s]]                
+                if s in orig_sample:
+                    ret_scores[i] = 1e12 
+                elif s in self.suspect2id:
+                    ret_scores[i] = neg_log_notp[self.suspect2id[s]] 
+                    
             return ranking, ret_scores
+            
         else:
             return ranking 
