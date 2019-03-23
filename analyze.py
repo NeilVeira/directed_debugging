@@ -87,9 +87,9 @@ def parse_start_end_time(failure):
                     found_end = True 
                     break 
                 
-        elif not found_start and cur_main_pass == 2 and "OracleSolver::solveAll()" in lines[i]:
+        elif not found_start and cur_main_pass == 2 and "Running the solver with N = 1" in lines[i]:
             found_start = True 
-            start_time = utils.parse_time_of(lines[i], "OracleSolver::solveAll()")
+            start_time = utils.parse_time_of(lines[i], "Running the solver with N = 1")
             
         elif "Finished pass" in lines[i]:
             last_finish = utils.parse_time_of(lines[i], "Finished pass")
