@@ -11,6 +11,7 @@ import utils
 from suspect_prediction.date import DATEPrediction
 from suspect_prediction.suspect2vec import Suspect2Vec
 from suspect_prediction.naive import RandomPrediction 
+from suspect_prediction.naive import NaivePrediction 
 
 INF = 1e12
         
@@ -43,6 +44,11 @@ def run_train_test(model, data, train_index, test_index, results, n, args):
             
         pred, scores = model.predict(sample, score_query=range(n))
         assert len(scores) == n                 
+        
+        sample_scores = [scores[j] for j in sample]
+        non_sample_scores = [scores[j] for j in range(n) if j not in sample]
+        assert min(sample_scores) >= max(non_sample_scores)
+                
         results[i] = eval_pred(pred, scores, test_data, n)  
         f1s.append(results[i][2])
             
@@ -60,6 +66,9 @@ def run_all(data, train_index, test_index, all_results, n, date, args):
             
         elif model_name.lower() == "random":
             model = RandomPrediction()
+            
+        elif model_name.lower() == "naive":
+            model = NaivePrediction()
             
         else:
             raise ValueError("Unknown model %s" %(model_name))            

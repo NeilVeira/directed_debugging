@@ -1,5 +1,7 @@
 import random 
 import numpy as np 
+import collections
+
 
 class RandomPrediction(object): 
     def __init__(self):
@@ -40,4 +42,52 @@ class RandomPrediction(object):
                 
         else:
             return ret 
+        
+        
+class NaivePrediction(object):
+    def __init__(self):
+        pass
+        
+    def fit(self, data):
+        self.suspect_union = set([])
+        for S in data:
+            for s in S:
+                self.suspect_union.add(s)
+        sizes = [len(S) for S in data]
+        self.size = int(np.median(sizes))
+        
+        self.cntx = collections.defaultdict(int)
+        for S in data:
+            for s in S:
+                self.cntx[s] += 1
+        
+    def predict(self, sample, k=None, score_query=None):
+        if k is None:
+            k = self.size 
+            
+        all_suspects = self.suspect_union
+        if score_query is not None:
+            all_suspects = all_suspects.union(set(score_query))
+        all_suspects = list(all_suspects)
+        
+        rank = list(sample)
+        freqs = [(self.cntx[s],s) for s in all_suspects]
+        freqs.sort(reverse=True)
+        for _,s in freqs:
+            if s not in rank:
+                rank.append(s)
+                
+        ret = rank[:k]
+                
+        if score_query is not None:
+            n = len(score_query)
+            ret_scores = np.zeros(n)
+            for i,s in enumerate(score_query):
+                pos = rank.index(s) 
+                ret_scores[i] = float(n - pos) / n                    
+            return ret, ret_scores 
+            
+        else:
+            return ret 
+        
         
