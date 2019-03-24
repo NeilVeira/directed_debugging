@@ -46,7 +46,7 @@ class SignalFailure(object):
         return max(0, self.time-window_size)
     
     def get_debug_end(self):
-        return self.time+50
+        return self.time+10
         
             
 class AssertionFailure(object):
@@ -71,7 +71,7 @@ class AssertionFailure(object):
         return max(0, min(self.start_time-50, self.end_time-window_size))
         
     def get_debug_end(self):
-        return self.end_time+50
+        return self.end_time+10
  
  
 def run(cmd, verbose=True, timeout=2*60*60*24):

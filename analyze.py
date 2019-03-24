@@ -40,7 +40,7 @@ def parse_solutions(log_file, start_time, end_time):
     return points 
     
 
-def parse_start_end_time(failure):  
+def parse_start_end_time(failure, time_limit=10800):  
     log_file = os.path.join(failure+".vennsawork","logs","vdb","vdb.log") 
     # Find the second main pass 
     
@@ -101,7 +101,7 @@ def parse_start_end_time(failure):
         return None, None, None         
     
     if not found_end:
-        end_time = utils.parse_runtime(failure, time_limit=10800)
+        end_time = utils.parse_runtime(failure, time_limit=time_limit)
         
     # print failure 
     # print "start_time =",start_time 
@@ -110,7 +110,7 @@ def parse_start_end_time(failure):
     return start_time, end_time, points 
 
 
-def parse_failure(failure, verbose):
+def parse_failure(failure, verbose, time_limit=10800):
     '''
     Parse start time, end time, and (time,recall) points of relevant solutions for failure. 
     '''
@@ -127,7 +127,7 @@ def parse_failure(failure, verbose):
     else:
         method = 0
 
-    return parse_start_end_time(failure)
+    return parse_start_end_time(failure, time_limit)
     
   
 def normalize(base_points, new_points, end_method="min"):    
@@ -242,12 +242,12 @@ def plot_improvements(outfile, recall_auc_improvementz):
     plt.savefig(outfile)
     
     
-def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min"):
-    base_start, base_end, base_points = parse_failure(base_failure, verbose)
+def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min", time_limit=10800):
+    base_start, base_end, base_points = parse_failure(base_failure, verbose, time_limit)
     if base_start is None: 
         return None, None, None, None, None  
         
-    new_start, new_end, new_points = parse_failure(new_failure, verbose)
+    new_start, new_end, new_points = parse_failure(new_failure, verbose, time_limit)
     if new_start is None: 
         return None, None, None, None, None  
         
@@ -311,7 +311,8 @@ def main(args):
     
     for failure in all_failurez: 
         recall_auc_improvement, speedup, base_points, new_points, runs_finished = analyze(failure+args.base_suffix, 
-            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime, end_method=args.end_method)
+            failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime, end_method=args.end_method,
+            time_limit=args.tl)
         
         if recall_auc_improvement is not None:
             tot_runs_finished += runs_finished 
@@ -344,6 +345,7 @@ def main(args):
 def init(parser):
     parser.add_argument("new_suffix", default="", help="Suffix of failure names to compare against the baseline")
     parser.add_argument("base_suffix", nargs='?', default="", help="[optional] Suffix of failure names to compare against the baseline")
+    parser.add_argument("--tl", type=int, default=10800, help="Time limit that experiment was run for.")
     parser.add_argument("--design", help="Design to analyze.")
     parser.add_argument("--failure", help="Analyze a single failure (base name).")    
     parser.add_argument("--min_runtime", type=int, default=10, help="Exclude designs with runtime less than this.")
