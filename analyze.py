@@ -141,7 +141,7 @@ def normalize(base_points, new_points, end_method="min"):
         
     base_points.append([end_time,base_points[-1][1]])
     new_points.append([end_time,new_points[-1][1]])    
-    max_n = float(base_points[-1][1])
+    max_n = max(float(base_points[-1][1]), float(new_points[-1][1]))
     
     for i in range(len(base_points)):
         base_points[i][0] /= end_time
@@ -209,8 +209,8 @@ def plot_recall_vs_time(base_points, new_points, outfile=None):
     # c1 = "r" 
     # c2 = "b"
     plt.clf()
-    plt.plot(x, y_base, color=c2, label="baseline debug", linestyle="--", linewidth=3)
-    plt.plot(x, y_new, color=c1, label="directed debug", linewidth=2)
+    plt.plot(x, y_base, color=c2, label="Algorithm 1", linestyle="--", linewidth=3)
+    plt.plot(x, y_new, color=c1, label="Algorithm 2", linewidth=2)
     plt.fill_between(x, np.zeros(len(x)), y_base, color=c2, alpha=0.5)
     plt.fill_between(x, y_base, y_new, color=c1, alpha=0.25)
 
@@ -219,14 +219,14 @@ def plot_recall_vs_time(base_points, new_points, outfile=None):
         R_new = auc_recall_time(new_points[0])
         font = FontProperties()
         font.set_weight("heavy")
-        plt.text(0.7, 0.3, "$R_{base}=%.3f$" %(R_base), fontsize=18, weight="heavy")
-        plt.text(0.56, 0.6, "$R_{new}=%.3f$" %(R_new), fontsize=18, weight="heavy")
+        plt.text(0.7, 0.25, "$R_{1}=%.3f$" %(R_base), fontsize=18, weight="heavy")
+        plt.text(0.7, 0.7, "$R_{2}=%.3f$" %(R_new), fontsize=18, weight="heavy")
 
-    plt.xlabel("Relative runtime", fontsize=16)
+    plt.xlabel("Normalized time", fontsize=16)
     plt.ylabel("Suspect recall", fontsize=16)
     plt.xlim((0,1))
     plt.ylim((-0.05,1.05))
-    plt.legend(loc="lower right")
+    plt.legend(loc="upper left")
     if outfile:
         plt.savefig(outfile)
 
@@ -267,9 +267,16 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
     new_mem = parse_peak_memory(new_failure)
     mem_reduce = new_mem / float(base_mem)
     
+
     base_points, new_points = normalize(base_points, new_points, end_method)
+    # print base_points 
+    # print "" 
+    # print new_points 
+    # print "" 
     base_recall_auc = auc_recall_time(base_points)    
     new_recall_auc = auc_recall_time(new_points)
+    # print base_recall_auc
+    # print new_recall_auc
     
     if base_recall_auc == 0 or new_recall_auc == 0: # or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
         # This can happen when using end_method=min in the rare case that one of the experiments finds 
@@ -282,7 +289,12 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
         
     recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
 
-    runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
+    runs_finished = np.zeros(2, dtype=np.int32)
+    if utils.parse_run_finished(base_failure) and utils.parse_runtime(base_failure, time_limit=time_limit):
+        runs_finished[0] = 1
+    if utils.parse_run_finished(new_failure) and utils.parse_runtime(new_failure, time_limit=time_limit):
+        runs_finished[1] = 1
+    # runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
     
     print "Recall auc improvement: %.3f" %(recall_auc_improvement)
     if verbose:

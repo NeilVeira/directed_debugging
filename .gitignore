@@ -5,3 +5,6 @@ suspect_lists/scam_core/*
 in.txt
 out.txt
 suspect2vec/suspect2vec
+paper/*
+plots/*
+temp*

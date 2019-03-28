@@ -33,8 +33,8 @@ def debug_passed(failure):
     if not os.path.exists(log_file):
         return False 
     
-    if "sudoku_check" in failure:
-        # sudoku_check logs are full of messages containing "error:" but the debugging 
+    if "sudoku_check" in failure or "scam_core" in failure:
+        # logs for these designs contain nessages with "error:" but the debugging 
         # doesn't actually fail 
         return True 
     log = open(log_file).read()
