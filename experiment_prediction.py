@@ -33,7 +33,6 @@ def run_train_test(model, data, train_index, test_index, results, n, args):
     model.fit(train_data)
         
     # Testing
-    f1s = []
     for i in test_index:
         assert i not in train_index 
         test_data = data[i]
@@ -50,10 +49,10 @@ def run_train_test(model, data, train_index, test_index, results, n, args):
         assert min(sample_scores) >= max(non_sample_scores)
                 
         results[i] = eval_pred(pred, scores, test_data, n)  
-        f1s.append(results[i][2])
             
-    if args.verbosity >= 1:    
-        print("%s f1-score:         %.9f" %(type(model).__name__.ljust(20), np.mean(f1s)))
+        if args.verbosity >= 1:   
+            print "%s f1-score:         %.9f" %(type(model).__name__.ljust(20), results[i][2])
+            print "%s auc-pr:         %.9f" %(type(model).__name__.ljust(20), results[i][3])
     
 
 def run_all(data, train_index, test_index, all_results, n, date, args):
@@ -109,10 +108,13 @@ def experiment(data, suspect_union, args, all_failurez):
             if "/random_bug_" in all_failurez[i]:
                 train_index.append(i)
             elif "/buggy" in all_failurez[i]:
-                test_index.append(i)
+                test_index.append(i)                
+        # for i in test_index:
+            # print i,all_failurez[i]
           
         if len(test_index) == 0:
-            raise Exception("No buggy data found") 
+            print "WARNING: No buggy data found"
+            return all_results
             
         if args.verbosity >= 1:
             print "Running random-to-buggy on %i random failures to %i buggy failures" %(len(train_index), len(test_index))
@@ -126,6 +128,35 @@ def experiment(data, suspect_union, args, all_failurez):
                 compressed_results[i][j] = all_results[i][test_idx]
         all_results = compressed_results
         
+        
+    elif args.train_test_split == "random-vs-buggy":
+        train_size = m-1         
+        random_results = []
+        buggy_results = []
+        
+        for i in range(m):        
+            if args.verbosity >= 1:
+                print "Testing on failure %i/%i" %(i+1,m)
+                print all_failurez[i] 
+                
+            # Generate train training data as a random subset of data excluding i 
+            train_index = range(m)
+            random.shuffle(train_index)
+            
+            # Make sure i is excluded 
+            j = train_index.index(i)
+            if j < train_size:
+                train_index[j], train_index[-1] = train_index[-1], train_index[j]
+                
+            run_all(data, train_index[:train_size], [i], all_results, n, date, args)
+            
+            if "random_bug" in all_failurez[i]:
+                random_results.append(all_results[:,i,:])
+            else:
+                buggy_results.append(all_results[:,i,:])
+
+        print np.mean(random_results, axis=0)
+        print np.mean(buggy_results, axis=0)
     
     else:
         # Assume train_test_split indicates the number of data points to use for training 

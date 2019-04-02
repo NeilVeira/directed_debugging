@@ -10,7 +10,7 @@ import run_debug_data
 
 METHODS = [None, "assump", "optAssump", "assumpBlock", "optAssumpBlock", "optAssumpBlock0", 
             "2pass", None, None, None, 
-            "optMulti", "Multi", "Multiv2"
+            "optMulti", "Multi", "Multiv2", "multiDate"
             ]
 
 def run_debug(name, timeout=60*60*24, verbose=False):
@@ -87,6 +87,8 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             if os.system("cp %s_input_embeddings.txt input_embeddings.txt" %(base_name)) != 0 or \
                 os.system("cp %s_output_embeddings.txt output_embeddings.txt" %(base_name)) != 0:
                 print "WARNING: Could not copy embeddings file into bug directory" 
+            if os.system("cp %s_DATE_info.txt DATE_info.txt" %(base_name)) != 0:
+                print "WARNING: Could not copy DATE_info file into bug directory" 
         assert os.system("cp %s.template %s.template" %(base_name,new_name)) == 0
         
         # Modify template file as needed 
@@ -113,8 +115,6 @@ def main(base_name, new_name=None, min_suspects=999999, aggressiveness=0.5, guid
             return False 
             
         try:
-            if "_1pass" in new_name or "_2pass" in new_name:
-                base_name += "_1pass"
             analyze.analyze(base_name, new_name, verbose=verbose, min_runtime=0)
         except Exception as e:
             print "analyze failed" 

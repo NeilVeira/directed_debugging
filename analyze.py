@@ -269,14 +269,8 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
     
 
     base_points, new_points = normalize(base_points, new_points, end_method)
-    # print base_points 
-    # print "" 
-    # print new_points 
-    # print "" 
     base_recall_auc = auc_recall_time(base_points)    
     new_recall_auc = auc_recall_time(new_points)
-    # print base_recall_auc
-    # print new_recall_auc
     
     if base_recall_auc == 0 or new_recall_auc == 0: # or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
         # This can happen when using end_method=min in the rare case that one of the experiments finds 

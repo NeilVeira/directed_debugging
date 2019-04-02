@@ -5,7 +5,8 @@ import re
 
 import utils 
 from suspect_prediction.suspect2vec import Suspect2Vec
-    
+from suspect_prediction.date import DATEPrediction 
+
     
 def write_embeddings(embeddingx, file_name):
     with open(file_name,"w") as f:
@@ -37,15 +38,31 @@ def main(args):
         suspectz = open(suspect_list_file).readlines()
         all_suspectz.append([s.strip() for s in suspectz])
     
+    date_pred = DATEPrediction()
+        
     for i,failure in enumerate(all_failurez):
         print failure
         train_data = all_suspectz[:i] + all_suspectz[i+1:]
-        predictor = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
-        predictor.fit(train_data)
-        embed_inx, embed_outx = predictor.get_embeddings()
-        write_embeddings(embed_inx, failure+"_input_embeddings.txt")
-        write_embeddings(embed_outx, failure+"_output_embeddings.txt")
-        predictor.save(failure+".suspect2vec.pkl")
+        
+        if not args.skip_s2v:
+            predictor = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
+            predictor.fit(train_data)
+            embed_inx, embed_outx = predictor.get_embeddings()
+            write_embeddings(embed_inx, failure+"_input_embeddings.txt")
+            write_embeddings(embed_outx, failure+"_output_embeddings.txt")
+            # predictor.save(failure+".suspect2vec.pkl")
+        
+        # DATE training
+        date_pred.fit(train_data)        
+        with open(failure+"_DATE_info.txt", "w") as f:
+            for s in date_pred.suspect_union:
+                f.write(s+" ")
+            f.write("\n")
+            
+            for row in date_pred.weights:
+                for x in row:
+                    f.write("%.9f " %(x))
+                f.write("\n")
         
 
 def init(parser):
@@ -56,6 +73,7 @@ def init(parser):
     parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
     parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
     parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
+    parser.add_argument("--skip_s2v", action="store_true", default=False)
 
     
 if __name__ == "__main__":

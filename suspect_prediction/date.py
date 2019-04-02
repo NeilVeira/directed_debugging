@@ -128,23 +128,16 @@ class DATEPrediction(object):
         neg_logw = -1 * np.log(1-self.weights)
         ranking = sample
         
-        all_scores = np.ones(len(ranking))
-        
-        #in_predicted[i] = 1 iff i is in the ranking
-        in_predicted = [False]*n
-        for i in ranking:
-            in_predicted[i] = True 
-        
         #neg_log_notp[i] = negative log of probability of not suspect i 
         #maximize neg_log_notp of suspect i <==> maximize probability of suspect i
         neg_log_notp = np.zeros(n)
-        for j in ranking:
+        for j in sample:
             neg_log_notp += neg_logw[j]
             
         #sort by negative log of 1-probability
         ordered_suspectz = []
         for i in range(n):
-            if i not in ranking:
+            if i not in sample:
                 ordered_suspectz.append((neg_log_notp[i], i))
                 
         ordered_suspectz.sort()

@@ -10,10 +10,12 @@ import write_suspect_lists
 import run_debug_prediction_wrapper
 
 
-# fail_list =  '''buggy2/fail_1
-                # buggy9/fail_1
-                # buggy10/fail_1
-                # buggy11/fail_1'''
+# fail_list =  '''random_bug_1/fail_0
+                # random_bug_13/fail_0
+                # random_bug_3/fail_3
+                # random_bug_6/fail_0
+                # random_bug_6/fail_2
+                # random_bug_6/fail_6'''
 # failurez = fail_list.split()
 
 def main(args):
@@ -45,11 +47,6 @@ def main(args):
         if not found_start or not found_end:
             print "Could not parse start and finish times"
             continue 
-
-        # temporary hack 
-        # print "WARNING: setting start time to 0"
-        # start_time = 0
-        # utils.write_template(template_file, "START_TIME=", "START_TIME=0ns")
 
         if args.window:
             init_window = int(args.window)

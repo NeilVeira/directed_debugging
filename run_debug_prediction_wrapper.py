@@ -57,7 +57,7 @@ def init(parser):
     parser.add_argument("--min_suspects", type=int, default=999999, help="Minimum number of suspects to "\
         "find before predicting")
     parser.add_argument("--aggressiveness", type=float, default=0.5, help="Threshold below which suspects are blocked")
-    parser.add_argument("--timeout", type=int, default=3600, help="Time limit in seconds for a single debugging run.")
+    parser.add_argument("--timeout", type=int, default=10800, help="Time limit in seconds for a single debugging run.")
     parser.add_argument("--pass_timeout", type=int, default=100000, help="Time limit in seconds for a single pass.")
     parser.add_argument("-v","--verbose", action="store_true", default=False, help="Display more info")
     parser.add_argument("--method", type=str, default=None, help="Solver guidance method. " \
