@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/memory/generic_dpram.v : 175
+Golden:   			if (we && wce)
+Bug:      			if (we ^ wce)

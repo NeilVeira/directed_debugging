@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/vga_tgen.v : 134
+Golden:   	.Tgate(Tvgate),
+Bug:      	

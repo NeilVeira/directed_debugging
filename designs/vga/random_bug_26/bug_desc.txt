@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/vga_enh_top.v : 231
+Golden:   	.cd          ( ctrl_cd      ),
+Bug:      	

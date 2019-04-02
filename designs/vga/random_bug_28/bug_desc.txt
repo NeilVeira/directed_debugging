@@ -1,0 +1,4 @@
+Bug Description: Missing port connection
+Location: 	rtl/vga_enh_top.v : 268
+Golden:   	.clut_acc    ( ext_clut_req ),
+Bug:      	

@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/vga_wb_master.v : 254
+Golden:   	 burst_cnt} -4'h1;
+Bug:      	 burst_cnt} +4'h1;

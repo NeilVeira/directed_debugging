@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/vga_wb_master.v : 213
+Golden:   	d_cursor1)) & !cur_done;
+Bug:      	d_cursor1)) | !cur_done;

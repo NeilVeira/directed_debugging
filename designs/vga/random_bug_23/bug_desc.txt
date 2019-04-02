@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/vga_wb_slave.v : 236
+Golden:   	= ~CLUT_ADR & acc & acc32
+Bug:      	= ~CLUT_ADR | acc & acc32

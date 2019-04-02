@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/vga_wb_slave.v : 316
+Golden:   	if (!arst_i)
+Bug:      	if (1)

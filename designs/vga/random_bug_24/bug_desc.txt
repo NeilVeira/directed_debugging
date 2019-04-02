@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/vga_fifo_dc.v : 148
+Golden:   	 <= #1 rclr | sswclr;
+Bug:      	 <= #1 rclr && sswclr;
