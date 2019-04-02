@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/eth_clockgen.v : 132
+Golden:   	 = CountEq0 & Mdc;
+Bug:      	 = CountEq0 | Mdc;

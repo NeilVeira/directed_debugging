@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/eth_register.v : 104
+Golden:   	if(SyncReset)
+Bug:      	if (1)

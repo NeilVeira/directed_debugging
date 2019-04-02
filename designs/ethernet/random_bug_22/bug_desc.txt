@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/eth_miim.v : 359
+Golden:   	tart_q1     & ~RStatStart
+Bug:      	tart_q1     ^ ~RStatStart

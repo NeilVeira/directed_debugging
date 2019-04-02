@@ -1,0 +1,4 @@
+Bug Description: incorrect operator
+Location: 	rtl/eth_rxstatem.v : 136
+Golden:   	 & ~MRxDEq5 & (StateIdle 
+Bug:      	 & ~MRxDEq5 ^ (StateIdle 
