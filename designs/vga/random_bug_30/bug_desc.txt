@@ -1,0 +1,4 @@
+Bug Description: incorrect condition
+Location: 	rtl/vga_wb_slave.v : 279
+Golden:   	if (reg_wacc)
+Bug:      	if (1)
