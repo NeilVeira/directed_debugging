@@ -36,7 +36,7 @@ CONSTRAIN_SIGNAL=OW_SI_ERRN:h1:27180ns
 # Setup the debug window
 # The firing assertion or constrain signal time should be 
 #  contained within the debug window
-START_TIME=26930ns
+START_TIME=26980ns
 FINISH_TIME=27230ns
 #  Or setup the dynamic debug window
 #  Use this to set the start time relative to the 
@@ -55,7 +55,7 @@ MEMORY_LIMIT=16GB
 #  * setup,combo,gui_db              - for viewing periodic intermediate results
 #  * setup,abr,vdb,gui_db            - for improved performance, but no intermediate results
 #  * setup,abr,sdp,causality,gui_db  - for long diagnose windows, no intermediate results
-RUN=setup,abr,vdb
+RUN=setup,vdb
 
 ###------------------------------------------### 
 ###  ADVANCED OPTIONS                        ###
@@ -100,10 +100,10 @@ REDUCE_IMPLICATION_SUSPECTS=0
 #RTL_CAUSALITY=1
 
 # Sets verbosity level (only change when you encounter an error)
-VERBOSITY=quiet
+VERBOSITY=debug
 
 # Forces a project overwrite on creation
 FORCE=1
 
 # Appends to general vdb options
-GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all --dangling-logic-removal=no"
+GENERAL_OPTIONS="--max=1 --rtl-implications=no --suspect-implications=none --oracle-solver-stats=debug --oracle-problem-stats=debug --skip-hard-suspects=no --time-diagnosis=no --diagnose-command=rtl --suspect-types=all"
