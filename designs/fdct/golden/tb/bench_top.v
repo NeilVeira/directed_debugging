@@ -514,5 +514,14 @@ module bench_top();
 		//$stop;
 
 	end
+    
+reg debug_clk;
+initial debug_clk = 1;
+always #50 debug_clk = ~debug_clk;
+always @(posedge debug_clk) begin 
+    $display("Signals at %t",$time);
+    $display("dout[11:0] = %h",dut.dout);
+    $display("douten = %h",dut.douten);
+end
   
 endmodule
