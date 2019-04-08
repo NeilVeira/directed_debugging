@@ -62,4 +62,72 @@ $finish;
        
 end
 
+reg debug_clk;
+initial debug_clk = 1;
+always #50 debug_clk = ~debug_clk;
+reg [6:0] prev_seg7led1;
+reg [6:0] prev_seg7led2;
+reg [7:0] prev_lcd_data;
+reg  prev_lcd_rs;
+reg  prev_lcd_rw;
+reg  prev_lcd_en;
+reg  prev_led1;
+reg  prev_led2;
+reg [31:0] prev_zz_addr_o;
+reg [31:0] prev_zz_dout;
+reg [31:0] prev_zz_pc_o;
+reg [3:0] prev_zz_wr_en_o;
+always @(posedge debug_clk) begin
+    if (
+        mips789_tb.isys.seg7led1 != prev_seg7led1 ||
+        mips789_tb.isys.seg7led2 != prev_seg7led2 ||
+        mips789_tb.isys.lcd_data != prev_lcd_data ||
+        mips789_tb.isys.lcd_rs != prev_lcd_rs ||
+        mips789_tb.isys.lcd_rw != prev_lcd_rw ||
+        mips789_tb.isys.lcd_en != prev_lcd_en ||
+        mips789_tb.isys.led1 != prev_led1 ||
+        mips789_tb.isys.led2 != prev_led2 ||
+        mips789_tb.isys.zz_addr_o != prev_zz_addr_o ||
+        mips789_tb.isys.zz_dout != prev_zz_dout ||
+        mips789_tb.isys.zz_pc_o != prev_zz_pc_o ||
+        mips789_tb.isys.zz_wr_en_o != prev_zz_wr_en_o )
+        $display("Signals at %t",$time);
+    if (mips789_tb.isys.seg7led1 != prev_seg7led1)
+        $display("seg7led1[6:0] = %h",mips789_tb.isys.seg7led1);
+    prev_seg7led1 <= mips789_tb.isys.seg7led1;
+    if (mips789_tb.isys.seg7led2 != prev_seg7led2)
+        $display("seg7led2[6:0] = %h",mips789_tb.isys.seg7led2);
+    prev_seg7led2 <= mips789_tb.isys.seg7led2;
+    if (mips789_tb.isys.lcd_data != prev_lcd_data)
+        $display("lcd_data[7:0] = %h",mips789_tb.isys.lcd_data);
+    prev_lcd_data <= mips789_tb.isys.lcd_data;
+    if (mips789_tb.isys.lcd_rs != prev_lcd_rs)
+        $display("lcd_rs = %h",mips789_tb.isys.lcd_rs);
+    prev_lcd_rs <= mips789_tb.isys.lcd_rs;
+    if (mips789_tb.isys.lcd_rw != prev_lcd_rw)
+        $display("lcd_rw = %h",mips789_tb.isys.lcd_rw);
+    prev_lcd_rw <= mips789_tb.isys.lcd_rw;
+    if (mips789_tb.isys.lcd_en != prev_lcd_en)
+        $display("lcd_en = %h",mips789_tb.isys.lcd_en);
+    prev_lcd_en <= mips789_tb.isys.lcd_en;
+    if (mips789_tb.isys.led1 != prev_led1)
+        $display("led1 = %h",mips789_tb.isys.led1);
+    prev_led1 <= mips789_tb.isys.led1;
+    if (mips789_tb.isys.led2 != prev_led2)
+        $display("led2 = %h",mips789_tb.isys.led2);
+    prev_led2 <= mips789_tb.isys.led2;
+    if (mips789_tb.isys.zz_addr_o != prev_zz_addr_o)
+        $display("zz_addr_o[31:0] = %h",mips789_tb.isys.zz_addr_o);
+    prev_zz_addr_o <= mips789_tb.isys.zz_addr_o;
+    if (mips789_tb.isys.zz_dout != prev_zz_dout)
+        $display("zz_dout[31:0] = %h",mips789_tb.isys.zz_dout);
+    prev_zz_dout <= mips789_tb.isys.zz_dout;
+    if (mips789_tb.isys.zz_pc_o != prev_zz_pc_o)
+        $display("zz_pc_o[31:0] = %h",mips789_tb.isys.zz_pc_o);
+    prev_zz_pc_o <= mips789_tb.isys.zz_pc_o;
+    if (mips789_tb.isys.zz_wr_en_o != prev_zz_wr_en_o)
+        $display("zz_wr_en_o[3:0] = %h",mips789_tb.isys.zz_wr_en_o);
+    prev_zz_wr_en_o <= mips789_tb.isys.zz_wr_en_o;
+end
+
 endmodule
