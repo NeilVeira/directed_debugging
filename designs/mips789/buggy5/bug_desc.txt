@@ -1,0 +1,4 @@
+Bug Description: Incorrect operation
+Location: 	rtl/ulit.v : 41
+Golden:   	always@(*) d_o = `__TP d_i + 4;
+Bug:      	always@(*) d_o = `__TP d_i + 0;

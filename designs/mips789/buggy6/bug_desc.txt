@@ -1,0 +1,4 @@
+Bug Description: Swapped connections in module instantiations
+Location: 	rtl/mips_core.v : 302,315,328
+Golden:   	.r5_i(BUS775), .r5_i(BUS1726), .r5_i(BUS1724),
+Bug:      	.r5_i(BUS1724), .r5_i(BUS775), .r5_i(BUS1726),
