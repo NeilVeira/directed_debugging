@@ -1,0 +1,4 @@
+Bug Description: Swapped port connections
+Location: 	rtl/dctub.v : 160,172
+Golden:   	.dout(dout6) .dout(dout7)
+Bug:      	.dout(dout7) .dout(dout6)

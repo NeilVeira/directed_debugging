@@ -1,0 +1,4 @@
+Bug Description: Swapped port connections
+Location: 	rtl/fdct.v : 231-232
+Golden:   	.din_00(res00), .din_01(res01),
+Bug:      	.din_00(res01), .din_01(res00),
