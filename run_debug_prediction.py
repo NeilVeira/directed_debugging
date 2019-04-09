@@ -10,7 +10,7 @@ import run_debug_data
 
 METHODS = [None, "assump", "optAssump", "assumpBlock", "optAssumpBlock", "optAssumpBlock0", 
             "2pass", None, None, None, 
-            "optMulti", "Multi", "Multiv2", "multiDate"
+            "optMulti", "Multi", "Multiv2", "MultiDATE"
             ]
 
 def run_debug(name, timeout=60*60*24, verbose=False):

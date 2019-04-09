@@ -1,7 +1,7 @@
 *.pyc
-suspect2vec/data/scam_core/*
 designs/*
 suspect_lists/scam_core/*
+suspect_lists/smoac_core/*
 in.txt
 out.txt
 suspect2vec/suspect2vec
