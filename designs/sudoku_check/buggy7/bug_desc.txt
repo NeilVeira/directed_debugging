@@ -1,0 +1,4 @@
+Bug Description: Missing encoding cases
+Location: 	rtl/sudoku_hex2bin.v
+Golden:   	4'h 8   : bin = 9'b 010000000; 4'h 9   : bin = 9'b 100000000;
+Bug:      	

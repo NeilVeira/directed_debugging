@@ -1,0 +1,4 @@
+Bug Description: Missing update step
+Location: 	rtl/sudoku_check.v : 54
+Golden:   	if (solution || give_up) check_index <= check_index + 1;
+Bug:      	

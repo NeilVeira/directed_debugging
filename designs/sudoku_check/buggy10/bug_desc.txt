@@ -1,0 +1,4 @@
+Bug Description: Incorrect loop termination condition
+Location: 	rtl/sudoku_mask_stg2.v : 22
+Golden:   	for (i=0; i < 9*9*9; i=i+1)
+Bug:      	for (i=0; i < 9*9; i=i+1)

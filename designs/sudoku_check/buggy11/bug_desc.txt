@@ -1,0 +1,4 @@
+Bug Description: Incorrect arithmetic formula
+Location: 	rtl/sudoku_mask_stg2.v : 52
+Golden:   	if ((i/9)%9 == yi)
+Bug:      	if (i%9 == yi)

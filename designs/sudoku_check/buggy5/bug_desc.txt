@@ -1,0 +1,4 @@
+Bug Description: Incorrect logic
+Location: 	rtl/sudoku.v : 130 
+Golden:   	assign give_up = puzzle_oe && !solution_wire;
+Bug:      	assign give_up = puzzle_oe && solution_wire;

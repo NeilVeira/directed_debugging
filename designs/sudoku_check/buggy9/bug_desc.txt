@@ -1,0 +1,4 @@
+Bug Description: Inconsistent encoding/decoding
+Location: 	rtl/sudoku_bin2hex.v : 39
+Golden:   	9'b 000100000 : hex = 4'h 6; 9'b 001000000 : hex = 4'h 7;
+Bug:      	9'b 001000000 : hex = 4'h 6; 9'b 000100000 : hex = 4'h 7;

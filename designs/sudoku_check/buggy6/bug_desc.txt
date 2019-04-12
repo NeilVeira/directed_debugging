@@ -1,0 +1,4 @@
+Bug Description: Incorrect signal indices
+Location: 	rtl/sudoku_hex2bin.v : 46 
+Golden:   	assign out = bin[9-1:0];
+Bug:      	out = bin[18-1:9];

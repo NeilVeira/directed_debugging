@@ -1,0 +1,4 @@
+Bug Description: Incorrect case 
+Location: 	rtl/puz_bank3.v : 51
+Golden:   	0 : begin
+Bug:      	1 : begin
