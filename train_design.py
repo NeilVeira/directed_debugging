@@ -15,7 +15,42 @@ def write_embeddings(embeddingx, file_name):
             for x in embeddingx[key]:
                 f.write(" %.6f" %(x))
             f.write("\n")
+         
+def load_data(failure):
+    design = "/".join(failure.split("/")[:2])
+    all_failurez = utils.find_all_failures(design)
+    data = []
+    for f in all_failurez:
+        if f != failure:
+            suspect_list_file = f.replace("designs","suspect_lists")+"_suspects.txt"
+            suspectz = open(suspect_list_file).readlines()
+            data.append([s.strip() for s in suspectz])
+    return data 
+    
                 
+def train_s2v(failure):
+    train_data = load_data(failure) 
+    predictor = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
+    predictor.fit(train_data)
+    embed_inx, embed_outx = predictor.get_embeddings()
+    write_embeddings(embed_inx, failure+"_input_embeddings.txt")
+    write_embeddings(embed_outx, failure+"_output_embeddings.txt")
+    
+    
+def train_DATE(failure):
+    train_data = load_data(failure) 
+    date_pred = DATEPrediction()
+    date_pred.fit(train_data)        
+    with open(failure+"_DATE_info.txt", "w") as f:
+        for s in date_pred.suspect_union:
+            f.write(s+" ")
+        f.write("\n")
+        
+        for row in date_pred.weights:
+            for x in row:
+                f.write("%.9f " %(x))
+            f.write("\n")
+    
     
 def main(args):
     if args.skip_check:
@@ -31,48 +66,17 @@ def main(args):
     else:
         all_failurez = utils.find_all_failures(args.design)
 
-    print "Training %i failures in leave-one-out" %(len(all_failurez))
-    all_suspectz = []
     for failure in all_failurez:
-        suspect_list_file = failure.replace("designs","suspect_lists")+"_suspects.txt"
-        suspectz = open(suspect_list_file).readlines()
-        all_suspectz.append([s.strip() for s in suspectz])
-    
-    date_pred = DATEPrediction()
-        
-    for i,failure in enumerate(all_failurez):
-        print failure
-        train_data = all_suspectz[:i] + all_suspectz[i+1:]
-        
+        print "Training %i failures in leave-one-out" %(len(all_failurez))
+        train_DATE(failure)
         if not args.skip_s2v:
-            predictor = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
-            predictor.fit(train_data)
-            embed_inx, embed_outx = predictor.get_embeddings()
-            write_embeddings(embed_inx, failure+"_input_embeddings.txt")
-            write_embeddings(embed_outx, failure+"_output_embeddings.txt")
-            # predictor.save(failure+".suspect2vec.pkl")
-        
-        # DATE training
-        date_pred.fit(train_data)        
-        with open(failure+"_DATE_info.txt", "w") as f:
-            for s in date_pred.suspect_union:
-                f.write(s+" ")
-            f.write("\n")
-            
-            for row in date_pred.weights:
-                for x in row:
-                    f.write("%.9f " %(x))
-                f.write("\n")
+            train_s2v(failure)
         
 
 def init(parser):
     parser.add_argument("design")
     parser.add_argument("--skip_check", action="store_true", default=False, \
         help="Skip check for successful debug runs. This should not be used on pczisis.")
-    parser.add_argument("--epochs", type=int, default=4000)
-    parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
-    parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
-    parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
     parser.add_argument("--skip_s2v", action="store_true", default=False)
 
     
