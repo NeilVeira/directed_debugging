@@ -1,5 +1,6 @@
 import os 
 import subprocess 
+import random 
 import pickle 
 import numpy as np 
 import sklearn.model_selection
@@ -24,11 +25,12 @@ class Suspect2Vec(object):
         self._lambd = lambd 
         self._dir_path = os.path.dirname(os.path.realpath(__file__))
         self._verbose = verbose 
+        self.suffix = random.randrange(10**9)
         
         
     def _run_C_suspect2vec(self, one_hot_data, **args):
         m,n = one_hot_data.shape
-        with open("in.txt","w") as f:
+        with open("in_%i.txt" %self.suffix, "w") as f:
             f.write("%i %i\n" %(m,n))
             for row in one_hot_data:
                 f.write(" ".join(map(str,map(int,row)))+"\n")
@@ -36,12 +38,12 @@ class Suspect2Vec(object):
         params = {"epochs":self._epochs, "eta":self._eta, "lambd":self._lambd, "dim":self._dim}
         for key in args:
             params[key] = args[key]
-        cmd = "%s -in in.txt -out out.txt" %(os.path.join(self._dir_path,"suspect2vec"))
+        cmd = "%s -in in_%i.txt -out out_%i.txt" %(os.path.join(self._dir_path,"suspect2vec"), self.suffix, self.suffix)
         for key in params:
             cmd += " -%s %s" %(key,params[key])
         stdout,stderr = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()
         
-        with open("out.txt") as f:
+        with open("out_%i.txt" %self.suffix) as f:
             self.embed_in = []
             self.embed_out = []
             for i in range(n):
@@ -52,6 +54,8 @@ class Suspect2Vec(object):
             self.embed_out = np.array(self.embed_out)    
         assert not np.isnan(self.embed_in).any()
         assert not np.isnan(self.embed_out).any()
+        
+        os.system("rm -rf out_%i.txt in_%i.txt" %(self.suffix,self.suffix))
 
             
     def _validate(self, train_index, valid_index, lambd):
