@@ -123,19 +123,23 @@ def find_time_of(failure, pattern, default=None):
         
         
 def parse_runtime(failure, time_limit=3600):
-    start = find_time_of(failure, "Oracle::ask\(\)")
-    if not start:
-        start = find_time_of(failure, "OracleSolver::solveAll\(\)")
-        if not start:
-            start = 0 
-    
+    # start = find_time_of(failure, "Oracle::ask\(\)")
+    # if not start:
+        # start = find_time_of(failure, "OracleSolver::solveAll\(\)")
+        # if not start:
+            # start = 0     
     end = find_time_of(failure, "\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*  VDB Process Ends  \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*")
     if end:
         return end - start 
     else:
         # No way to know actual time limit since it's not recorded anywhere...
         # print "WARNING: failure %s did not finish. Assuming a total runtime of %i seconds." %(failure, time_limit)
-        return time_limit - start
+        # Parse time of last line written to log file 
+        with open(os.path.join(failure+".vennsawork","logs","vdb","vdb.log")) as f:
+            lines = f.readlines()
+            last_time = parse_time_of(lines[-1], ".*")
+        
+        return max(time_limit,last_time)
         
         
 def parse_run_finished(failure):

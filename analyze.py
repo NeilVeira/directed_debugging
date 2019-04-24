@@ -106,7 +106,7 @@ def parse_start_end_time(failure, time_limit=10800):
     # print failure 
     # print "start_time =",start_time 
     # print "end_time =",end_time 
-    points = parse_solutions(log_file, start_time, end_time)    
+    points = parse_solutions(log_file, start_time, end_time)  
     return start_time, end_time, points 
 
 
@@ -260,12 +260,12 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
             print "Skipping %s due to short runtime" %(new_failure) 
         return None, None, None, None, None  
     
-    print "Analyzing", new_failure
     
+    print "Analyzing", new_failure
     # Analyze peak memory usage
-    base_mem = parse_peak_memory(base_failure)
-    new_mem = parse_peak_memory(new_failure)
-    mem_reduce = new_mem / float(base_mem)
+    # base_mem = parse_peak_memory(base_failure)
+    # new_mem = parse_peak_memory(new_failure)
+    # mem_reduce = new_mem / float(base_mem)
     
 
     base_points, new_points = normalize(base_points, new_points, end_method)
@@ -284,9 +284,9 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
     recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
 
     runs_finished = np.zeros(2, dtype=np.int32)
-    if utils.parse_run_finished(base_failure) and utils.parse_runtime(base_failure, time_limit=time_limit):
+    if utils.parse_run_finished(base_failure) and utils.parse_runtime(base_failure, time_limit=time_limit) <= time_limit:
         runs_finished[0] = 1
-    if utils.parse_run_finished(new_failure) and utils.parse_runtime(new_failure, time_limit=time_limit):
+    if utils.parse_run_finished(new_failure) and utils.parse_runtime(new_failure, time_limit=time_limit) <= time_limit:
         runs_finished[1] = 1
     # runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
     
@@ -296,7 +296,7 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
         print "Number of new points: %i (recall %.3f)" %(len(new_points), recall)
         print "Runtime: %.1fs" %(base_runtime)
         print "Relative runtime: %.3f" %(speedup)
-        print "Peak memory reduction: %.3f" %(mem_reduce)
+        # print "Peak memory reduction: %.3f" %(mem_reduce)
         print ""
 
     return recall_auc_improvement, speedup, base_points, new_points, runs_finished

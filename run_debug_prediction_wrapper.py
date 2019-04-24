@@ -3,6 +3,7 @@ import argparse
 
 import utils 
 import run_debug_prediction
+import analyze 
 
 
 def find_failure(failure, all_failurez):
@@ -27,21 +28,36 @@ def main(args):
         
     for i in range(start,stop+1):
         failure = all_failurez[i]
-        print failure
+        if args.verbose:
+            print failure
         if args.new_suffix is None:
             success = run_debug_prediction.main(failure, verbose=args.verbose)
+            
         else:
             if args.min_runtime > 0:
-                runtime = utils.parse_runtime(failure)
+                # Try to parse runtime as will be done when analyzing 
+                if os.path.exists(failure+"_1pass.vennsawork/logs/vdb/vdb.log"):
+                    start_time,end_time,_ = analyze.parse_start_end_time(failure+"_1pass")
+                    if start_time:
+                        runtime = end_time - start_time 
+                    else:
+                        runtime = 0
+                    
+                else: 
+                    runtime = utils.parse_runtime(failure)                
+                
                 if runtime < args.min_runtime:
-                    print "Ignoring failure %s, runtime is too short" %(failure)
+                    if args.verbose:
+                        print "Ignoring failure %s, runtime is too short" %(failure)
                     continue
+            
             success = run_debug_prediction.main(failure, failure+args.new_suffix, args.min_suspects, args.aggressiveness, 
                 guidance_method=args.method, timeout=args.timeout, pass_timeout=args.pass_timeout, verbose=args.verbose)
         
         if not success:
             unsuccessful.append(failure)
-        print "" 
+        if args.verbose:
+            print "" 
     
     if len(unsuccessful) > 0:
         print "The following runs were unsuccessful:"
