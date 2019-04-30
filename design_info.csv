@@ -15,7 +15,7 @@ fdct,           fdct,       bench_top.dut ,1000
 i2c,            i2c,        tst_bench_top.dut ,
 mips789,        mips_sys,   AA_mips_top_tb.mips789_tb.isys,1
 pci,            TOP,        SYSTEM.bridge32_top,
-Aquarius_usb,   top,        test.TOP,
+Aquarius_usb,   top,        test.TOP,10
 minsoc,         minsoc_top, minsoc_bench.minsoc_top_0,
 scam_core,      scam_core,  scam_top_testbench.TOP.CORE,1
 sudoku_check,sudoku_check,sudoku_check_bench.st,1000000
