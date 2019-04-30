@@ -245,11 +245,11 @@ def plot_improvements(outfile, recall_auc_improvementz):
 def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method="min", time_limit=10800):
     base_start, base_end, base_points = parse_failure(base_failure, verbose, time_limit)
     if base_start is None: 
-        return None, None, None, None, None  
+        return [None]*6
         
     new_start, new_end, new_points = parse_failure(new_failure, verbose, time_limit)
     if new_start is None: 
-        return None, None, None, None, None  
+        return [None]*6
         
     base_runtime = base_end - base_start 
     new_runtime = new_end - new_start
@@ -258,7 +258,7 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
     if base_runtime < min_runtime:
         if verbose:
             print "Skipping %s due to short runtime" %(new_failure) 
-        return None, None, None, None, None  
+        return [None]*6
     
     
     print "Analyzing", new_failure
@@ -269,17 +269,17 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
     
 
     base_points, new_points = normalize(base_points, new_points, end_method)
-    base_recall_auc = auc_recall_time(base_points)    
-    new_recall_auc = auc_recall_time(new_points)
+    R_base = auc_recall_time(base_points)    
+    R_new = auc_recall_time(new_points)
     
-    if base_recall_auc == 0 or new_recall_auc == 0: # or not 0.1 <= new_recall_auc / base_recall_auc <= 10:
+    if R_base == 0 or R_new == 0: # or not 0.1 <= R_new / R_base <= 10:
         # This can happen when using end_method=min in the rare case that one of the experiments finds 
         # all or almost all suspects before the other finds any.
         # Such cases are probably not very meaningful so skipping is probably justified. 
         print "WARNING: skipping extreme outlier" 
-        return None,None,None,None,None
+        return [None]*6
     else:
-        recall_auc_improvement = new_recall_auc / base_recall_auc
+        R_rel = R_new / R_base
         
     recall = len(new_points)/float(len(base_points)) if len(base_points) > 0 else np.nan 
 
@@ -290,7 +290,7 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
         runs_finished[1] = 1
     # runs_finished = np.array([utils.parse_run_finished(base_failure), utils.parse_run_finished(new_failure)], dtype=np.int32)
     
-    print "Recall auc improvement: %.3f" %(recall_auc_improvement)
+    print "Recall auc improvement: %.3f" %(R_rel)
     if verbose:
         print "Number of base points: %i" %(len(base_points))
         print "Number of new points: %i (recall %.3f)" %(len(new_points), recall)
@@ -299,7 +299,7 @@ def analyze(base_failure, new_failure, verbose=False, min_runtime=0, end_method=
         # print "Peak memory reduction: %.3f" %(mem_reduce)
         print ""
 
-    return recall_auc_improvement, speedup, base_points, new_points, runs_finished
+    return R_rel, speedup, new_runtime, base_points, new_points, runs_finished
     
   
 def main(args):
@@ -316,13 +316,13 @@ def main(args):
     tot_runs_finished = np.zeros(2, dtype=np.int32)
     
     for failure in all_failurez: 
-        recall_auc_improvement, speedup, base_points, new_points, runs_finished = analyze(failure+args.base_suffix, 
+        R_rel, speedup, _, base_points, new_points, runs_finished = analyze(failure+args.base_suffix, 
             failure+args.new_suffix, verbose=args.verbose, min_runtime=args.min_runtime, end_method=args.end_method,
             time_limit=args.tl)
         
-        if recall_auc_improvement is not None:
+        if R_rel is not None:
             tot_runs_finished += runs_finished 
-            recall_auc_improvementz.append(recall_auc_improvement)
+            recall_auc_improvementz.append(R_rel)
             if runs_finished[0] and runs_finished[1]:
                 speedupz.append(speedup)
             all_base_points.append(base_points)

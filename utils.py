@@ -130,7 +130,7 @@ def parse_runtime(failure, time_limit=3600):
             # start = 0     
     end = find_time_of(failure, "\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*  VDB Process Ends  \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*")
     if end:
-        return end - start 
+        return end
     else:
         # No way to know actual time limit since it's not recorded anywhere...
         # print "WARNING: failure %s did not finish. Assuming a total runtime of %i seconds." %(failure, time_limit)
