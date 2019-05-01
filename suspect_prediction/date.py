@@ -5,7 +5,7 @@ warnings.filterwarnings('ignore')
 
 class DATEPrediction(object):
 
-    def __init__(self, prior_var=0.2):
+    def __init__(self, prior_var=0.2, delta=60):
         '''
         Initialize DATEPrediction object. 
         Parameters
@@ -14,6 +14,7 @@ class DATEPrediction(object):
             Variance to use for the Gaussian prior distribution. 
         '''
         self.prior_var = prior_var 
+        self.delta = delta 
         self.map_weights = None
         self.M = 0
         
@@ -156,7 +157,7 @@ class DATEPrediction(object):
             
             # Smooth the function
             smoothed_scores = np.ones(n)
-            smooth_range = int(round(float(n)/60))
+            smooth_range = int(round(float(n)/self.delta))
             for i in range(n):
                 smoothed_scores[i] = np.mean(scores[max(0,i-smooth_range):i+smooth_range+1])
             

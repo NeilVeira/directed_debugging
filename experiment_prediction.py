@@ -61,7 +61,7 @@ def run_all(data, train_index, test_index, all_results, n, date, args):
             model = date 
             
         elif model_name.lower() in ["s2v","suspect2vec"]:
-            model = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim, lambd=args.lambd)
+            model = Suspect2Vec(eta=args.eta, epochs=args.epochs, dim=args.dim)
             
         elif model_name.lower() == "random":
             model = RandomPrediction()
@@ -81,7 +81,7 @@ def experiment(data, suspect_union, args, all_failurez):
     '''
     m = len(data)
     n = len(suspect_union)
-    date = DATEPrediction(args.prior_var) # Instantiate it once to save time precomputing MAP weights
+    date = DATEPrediction(args.prior_var, args.delta) # Instantiate it once to save time precomputing MAP weights
 
     all_results = np.zeros((len(args.models), m, 5)) # (precision, recall, fscore, auprc, size_error)
     
@@ -248,7 +248,8 @@ def init(parser):
     parser.add_argument("--epochs", type=int, default=4000)
     parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
     parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
-    parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
+    parser.add_argument("--delta", type=int, default=60, help="Denominator in smoothing width")
+    # parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
    
 
 if __name__ == "__main__":

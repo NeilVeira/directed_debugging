@@ -26,7 +26,7 @@ def main(args):
         data = pd.read_csv(data_file, index_col=0)
     else:
         data = pd.DataFrame(
-            columns=["design","predictor","sample_type","sample_size","train_size","folds","dim","lambd",
+            columns=["design","predictor","sample_type","sample_size","train_size","folds","dim",
                     "mean_precision","mean_recall","mean_fscore","mean_auprc","mean_size_err",
                     "median_precision","median_recall","median_fscore","median_auprc","median_size_err",
                     ]
@@ -60,8 +60,8 @@ def main(args):
         
         data.to_csv(data_file)
         
-    data.drop_duplicates(subset=["design","predictor","sample_type","train_size","sample_size","folds","dim","lambd"], inplace=True, keep="last")
-    data.sort_values(by=["sample_size","train_size","sample_type","folds","design","predictor","lambd","dim"], inplace=True)
+    data.drop_duplicates(subset=["design","predictor","sample_type","train_size","sample_size","folds","dim"], inplace=True, keep="last")
+    data.sort_values(by=["sample_size","train_size","sample_type","folds","design","predictor","dim"], inplace=True)
     data.reset_index(drop=True, inplace=True)
     data.to_csv(data_file)
         
@@ -81,7 +81,7 @@ def init(parser):
     parser.add_argument("--epochs", type=int, default=4000)
     parser.add_argument("--eta", type=float, default=0.01, help="Learning rate")
     parser.add_argument("--dim", type=int, default=20, help="Embedding dimension")
-    parser.add_argument("--lambd", type=float, default=0, help="Regularization factor")
+    parser.add_argument("--delta", type=int, default=60, help="Denominator in smoothing width")
    
 
 if __name__ == "__main__":
